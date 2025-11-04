@@ -1,14 +1,17 @@
 import { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Users, KanbanSquare, FileText, Settings } from "lucide-react";
+import { LayoutDashboard, Users, KanbanSquare, FileText, Settings, LogOut } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import grifoLogo from "@/assets/grifo-logo.png";
+import { useAuth } from "@/contexts/AuthContext";
+import { ReadOnlyBanner } from "./ReadOnlyBanner";
+import { Button } from "@/components/ui/button";
 interface AppLayoutProps {
   children: ReactNode;
 }
 const navigation = [{
   name: "Dashboard",
-  href: "/",
+  href: "/dashboard",
   icon: LayoutDashboard
 }, {
   name: "Leads",
@@ -28,9 +31,8 @@ const navigation = [{
   icon: Settings
 }];
 function AppSidebar() {
-  const {
-    open
-  } = useSidebar();
+  const { open } = useSidebar();
+  const { signOut, currentUser } = useAuth();
   return <Sidebar className="bg-sidebar border-r border-sidebar-border">
       <SidebarContent className="bg-sidebar">
         {/* Logo/Title */}
@@ -61,13 +63,29 @@ function AppSidebar() {
         <div className="p-4 border-t border-sidebar-border">
           <div className="flex items-center gap-3 px-4 py-3">
             <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-semibold text-sidebar-accent-foreground">U</span>
+              <span className="text-sm font-semibold text-sidebar-accent-foreground">
+                {currentUser?.user_nome.charAt(0).toUpperCase() || 'U'}
+              </span>
             </div>
             {open && <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">Usuário</p>
-                <p className="text-xs text-sidebar-foreground/70 truncate">Admin</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  {currentUser?.user_nome}
+                </p>
+                <p className="text-xs text-sidebar-foreground/70 truncate capitalize">
+                  {currentUser?.user_role}
+                </p>
               </div>}
           </div>
+          {open && (
+            <Button
+              variant="ghost"
+              onClick={signOut}
+              className="w-full mt-2 flex items-center gap-2 justify-start px-4 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sair</span>
+            </Button>
+          )}
         </div>
       </SidebarContent>
     </Sidebar>;
@@ -81,8 +99,11 @@ export function AppLayout({
         
         <div className="flex-1 flex flex-col">
           {/* Header with Toggle */}
-          <header className="h-14 flex items-center border-b px-4 bg-background">
-            <SidebarTrigger />
+          <header className="border-b bg-background">
+            <div className="h-14 flex items-center px-4">
+              <SidebarTrigger />
+            </div>
+            <ReadOnlyBanner />
           </header>
 
           {/* Main Content */}

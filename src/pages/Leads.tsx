@@ -2,8 +2,12 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Leads() {
+  const { currentRole } = useAuth();
+  const canCreateLead = currentRole && ['admin', 'closer', 'sdr'].includes(currentRole);
+
   return (
     <AppLayout>
       <div className="p-8">
@@ -14,10 +18,12 @@ export default function Leads() {
               Visualize e gerencie todos os leads
             </p>
           </div>
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Novo Lead
-          </Button>
+          {canCreateLead && (
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Novo Lead
+            </Button>
+          )}
         </div>
 
         {/* Search and Filters */}
