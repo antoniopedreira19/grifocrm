@@ -36,7 +36,7 @@ function AppSidebar() {
         {/* Logo/Title */}
         <div className="p-6 border-b border-sidebar-border flex items-center gap-3">
           <img src={grifoLogo} alt="Grifo" className="h-10 w-10 object-contain flex-shrink-0" />
-          {open && <h1 className="text-xl font-bold text-sidebar-foreground whitespace-nowrap">GRIFO ACADEMY</h1>}
+          {open && <h1 className="text-xl font-bold text-sidebar-foreground whitespace-nowrap">GRIFO CRM</h1>}
         </div>
 
         {/* Navigation */}
