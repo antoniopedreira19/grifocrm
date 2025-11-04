@@ -5,13 +5,9 @@ import { statusLabels } from "@/utils/labels";
 import type { Status } from "@/types/lead";
 
 const columns: Status[] = [
-  "backlog",
   "primeiro_contato",
   "proximo_contato",
   "negociando",
-  "stand_by",
-  "pode_fechar",
-  "pagamento",
   "ganho",
   "perdido",
 ];
