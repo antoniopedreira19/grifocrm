@@ -59,11 +59,7 @@ const App = () => (
             />
             <Route
               path="/formulario/:tipo"
-              element={
-                <ProtectedRoute>
-                  <FormularioPublico />
-                </ProtectedRoute>
-              }
+              element={<FormularioPublico />}
             />
             <Route
               path="/settings"
