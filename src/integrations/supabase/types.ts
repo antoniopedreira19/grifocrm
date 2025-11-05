@@ -85,6 +85,20 @@ export type Database = {
             foreignKeyName: "interacoes_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
+            referencedRelation: "v_fast_prioridade"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interacoes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_gbc_prioridade"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interacoes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "v_leads_prioridade_ativas"
             referencedColumns: ["id"]
           },
@@ -137,6 +151,20 @@ export type Database = {
             foreignKeyName: "lead_status_history_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
+            referencedRelation: "v_fast_prioridade"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_status_history_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_gbc_prioridade"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_status_history_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "v_leads_prioridade_ativas"
             referencedColumns: ["id"]
           },
@@ -144,15 +172,18 @@ export type Database = {
       }
       leads: {
         Row: {
+          anos_empresa: number | null
           conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at: string
           deal_fase: Database["public"]["Enums"]["deal_fase_t"] | null
           deal_valor: number | null
           email: string
           faixa_investimento: string | null
+          fast_peso_geral: number | null
           faturamento_2024: Database["public"]["Enums"]["faturamento_t"] | null
           faturamento_2025: Database["public"]["Enums"]["faturamento_t"]
           fbclid: string | null
+          form_answers: Json | null
           gclid: string | null
           id: string
           interesse: Database["public"]["Enums"]["interesse_t"] | null
@@ -177,6 +208,7 @@ export type Database = {
           score_tempo: number | null
           score_total: number | null
           status: Database["public"]["Enums"]["status_t"]
+          tag_form: string | null
           telefone: string
           ultima_interacao: string | null
           updated_at: string
@@ -187,15 +219,18 @@ export type Database = {
           utm_term: string | null
         }
         Insert: {
+          anos_empresa?: number | null
           conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at?: string
           deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
           deal_valor?: number | null
           email: string
           faixa_investimento?: string | null
+          fast_peso_geral?: number | null
           faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
           faturamento_2025: Database["public"]["Enums"]["faturamento_t"]
           fbclid?: string | null
+          form_answers?: Json | null
           gclid?: string | null
           id?: string
           interesse?: Database["public"]["Enums"]["interesse_t"] | null
@@ -220,6 +255,7 @@ export type Database = {
           score_tempo?: number | null
           score_total?: number | null
           status?: Database["public"]["Enums"]["status_t"]
+          tag_form?: string | null
           telefone: string
           ultima_interacao?: string | null
           updated_at?: string
@@ -230,15 +266,18 @@ export type Database = {
           utm_term?: string | null
         }
         Update: {
+          anos_empresa?: number | null
           conhece_daniel?: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at?: string
           deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
           deal_valor?: number | null
           email?: string
           faixa_investimento?: string | null
+          fast_peso_geral?: number | null
           faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
           faturamento_2025?: Database["public"]["Enums"]["faturamento_t"]
           fbclid?: string | null
+          form_answers?: Json | null
           gclid?: string | null
           id?: string
           interesse?: Database["public"]["Enums"]["interesse_t"] | null
@@ -263,6 +302,7 @@ export type Database = {
           score_tempo?: number | null
           score_total?: number | null
           status?: Database["public"]["Enums"]["status_t"]
+          tag_form?: string | null
           telefone?: string
           ultima_interacao?: string | null
           updated_at?: string
@@ -304,6 +344,336 @@ export type Database = {
           status: Database["public"]["Enums"]["status_t"] | null
         }
         Relationships: []
+      }
+      v_fast_prioridade: {
+        Row: {
+          anos_empresa: number | null
+          conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"] | null
+          created_at: string | null
+          deal_fase: Database["public"]["Enums"]["deal_fase_t"] | null
+          deal_valor: number | null
+          email: string | null
+          faixa_investimento: string | null
+          fast_peso_geral: number | null
+          faturamento_2024: Database["public"]["Enums"]["faturamento_t"] | null
+          faturamento_2025: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid: string | null
+          form_answers: Json | null
+          gclid: string | null
+          id: string | null
+          interesse: Database["public"]["Enums"]["interesse_t"] | null
+          modelo_negocio: string | null
+          nome: string | null
+          num_funcionarios: number | null
+          observacao: string | null
+          origem: Database["public"]["Enums"]["origem_t"] | null
+          perdido_motivo_cat:
+            | Database["public"]["Enums"]["perdido_motivo_t"]
+            | null
+          perdido_motivo_txt: string | null
+          primeiro_contato: string | null
+          produto: Database["public"]["Enums"]["produto_t"] | null
+          proximo_contato: string | null
+          rede_social: string | null
+          regiao: string | null
+          responsavel: string | null
+          score_cor: Database["public"]["Enums"]["score_cor_t"] | null
+          score_faturamento: number | null
+          score_interesse: number | null
+          score_tempo: number | null
+          score_total: number | null
+          status: Database["public"]["Enums"]["status_t"] | null
+          tag_form: string | null
+          telefone: string | null
+          tie_fat25: number | null
+          tie_interesse: number | null
+          tie_tempo: number | null
+          ultima_interacao: string | null
+          updated_at: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          anos_empresa?: number | null
+          conhece_daniel?:
+            | Database["public"]["Enums"]["conhece_daniel_t"]
+            | null
+          created_at?: string | null
+          deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
+          deal_valor?: number | null
+          email?: string | null
+          faixa_investimento?: string | null
+          fast_peso_geral?: number | null
+          faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
+          faturamento_2025?: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid?: string | null
+          form_answers?: Json | null
+          gclid?: string | null
+          id?: string | null
+          interesse?: Database["public"]["Enums"]["interesse_t"] | null
+          modelo_negocio?: string | null
+          nome?: string | null
+          num_funcionarios?: number | null
+          observacao?: string | null
+          origem?: Database["public"]["Enums"]["origem_t"] | null
+          perdido_motivo_cat?:
+            | Database["public"]["Enums"]["perdido_motivo_t"]
+            | null
+          perdido_motivo_txt?: string | null
+          primeiro_contato?: string | null
+          produto?: Database["public"]["Enums"]["produto_t"] | null
+          proximo_contato?: string | null
+          rede_social?: string | null
+          regiao?: string | null
+          responsavel?: string | null
+          score_cor?: Database["public"]["Enums"]["score_cor_t"] | null
+          score_faturamento?: number | null
+          score_interesse?: number | null
+          score_tempo?: number | null
+          score_total?: number | null
+          status?: Database["public"]["Enums"]["status_t"] | null
+          tag_form?: string | null
+          telefone?: string | null
+          tie_fat25?: never
+          tie_interesse?: never
+          tie_tempo?: never
+          ultima_interacao?: string | null
+          updated_at?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          anos_empresa?: number | null
+          conhece_daniel?:
+            | Database["public"]["Enums"]["conhece_daniel_t"]
+            | null
+          created_at?: string | null
+          deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
+          deal_valor?: number | null
+          email?: string | null
+          faixa_investimento?: string | null
+          fast_peso_geral?: number | null
+          faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
+          faturamento_2025?: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid?: string | null
+          form_answers?: Json | null
+          gclid?: string | null
+          id?: string | null
+          interesse?: Database["public"]["Enums"]["interesse_t"] | null
+          modelo_negocio?: string | null
+          nome?: string | null
+          num_funcionarios?: number | null
+          observacao?: string | null
+          origem?: Database["public"]["Enums"]["origem_t"] | null
+          perdido_motivo_cat?:
+            | Database["public"]["Enums"]["perdido_motivo_t"]
+            | null
+          perdido_motivo_txt?: string | null
+          primeiro_contato?: string | null
+          produto?: Database["public"]["Enums"]["produto_t"] | null
+          proximo_contato?: string | null
+          rede_social?: string | null
+          regiao?: string | null
+          responsavel?: string | null
+          score_cor?: Database["public"]["Enums"]["score_cor_t"] | null
+          score_faturamento?: number | null
+          score_interesse?: number | null
+          score_tempo?: number | null
+          score_total?: number | null
+          status?: Database["public"]["Enums"]["status_t"] | null
+          tag_form?: string | null
+          telefone?: string | null
+          tie_fat25?: never
+          tie_interesse?: never
+          tie_tempo?: never
+          ultima_interacao?: string | null
+          updated_at?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_responsavel_fkey"
+            columns: ["responsavel"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_gbc_prioridade: {
+        Row: {
+          anos_empresa: number | null
+          conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"] | null
+          created_at: string | null
+          deal_fase: Database["public"]["Enums"]["deal_fase_t"] | null
+          deal_valor: number | null
+          email: string | null
+          faixa_investimento: string | null
+          fast_peso_geral: number | null
+          faturamento_2024: Database["public"]["Enums"]["faturamento_t"] | null
+          faturamento_2025: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid: string | null
+          form_answers: Json | null
+          gclid: string | null
+          id: string | null
+          interesse: Database["public"]["Enums"]["interesse_t"] | null
+          modelo_negocio: string | null
+          nome: string | null
+          num_funcionarios: number | null
+          observacao: string | null
+          origem: Database["public"]["Enums"]["origem_t"] | null
+          perdido_motivo_cat:
+            | Database["public"]["Enums"]["perdido_motivo_t"]
+            | null
+          perdido_motivo_txt: string | null
+          primeiro_contato: string | null
+          produto: Database["public"]["Enums"]["produto_t"] | null
+          proximo_contato: string | null
+          rede_social: string | null
+          regiao: string | null
+          responsavel: string | null
+          score_cor: Database["public"]["Enums"]["score_cor_t"] | null
+          score_faturamento: number | null
+          score_interesse: number | null
+          score_tempo: number | null
+          score_total: number | null
+          status: Database["public"]["Enums"]["status_t"] | null
+          tag_form: string | null
+          telefone: string | null
+          tie_fat25: number | null
+          tie_interesse: number | null
+          tie_tempo: number | null
+          ultima_interacao: string | null
+          updated_at: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          anos_empresa?: number | null
+          conhece_daniel?:
+            | Database["public"]["Enums"]["conhece_daniel_t"]
+            | null
+          created_at?: string | null
+          deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
+          deal_valor?: number | null
+          email?: string | null
+          faixa_investimento?: string | null
+          fast_peso_geral?: number | null
+          faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
+          faturamento_2025?: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid?: string | null
+          form_answers?: Json | null
+          gclid?: string | null
+          id?: string | null
+          interesse?: Database["public"]["Enums"]["interesse_t"] | null
+          modelo_negocio?: string | null
+          nome?: string | null
+          num_funcionarios?: number | null
+          observacao?: string | null
+          origem?: Database["public"]["Enums"]["origem_t"] | null
+          perdido_motivo_cat?:
+            | Database["public"]["Enums"]["perdido_motivo_t"]
+            | null
+          perdido_motivo_txt?: string | null
+          primeiro_contato?: string | null
+          produto?: Database["public"]["Enums"]["produto_t"] | null
+          proximo_contato?: string | null
+          rede_social?: string | null
+          regiao?: string | null
+          responsavel?: string | null
+          score_cor?: Database["public"]["Enums"]["score_cor_t"] | null
+          score_faturamento?: number | null
+          score_interesse?: number | null
+          score_tempo?: number | null
+          score_total?: number | null
+          status?: Database["public"]["Enums"]["status_t"] | null
+          tag_form?: string | null
+          telefone?: string | null
+          tie_fat25?: never
+          tie_interesse?: never
+          tie_tempo?: never
+          ultima_interacao?: string | null
+          updated_at?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          anos_empresa?: number | null
+          conhece_daniel?:
+            | Database["public"]["Enums"]["conhece_daniel_t"]
+            | null
+          created_at?: string | null
+          deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
+          deal_valor?: number | null
+          email?: string | null
+          faixa_investimento?: string | null
+          fast_peso_geral?: number | null
+          faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
+          faturamento_2025?: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid?: string | null
+          form_answers?: Json | null
+          gclid?: string | null
+          id?: string | null
+          interesse?: Database["public"]["Enums"]["interesse_t"] | null
+          modelo_negocio?: string | null
+          nome?: string | null
+          num_funcionarios?: number | null
+          observacao?: string | null
+          origem?: Database["public"]["Enums"]["origem_t"] | null
+          perdido_motivo_cat?:
+            | Database["public"]["Enums"]["perdido_motivo_t"]
+            | null
+          perdido_motivo_txt?: string | null
+          primeiro_contato?: string | null
+          produto?: Database["public"]["Enums"]["produto_t"] | null
+          proximo_contato?: string | null
+          rede_social?: string | null
+          regiao?: string | null
+          responsavel?: string | null
+          score_cor?: Database["public"]["Enums"]["score_cor_t"] | null
+          score_faturamento?: number | null
+          score_interesse?: number | null
+          score_tempo?: number | null
+          score_total?: number | null
+          status?: Database["public"]["Enums"]["status_t"] | null
+          tag_form?: string | null
+          telefone?: string | null
+          tie_fat25?: never
+          tie_interesse?: never
+          tie_tempo?: never
+          ultima_interacao?: string | null
+          updated_at?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_responsavel_fkey"
+            columns: ["responsavel"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       v_leads_prioridade_ativas: {
         Row: {
@@ -460,6 +830,62 @@ export type Database = {
       }
     }
     Functions: {
+      capture_lead_public:
+        | {
+            Args: {
+              p_conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
+              p_email: string
+              p_faixa_investimento?: string
+              p_faturamento_2024?: Database["public"]["Enums"]["faturamento_t"]
+              p_faturamento_2025: Database["public"]["Enums"]["faturamento_t"]
+              p_fbclid?: string
+              p_gclid?: string
+              p_interesse: Database["public"]["Enums"]["interesse_t"]
+              p_modelo_negocio?: string
+              p_nome: string
+              p_num_funcionarios?: number
+              p_origem: Database["public"]["Enums"]["origem_t"]
+              p_produto: Database["public"]["Enums"]["produto_t"]
+              p_rede_social?: string
+              p_regiao?: string
+              p_tag_form?: string
+              p_telefone: string
+              p_utm_campaign?: string
+              p_utm_content?: string
+              p_utm_medium?: string
+              p_utm_source?: string
+              p_utm_term?: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
+              p_email: string
+              p_faixa_investimento?: string
+              p_faturamento_2024?: Database["public"]["Enums"]["faturamento_t"]
+              p_faturamento_2025: Database["public"]["Enums"]["faturamento_t"]
+              p_fbclid?: string
+              p_form_answers?: Json
+              p_gclid?: string
+              p_interesse: Database["public"]["Enums"]["interesse_t"]
+              p_modelo_negocio?: string
+              p_nome: string
+              p_num_funcionarios?: number
+              p_origem: Database["public"]["Enums"]["origem_t"]
+              p_produto: Database["public"]["Enums"]["produto_t"]
+              p_rede_social?: string
+              p_regiao?: string
+              p_tag_form?: string
+              p_telefone: string
+              p_utm_campaign?: string
+              p_utm_content?: string
+              p_utm_medium?: string
+              p_utm_source?: string
+              p_utm_term?: string
+            }
+            Returns: string
+          }
       me: {
         Args: never
         Returns: {
@@ -501,6 +927,7 @@ export type Database = {
         | "tempo"
         | "sem_resposta"
         | "outros"
+        | "concorrente"
       produto_t: "gbc" | "mentoria_fast"
       score_cor_t: "verde" | "verde_claro" | "amarelo" | "vermelho" | "cinza"
       status_t:
@@ -662,7 +1089,14 @@ export const Constants = {
         "social_seller",
         "outro",
       ],
-      perdido_motivo_t: ["sem_fit", "preco", "tempo", "sem_resposta", "outros"],
+      perdido_motivo_t: [
+        "sem_fit",
+        "preco",
+        "tempo",
+        "sem_resposta",
+        "outros",
+        "concorrente",
+      ],
       produto_t: ["gbc", "mentoria_fast"],
       score_cor_t: ["verde", "verde_claro", "amarelo", "vermelho", "cinza"],
       status_t: [

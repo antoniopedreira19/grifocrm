@@ -4,6 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -19,6 +22,7 @@ interface LeadDetailsModalProps {
 export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProps) {
   const { currentUser, currentRole } = useAuth();
   const queryClient = useQueryClient();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Fetch lead details
   const { data: lead, isLoading } = useQuery({
@@ -125,8 +129,50 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
     await createInteractionMutation.mutateAsync(comment);
   };
 
+  // Delete lead mutation
+  const deleteLeadMutation = useMutation({
+    mutationFn: async () => {
+      if (!leadId) throw new Error("Lead ID não encontrado");
+      
+      const { error } = await supabase
+        .from("leads")
+        .delete()
+        .eq("id", leadId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["kanban-leads"] });
+      toast({ title: "Lead excluído com sucesso!" });
+      onClose();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao excluir lead",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteConfirm = () => {
+    setDeleteDialogOpen(false);
+    deleteLeadMutation.mutate();
+  };
+
   // Check permissions
   const canComment = () => {
+    if (!currentRole || !currentUser) return false;
+    if (currentRole === "viewer") return false;
+    if (currentRole === "admin") return true;
+    if (currentRole === "closer" || currentRole === "sdr") {
+      return lead?.responsavel === currentUser.id;
+    }
+    return false;
+  };
+
+  const canDelete = () => {
     if (!currentRole || !currentUser) return false;
     if (currentRole === "viewer") return false;
     if (currentRole === "admin") return true;
@@ -144,13 +190,26 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
   if (!open) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle className="text-2xl">
-            {isLoading ? <Skeleton className="h-8 w-64" /> : `Detalhes do Lead: ${lead?.nome}`}
-          </DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="max-w-5xl max-h-[90vh] p-0">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-2xl">
+                {isLoading ? <Skeleton className="h-8 w-64" /> : `Detalhes do Lead: ${lead?.nome}`}
+              </DialogTitle>
+              {!isLoading && lead && canDelete() && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setDeleteDialogOpen(true)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
+              )}
+            </div>
+          </DialogHeader>
 
         {isLoading ? (
           <div className="p-6 space-y-4">
@@ -187,7 +246,29 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
             Lead não encontrado
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o lead <strong>{lead?.nome}</strong>? 
+              Esta ação não pode ser desfeita e todos os dados relacionados serão perdidos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
