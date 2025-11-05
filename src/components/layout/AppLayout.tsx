@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Users, KanbanSquare, FileText, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, KanbanSquare, FileText, LogOut } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import grifoLogo from "@/assets/grifo-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,10 +25,6 @@ const navigation = [{
   name: "Formulários",
   href: "/forms",
   icon: FileText
-}, {
-  name: "Configurações",
-  href: "/settings",
-  icon: Settings
 }];
 function AppSidebar() {
   const { open } = useSidebar();

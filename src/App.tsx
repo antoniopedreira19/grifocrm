@@ -66,14 +66,6 @@ const App = () => (
               path="/obrigado"
               element={<Obrigado />}
             />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
