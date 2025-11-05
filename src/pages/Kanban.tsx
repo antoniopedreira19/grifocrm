@@ -170,6 +170,20 @@ export default function Kanban() {
     const fromStatus = active.data.current?.status as Status;
     const toStatus = over.id as Status;
 
+    // Validar se toStatus é um status válido (e não um ID de lead)
+    const validStatuses: Status[] = [
+      "primeiro_contato",
+      "proximo_contato",
+      "negociando",
+      "ganho",
+      "perdido",
+    ];
+    
+    if (!validStatuses.includes(toStatus)) {
+      console.warn("Invalid status detected, ignoring drag event");
+      return;
+    }
+
     if (fromStatus === toStatus) return;
 
     // Verificar permissões
