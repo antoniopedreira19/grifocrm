@@ -5,7 +5,8 @@ import * as z from "zod";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Card, CardContent } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -167,355 +168,403 @@ export function FormularioFast({ utmParams }: FormularioFastProps) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Mentoria Fast</h1>
-        <p className="text-muted-foreground">
-          Preencha o formulário abaixo para se inscrever
-        </p>
-      </div>
+    <Card className="max-w-[880px] mx-auto shadow-2xl border-0">
+      <CardContent className="p-8 md:p-12">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+            {/* Seção 1: Seus dados */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
+                Seus dados
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="nome"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome completo *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Seu nome completo" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="nome"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome completo *</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>E-mail *</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="seu@email.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-mail *</FormLabel>
-                <FormControl>
-                  <Input type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <FormField
+                  control={form.control}
+                  name="telefone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefone *</FormLabel>
+                      <FormControl>
+                        <InputMask mask="(99) 99999-9999" {...field}>
+                          {(inputProps: any) => <Input placeholder="(00) 00000-0000" {...inputProps} />}
+                        </InputMask>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="telefone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Telefone *</FormLabel>
-                <FormControl>
-                  <InputMask mask="(99) 99999-9999" {...field}>
-                    {(inputProps: any) => <Input {...inputProps} />}
-                  </InputMask>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <FormField
+                  control={form.control}
+                  name="rede_social"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Rede social</FormLabel>
+                      <FormControl>
+                        <Input placeholder="@instagram ou LinkedIn" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
-          <FormField
-            control={form.control}
-            name="rede_social"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Rede social</FormLabel>
-                <FormControl>
-                  <Input placeholder="Instagram, LinkedIn, etc." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Seção 2: Perfil da empresa */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
+                Perfil da empresa
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="faturamento_2025"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Faturamento 2025 *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a faixa" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.entries(faturamentoLabels).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="faturamento_2025"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Faturamento 2025 *</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {Object.entries(faturamentoLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <FormField
+                  control={form.control}
+                  name="faturamento_2024"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Faturamento 2024</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a faixa" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.entries(faturamentoLabels).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="faturamento_2024"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Faturamento 2024</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {Object.entries(faturamentoLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <FormField
+                  control={form.control}
+                  name="num_funcionarios"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Número de funcionários</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="0" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="num_funcionarios"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Número de funcionários</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <FormField
+                  control={form.control}
+                  name="regiao"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Região/UF</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: SP, RJ, Sul" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="regiao"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Região/UF</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: SP, RJ, MG" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="modelo_negocio"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Modelo de negócio (resumo)</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Descreva brevemente seu modelo de negócio"
-                    maxLength={280}
-                    {...field}
+                <div className="md:col-span-2">
+                  <FormField
+                    control={form.control}
+                    name="modelo_negocio"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Modelo de negócio (resumo)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Descreva brevemente seu modelo de negócio"
+                            maxLength={280}
+                            rows={3}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>Máximo de 280 caracteres</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="conhece_daniel"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Há quanto tempo conhece o Daniel? *</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {Object.entries(conheceDanielLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="interesse"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  O investimento é de 12× R$ 1.666,67 ou R$ 16.000 à vista. Você tem capacidade de
-                  investir agora? *
-                </FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {Object.entries(interesseLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {showFaixaInvestimento && (
-            <FormField
-              control={form.control}
-              name="faixa_investimento"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Qual faixa de investimento faria sentido agora?</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: até R$ 10.000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-
-          <FormField
-            control={form.control}
-            name="maior_dor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Maior dificuldade hoje (sua "dor")?</FormLabel>
-                <FormControl>
-                  <Textarea rows={4} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="prioridade_modulo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Prioridade de módulo/tema que quer aprofundar?</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: Marketing, Vendas, Gestão" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="preferencia_canal"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Preferência de contato — canal</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                    <SelectItem value="telefone">Telefone</SelectItem>
-                    <SelectItem value="email">E-mail</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="preferencia_horario"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Preferência de contato — melhor horário</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: Manhã, tarde, após 18h" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="cidade"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cidade</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="uf"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>UF</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: SP" maxLength={2} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="lgpd"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    Aceito os termos e autorizo o tratamento dos meus dados conforme a LGPD *
-                  </FormLabel>
-                  <FormMessage />
                 </div>
-              </FormItem>
-            )}
-          />
+              </div>
+            </div>
 
-          <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-            {isSubmitting ? "Enviando..." : "Enviar Inscrição"}
-          </Button>
-        </form>
-      </Form>
-    </div>
+            {/* Seção 3: Relação com Daniel */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
+                Relação com Daniel
+              </h2>
+              <FormField
+                control={form.control}
+                name="conhece_daniel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Há quanto tempo conhece o Daniel? *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.entries(conheceDanielLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Seção 4: Investimento */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
+                Investimento
+              </h2>
+              <FormField
+                control={form.control}
+                name="interesse"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      O investimento é de 12× R$ 1.666,67 ou R$ 16.000 à vista. Você tem capacidade de
+                      investir agora? *
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione sua resposta" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.entries(interesseLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {showFaixaInvestimento && (
+                <FormField
+                  control={form.control}
+                  name="faixa_investimento"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Qual faixa de investimento faria sentido agora?</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: até R$ 10.000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+
+            {/* Seção 5: Suas necessidades */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
+                Suas necessidades
+              </h2>
+              
+              <FormField
+                control={form.control}
+                name="maior_dor"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Maior dificuldade hoje (sua "dor")?</FormLabel>
+                    <FormControl>
+                      <Textarea rows={4} placeholder="Descreva o principal desafio que você enfrenta..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="prioridade_modulo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prioridade de módulo/tema que quer aprofundar?</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Marketing, Vendas, Gestão, Finanças" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Seção 6: Preferências de contato */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
+                Preferências de contato
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="preferencia_canal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Canal preferido</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                          <SelectItem value="telefone">Telefone</SelectItem>
+                          <SelectItem value="email">E-mail</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="preferencia_horario"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Melhor horário</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: Manhã, tarde, após 18h" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="cidade"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cidade</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Sua cidade" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="uf"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>UF</FormLabel>
+                      <FormControl>
+                        <Input placeholder="SP" maxLength={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Seção 7: LGPD */}
+            <div className="space-y-6 pt-4">
+              <FormField
+                control={form.control}
+                name="lgpd"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted/30">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-medium">
+                        Aceito os termos e autorizo o tratamento dos meus dados conforme a LGPD *
+                      </FormLabel>
+                      <FormDescription className="text-sm">
+                        Seus dados serão utilizados exclusivamente para contato sobre o programa
+                      </FormDescription>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? "Enviando inscrição..." : "Enviar Inscrição"}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
