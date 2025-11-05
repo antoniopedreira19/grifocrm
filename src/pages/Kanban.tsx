@@ -370,8 +370,8 @@ export default function Kanban() {
         </div>
 
         {/* Board do Kanban */}
-        <div className="flex-1 overflow-x-hidden overflow-y-hidden px-8 pb-8">
-          <div className="max-w-[1320px] mx-auto h-full pr-6">
+        <div className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-8">
+          <div className="h-full pr-6">
             <DndContext
               collisionDetection={closestCorners}
               onDragStart={handleDragStart}
