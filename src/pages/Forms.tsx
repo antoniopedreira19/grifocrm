@@ -5,8 +5,8 @@ import { ExternalLink, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Forms() {
-  const gbcUrl = `${window.location.origin}/formulario/gbc`;
-  const fastUrl = `${window.location.origin}/formulario/mentoria-fast`;
+  const gbcUrl = `${window.location.origin}/form/gbc`;
+  const fastUrl = `${window.location.origin}/form/fast`;
 
   const copyToClipboard = (url: string, name: string) => {
     navigator.clipboard.writeText(url);

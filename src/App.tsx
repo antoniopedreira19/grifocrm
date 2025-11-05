@@ -11,6 +11,7 @@ import Leads from "./pages/Leads";
 import Kanban from "./pages/Kanban";
 import Forms from "./pages/Forms";
 import FormularioPublico from "./pages/FormularioPublico";
+import Obrigado from "./pages/Obrigado";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,8 +59,12 @@ const App = () => (
               }
             />
             <Route
-              path="/formulario/:tipo"
+              path="/form/:tipo"
               element={<FormularioPublico />}
+            />
+            <Route
+              path="/obrigado"
+              element={<Obrigado />}
             />
             <Route
               path="/settings"
