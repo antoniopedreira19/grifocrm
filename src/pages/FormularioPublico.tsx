@@ -38,48 +38,34 @@ export default function FormularioPublico() {
     return <Navigate to="/" replace />;
   }
 
-  const formTitle = tipo === "gbc" ? "Grifo Builders' Club" : "Mentoria Fast";
-  const formSubtitle = tipo === "gbc" 
-    ? "Programa exclusivo para empresários que querem acelerar seus resultados"
-    : "Mentoria intensiva para transformar seu negócio";
+  const formTitle = tipo === "gbc" ? "GRIFO BUILDERS CLUB" : "MENTORIA FAST";
+  const formSubtitle =
+    tipo === "gbc"
+      ? "Programa exclusivo para empresários que querem acelerar seus resultados"
+      : "Mentoria intensiva para transformar seu negócio";
 
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background with overlay */}
-      <div 
+      <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${grifoBackground})` }}
       />
-      <div 
-        className="fixed inset-0"
-        style={{ background: 'var(--gradient-grifo-overlay)' }}
-      />
-      
+      <div className="fixed inset-0" style={{ background: "var(--gradient-grifo-overlay)" }} />
+
       {/* Content */}
       <div className="relative z-10 container py-8 md:py-12">
         {/* Hero Header */}
         <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-12">
-          <img 
-            src={grifoIcon} 
-            alt="Grifo" 
-            className="w-16 h-16 md:w-20 md:h-20 object-contain"
-          />
+          <img src={grifoIcon} alt="Grifo" className="w-16 h-16 md:w-20 md:h-20 object-contain" />
           <div>
-            <h1 className="text-2xl md:text-4xl font-semibold text-white mb-1">
-              {formTitle}
-            </h1>
-            <p className="text-sm md:text-base text-white/80">
-              {formSubtitle}
-            </p>
+            <h1 className="text-2xl md:text-4xl font-semibold text-white mb-1">{formTitle}</h1>
+            <p className="text-sm md:text-base text-white/80">{formSubtitle}</p>
           </div>
         </div>
 
         {/* Form Card */}
-        {tipo === "gbc" ? (
-          <FormularioGBC utmParams={utmParams} />
-        ) : (
-          <FormularioFast utmParams={utmParams} />
-        )}
+        {tipo === "gbc" ? <FormularioGBC utmParams={utmParams} /> : <FormularioFast utmParams={utmParams} />}
       </div>
     </div>
   );
