@@ -49,6 +49,7 @@ const faturamentoLabels: Record<string, string> = {
 
 export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null);
   
   const {
     attributes,
@@ -74,19 +75,40 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
     locale: ptBR,
   });
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDetailsOpen(true);
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setDragStartPos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!dragStartPos) return;
+    
+    // Calcular a distância do movimento
+    const deltaX = Math.abs(e.clientX - dragStartPos.x);
+    const deltaY = Math.abs(e.clientY - dragStartPos.y);
+    
+    // Se moveu menos de 5px, considerar como clique (não drag)
+    if (deltaX < 5 && deltaY < 5 && !isDragging) {
+      e.stopPropagation();
+      setDetailsOpen(true);
+    }
+    
+    setDragStartPos(null);
   };
 
   return (
     <>
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <div 
+        ref={setNodeRef} 
+        style={style} 
+        {...attributes} 
+        {...listeners}
+        onMouseDown={handleMouseDown}
+        onClick={handleClick}
+      >
         <Card 
           className={`cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
-        <CardContent className="p-3" onDoubleClick={handleCardClick}>
+        <CardContent className="p-3">
           {/* Título */}
           <h4 className="font-semibold mb-2 text-xs line-clamp-1">
             {lead.nome}
