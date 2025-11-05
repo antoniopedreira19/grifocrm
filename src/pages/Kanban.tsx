@@ -318,7 +318,7 @@ export default function Kanban() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="flex flex-col h-screen overflow-x-hidden">
         {/* Cabeçalho */}
         <div className="px-8 pt-8 pb-4">
           <div className="max-w-[1320px] mx-auto">
@@ -330,7 +330,7 @@ export default function Kanban() {
         </div>
 
         {/* Barra de ferramentas sticky */}
-        <div className="sticky top-0 z-10 bg-background border-b px-8 py-3">
+        <div className="sticky top-0 z-10 bg-background border-b px-8 py-3 overflow-x-hidden">
           <div className="max-w-[1320px] mx-auto flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3 flex-wrap">
               <Select value={produtoFilter} onValueChange={setProdutoFilter}>
@@ -383,8 +383,8 @@ export default function Kanban() {
         </div>
 
         {/* Board do Kanban */}
-        <div className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-8">
-          <div className="max-w-[1320px] mx-auto h-full">
+        <div className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-8 pr-12">
+          <div className="max-w-[1320px] mx-auto h-full min-w-fit">
             <DndContext
               collisionDetection={closestCorners}
               onDragStart={handleDragStart}
