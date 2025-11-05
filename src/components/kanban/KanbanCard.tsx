@@ -3,6 +3,8 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { Status } from "@/types/lead";
@@ -49,7 +51,6 @@ const faturamentoLabels: Record<string, string> = {
 
 export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null);
   
   const {
     attributes,
@@ -75,40 +76,28 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
     locale: ptBR,
   });
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setDragStartPos({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    if (!dragStartPos) return;
-    
-    // Calcular a distância do movimento
-    const deltaX = Math.abs(e.clientX - dragStartPos.x);
-    const deltaY = Math.abs(e.clientY - dragStartPos.y);
-    
-    // Se moveu menos de 5px, considerar como clique (não drag)
-    if (deltaX < 5 && deltaY < 5 && !isDragging) {
-      e.stopPropagation();
-      setDetailsOpen(true);
-    }
-    
-    setDragStartPos(null);
+  const handleOpenModal = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDetailsOpen(true);
   };
 
   return (
     <>
-      <div 
-        ref={setNodeRef} 
-        style={style} 
-        {...attributes} 
-        {...listeners}
-        onMouseDown={handleMouseDown}
-        onClick={handleClick}
-      >
+      <div ref={setNodeRef} style={style} {...attributes}>
         <Card 
-          className={`cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+          className={`group relative transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
-        <CardContent className="p-3">
+        <CardContent className="p-3 pr-8" {...listeners}>
+          {/* Botão de abrir modal - fixed no canto superior direito */}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 hover:bg-primary/10 transition-opacity cursor-pointer z-10"
+            onClick={handleOpenModal}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
           {/* Título */}
           <h4 className="font-semibold mb-2 text-xs line-clamp-1">
             {lead.nome}
