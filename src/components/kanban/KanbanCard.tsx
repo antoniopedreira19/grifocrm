@@ -20,6 +20,8 @@ interface KanbanLead {
   created_at: string;
   responsavel?: string;
   ultima_interacao?: string;
+  score_total?: number | null;
+  score_cor?: string | null;
 }
 
 interface KanbanCardProps {
@@ -47,6 +49,14 @@ const faturamentoLabels: Record<string, string> = {
   entre_500k_1m: "500k-1M",
   entre_1m_10m: "1M-10M",
   entre_10m_50m: "10M-50M",
+};
+
+const getScoreBadgeColor = (score: number | null | undefined): string => {
+  if (!score) return "bg-gray-500";
+  if (score >= 8) return "bg-green-600";
+  if (score >= 6) return "bg-green-400";
+  if (score >= 4) return "bg-yellow-500";
+  return "bg-red-600";
 };
 
 export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
@@ -116,6 +126,13 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
               >
                 {interesseLabels[lead.interesse] || lead.interesse}
               </Badge>
+            )}
+
+            {lead.score_total !== null && lead.score_total !== undefined && (
+              <div className="flex items-center gap-1">
+                <div className={`w-2 h-2 rounded-full ${getScoreBadgeColor(lead.score_total)}`} />
+                <span className="text-[10px] font-semibold">{lead.score_total}</span>
+              </div>
             )}
           </div>
 

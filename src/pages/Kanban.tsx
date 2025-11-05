@@ -30,6 +30,8 @@ interface KanbanLead {
   responsavel?: string;
   ultima_interacao?: string;
   status: Status;
+  score_total?: number | null;
+  score_cor?: string | null;
 }
 
 interface PendingMove {
@@ -67,7 +69,7 @@ export default function Kanban() {
     queryFn: async () => {
       let query = supabase
         .from("leads")
-        .select("*")
+        .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor")
         .in("status", ["primeiro_contato", "proximo_contato", "negociando", "ganho", "perdido"]);
 
       // Filtro de produto
