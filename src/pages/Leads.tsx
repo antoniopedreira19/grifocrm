@@ -11,6 +11,7 @@ import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { statusLabels } from "@/utils/labels";
+import { LeadDetailsModal } from "@/components/lead/LeadDetailsModal";
 
 interface Lead {
   id: string;
@@ -29,6 +30,7 @@ export default function Leads() {
   const { currentRole } = useAuth();
   const canCreateLead = currentRole && ['admin', 'closer', 'sdr'].includes(currentRole);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
 
   const { data: leads, isLoading, error } = useQuery({
     queryKey: ['leads'],
@@ -141,7 +143,11 @@ export default function Leads() {
               </TableHeader>
               <TableBody>
                 {filteredLeads.map((lead) => (
-                  <TableRow key={lead.id} className="cursor-pointer">
+                  <TableRow 
+                    key={lead.id} 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => setSelectedLeadId(lead.id)}
+                  >
                     <TableCell className="font-medium">{lead.nome}</TableCell>
                     <TableCell>
                       <div className="text-sm">
@@ -178,6 +184,12 @@ export default function Leads() {
           )}
         </div>
       </div>
+
+      <LeadDetailsModal
+        leadId={selectedLeadId}
+        open={!!selectedLeadId}
+        onClose={() => setSelectedLeadId(null)}
+      />
     </AppLayout>
   );
 }
