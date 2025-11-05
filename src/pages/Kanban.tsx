@@ -50,7 +50,6 @@ export default function Kanban() {
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
   const [responsavelFilter, setResponsavelFilter] = useState<string>("todos");
   const [ordenacao, setOrdenacao] = useState<string>("prioridade");
-  const [densidade, setDensidade] = useState<"compacta" | "confortavel">("compacta");
   const [activeLead, setActiveLead] = useState<KanbanLead | null>(null);
   const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
   
@@ -283,11 +282,6 @@ export default function Kanban() {
 
   const totalLeads = leads.length;
 
-  // Largura das colunas baseada na densidade
-  const columnWidth = densidade === "compacta" 
-    ? "w-[260px] xl:w-[280px] 2xl:w-[320px]" 
-    : "w-[300px] xl:w-[320px] 2xl:w-[340px]";
-
   if (isLoading) {
     return (
       <AppLayout>
@@ -306,7 +300,7 @@ export default function Kanban() {
           </div>
           <div className="flex gap-4 px-8 pb-8 overflow-x-auto">
             {columns.map((status) => (
-              <div key={status} className={columnWidth}>
+              <div key={status} className="w-[280px]">
                 <Skeleton className="h-[calc(100vh-16rem)] rounded-lg" />
               </div>
             ))}
@@ -362,16 +356,6 @@ export default function Kanban() {
                   <SelectItem value="data_criacao">Data de criação</SelectItem>
                 </SelectContent>
               </Select>
-
-              <Select value={densidade} onValueChange={(v) => setDensidade(v as "compacta" | "confortavel")}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Densidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="compacta">Compacta</SelectItem>
-                  <SelectItem value="confortavel">Confortável</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="text-sm text-muted-foreground">
@@ -396,8 +380,7 @@ export default function Kanban() {
                     title={statusLabels[status]}
                     leads={getLeadsByStatus(status)}
                     canDrag={canDrag}
-                    densidade={densidade}
-                    columnWidth={columnWidth}
+                    columnWidth="w-[280px]"
                   />
                 ))}
               </div>
@@ -408,7 +391,6 @@ export default function Kanban() {
                     lead={activeLead} 
                     status={activeLead.status} 
                     disabled={false}
-                    densidade={densidade}
                   />
                 ) : null}
               </DragOverlay>

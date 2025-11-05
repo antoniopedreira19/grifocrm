@@ -22,11 +22,10 @@ interface KanbanColumnProps {
   title: string;
   leads: KanbanLead[];
   canDrag: (lead: KanbanLead) => boolean;
-  densidade: "compacta" | "confortavel";
   columnWidth: string;
 }
 
-export function KanbanColumn({ status, title, leads, canDrag, densidade, columnWidth }: KanbanColumnProps) {
+export function KanbanColumn({ status, title, leads, canDrag, columnWidth }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
     data: { status },
@@ -63,11 +62,10 @@ export function KanbanColumn({ status, title, leads, canDrag, densidade, columnW
               leads.map((lead) => (
                 <KanbanCard
                   key={lead.id}
-                  lead={lead}
-                  status={status}
-                  disabled={!canDrag(lead)}
-                  densidade={densidade}
-                />
+                lead={lead}
+                status={status}
+                disabled={!canDrag(lead)}
+              />
               ))
             )}
           </SortableContext>

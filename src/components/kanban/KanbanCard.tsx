@@ -22,7 +22,6 @@ interface KanbanCardProps {
   lead: KanbanLead;
   status: Status;
   disabled: boolean;
-  densidade?: "compacta" | "confortavel";
 }
 
 const interesseColors: Record<string, string> = {
@@ -46,7 +45,7 @@ const faturamentoLabels: Record<string, string> = {
   entre_10m_50m: "10M-50M",
 };
 
-export function KanbanCard({ lead, status, disabled, densidade = "compacta" }: KanbanCardProps) {
+export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -71,14 +70,12 @@ export function KanbanCard({ lead, status, disabled, densidade = "compacta" }: K
     locale: ptBR,
   });
 
-  const isConfortavel = densidade === "confortavel";
-
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <Card className={`cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
-        <CardContent className={isConfortavel ? "p-4" : "p-3"}>
+        <CardContent className="p-3">
           {/* Título */}
-          <h4 className={`font-semibold mb-2 ${isConfortavel ? 'text-sm line-clamp-2' : 'text-xs line-clamp-1'}`}>
+          <h4 className="font-semibold mb-2 text-xs line-clamp-1">
             {lead.nome}
           </h4>
 
@@ -99,7 +96,7 @@ export function KanbanCard({ lead, status, disabled, densidade = "compacta" }: K
           </div>
 
           {/* Info adicional */}
-          <div className={`space-y-1 text-[11px] text-muted-foreground ${!isConfortavel && 'line-clamp-1'}`}>
+          <div className="space-y-1 text-[11px] text-muted-foreground line-clamp-1">
             <div className="flex items-center gap-1">
               {lead.regiao && (
                 <>
@@ -109,29 +106,6 @@ export function KanbanCard({ lead, status, disabled, densidade = "compacta" }: K
               )}
               <span>{createdAgo}</span>
             </div>
-
-            {isConfortavel && (
-              <>
-                {lead.faturamento_2025 && (
-                  <div className="flex items-center gap-1">
-                    <span>💰</span>
-                    <span>{faturamentoLabels[lead.faturamento_2025] || lead.faturamento_2025}</span>
-                  </div>
-                )}
-
-                {lead.ultima_interacao && (
-                  <div className="flex items-center gap-1">
-                    <span>💬</span>
-                    <span>
-                      {formatDistanceToNow(new Date(lead.ultima_interacao), {
-                        addSuffix: true,
-                        locale: ptBR,
-                      })}
-                    </span>
-                  </div>
-                )}
-              </>
-            )}
           </div>
         </CardContent>
       </Card>
