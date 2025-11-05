@@ -22,9 +22,11 @@ interface KanbanColumnProps {
   title: string;
   leads: KanbanLead[];
   canDrag: (lead: KanbanLead) => boolean;
+  densidade: "compacta" | "confortavel";
+  columnWidth: string;
 }
 
-export function KanbanColumn({ status, title, leads, canDrag }: KanbanColumnProps) {
+export function KanbanColumn({ status, title, leads, canDrag, densidade, columnWidth }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
     data: { status },
@@ -33,9 +35,9 @@ export function KanbanColumn({ status, title, leads, canDrag }: KanbanColumnProp
   const leadIds = leads.map(l => l.id);
 
   return (
-    <div ref={setNodeRef} className="flex-shrink-0 w-80">
-      <Card className={`h-full ${isOver ? 'ring-2 ring-primary' : ''}`}>
-        <CardHeader className="pb-3">
+    <div ref={setNodeRef} className={`flex-shrink-0 ${columnWidth}`}>
+      <Card className={`h-full flex flex-col ${isOver ? 'ring-2 ring-primary' : ''}`}>
+        <CardHeader className="pb-3 flex-shrink-0">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-semibold">
               {title}
@@ -45,11 +47,17 @@ export function KanbanColumn({ status, title, leads, canDrag }: KanbanColumnProp
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="max-h-[calc(100vh-16rem)] overflow-y-auto">
+        <CardContent className="flex-1 overflow-y-auto min-h-0 space-y-3">
           <SortableContext items={leadIds} strategy={verticalListSortingStrategy}>
             {leads.length === 0 ? (
-              <div className="text-sm text-muted-foreground text-center py-8">
-                Nenhum lead nesta etapa
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="text-4xl mb-3 opacity-20">📭</div>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Nenhum lead nesta etapa
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Arraste cards para cá
+                </p>
               </div>
             ) : (
               leads.map((lead) => (
@@ -58,6 +66,7 @@ export function KanbanColumn({ status, title, leads, canDrag }: KanbanColumnProp
                   lead={lead}
                   status={status}
                   disabled={!canDrag(lead)}
+                  densidade={densidade}
                 />
               ))
             )}

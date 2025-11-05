@@ -22,6 +22,7 @@ interface KanbanCardProps {
   lead: KanbanLead;
   status: Status;
   disabled: boolean;
+  densidade?: "compacta" | "confortavel";
 }
 
 const interesseColors: Record<string, string> = {
@@ -45,7 +46,7 @@ const faturamentoLabels: Record<string, string> = {
   entre_10m_50m: "10M-50M",
 };
 
-export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
+export function KanbanCard({ lead, status, disabled, densidade = "compacta" }: KanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -70,59 +71,66 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
     locale: ptBR,
   });
 
+  const isConfortavel = densidade === "confortavel";
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <Card className={`mb-3 cursor-grab active:cursor-grabbing ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
-        <CardContent className="p-4">
+      <Card className={`cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
+        <CardContent className={isConfortavel ? "p-4" : "p-3"}>
           {/* Título */}
-          <h4 className="font-semibold text-sm mb-3 line-clamp-2">{lead.nome}</h4>
+          <h4 className={`font-semibold mb-2 ${isConfortavel ? 'text-sm line-clamp-2' : 'text-xs line-clamp-1'}`}>
+            {lead.nome}
+          </h4>
 
           {/* Badges */}
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            <Badge variant="outline" className="text-xs font-medium">
-              {lead.produto}
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            <Badge variant="outline" className="text-[10px] font-medium px-1.5 py-0">
+              {lead.produto === "gbc" ? "GBC" : "Fast"}
             </Badge>
             
             {lead.interesse && (
               <Badge 
                 variant="outline" 
-                className={`text-xs border ${interesseColors[lead.interesse] || ''}`}
+                className={`text-[10px] px-1.5 py-0 border ${interesseColors[lead.interesse] || ''}`}
               >
                 {interesseLabels[lead.interesse] || lead.interesse}
-              </Badge>
-            )}
-            
-            {lead.faturamento_2025 && (
-              <Badge variant="secondary" className="text-xs">
-                {faturamentoLabels[lead.faturamento_2025] || lead.faturamento_2025}
               </Badge>
             )}
           </div>
 
           {/* Info adicional */}
-          <div className="space-y-1 text-xs text-muted-foreground">
-            {lead.regiao && (
-              <div className="flex items-center gap-1">
-                <span className="text-muted-foreground/70">📍</span>
-                <span>{lead.regiao}</span>
-              </div>
-            )}
-            
+          <div className={`space-y-1 text-[11px] text-muted-foreground ${!isConfortavel && 'line-clamp-1'}`}>
             <div className="flex items-center gap-1">
-              <span className="text-muted-foreground/70">📅</span>
+              {lead.regiao && (
+                <>
+                  <span>📍 {lead.regiao}</span>
+                  <span>•</span>
+                </>
+              )}
               <span>{createdAgo}</span>
             </div>
 
-            {lead.ultima_interacao && (
-              <div className="flex items-center gap-1">
-                <span className="text-muted-foreground/70">💬</span>
-                <span>
-                  {formatDistanceToNow(new Date(lead.ultima_interacao), {
-                    addSuffix: true,
-                    locale: ptBR,
-                  })}
-                </span>
-              </div>
+            {isConfortavel && (
+              <>
+                {lead.faturamento_2025 && (
+                  <div className="flex items-center gap-1">
+                    <span>💰</span>
+                    <span>{faturamentoLabels[lead.faturamento_2025] || lead.faturamento_2025}</span>
+                  </div>
+                )}
+
+                {lead.ultima_interacao && (
+                  <div className="flex items-center gap-1">
+                    <span>💬</span>
+                    <span>
+                      {formatDistanceToNow(new Date(lead.ultima_interacao), {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
+                    </span>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </CardContent>
