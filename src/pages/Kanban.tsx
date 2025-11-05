@@ -10,6 +10,9 @@ import { PerdidoModal } from "@/components/kanban/PerdidoModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -50,6 +53,7 @@ export default function Kanban() {
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
   const [responsavelFilter, setResponsavelFilter] = useState<string>("todos");
   const [ordenacao, setOrdenacao] = useState<string>("prioridade");
+  const [scoreRange, setScoreRange] = useState<[number, number]>([0, 10]);
   const [activeLead, setActiveLead] = useState<KanbanLead | null>(null);
   const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
   
@@ -59,7 +63,7 @@ export default function Kanban() {
 
   // Fetch leads da tabela principal
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: ["kanban-leads", produtoFilter, responsavelFilter, ordenacao],
+    queryKey: ["kanban-leads", produtoFilter, responsavelFilter, ordenacao, scoreRange],
     queryFn: async () => {
       let query = supabase
         .from("leads")
@@ -76,9 +80,18 @@ export default function Kanban() {
         query = query.eq("responsavel", currentUser.id);
       }
 
+      // Filtro de score
+      query = query
+        .gte("score_total", scoreRange[0])
+        .lte("score_total", scoreRange[1]);
+
       // Ordenação
       if (ordenacao === "prioridade") {
         query = query.order("score_total", { ascending: false, nullsFirst: false });
+      } else if (ordenacao === "score") {
+        query = query.order("score_total", { ascending: false, nullsFirst: false });
+      } else if (ordenacao === "chegada") {
+        query = query.order("created_at", { ascending: true });
       } else if (ordenacao === "ultima_interacao") {
         query = query.order("ultima_interacao", { ascending: false, nullsFirst: false });
       } else if (ordenacao === "data_criacao") {
@@ -366,10 +379,43 @@ export default function Kanban() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="prioridade">Prioridade</SelectItem>
+                  <SelectItem value="score">Score</SelectItem>
+                  <SelectItem value="chegada">Ordem de chegada</SelectItem>
                   <SelectItem value="ultima_interacao">Última interação</SelectItem>
                   <SelectItem value="data_criacao">Data de criação</SelectItem>
                 </SelectContent>
               </Select>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-medium text-sm mb-3">Filtrar por Score</h4>
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm font-medium w-8">{scoreRange[0]}</span>
+                        <Slider
+                          value={scoreRange}
+                          onValueChange={(value) => setScoreRange(value as [number, number])}
+                          min={0}
+                          max={10}
+                          step={1}
+                          minStepsBetweenThumbs={1}
+                          className="flex-1"
+                        />
+                        <span className="text-sm font-medium w-8">{scoreRange[1]}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Score entre {scoreRange[0]} e {scoreRange[1]}
+                      </p>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="text-sm text-muted-foreground">

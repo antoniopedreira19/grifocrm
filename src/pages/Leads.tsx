@@ -3,7 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Loader2 } from "lucide-react";
+import { Plus, Search, Loader2, Filter, ArrowUpDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -31,15 +34,28 @@ export default function Leads() {
   const canCreateLead = currentRole && ['admin', 'closer', 'sdr'].includes(currentRole);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const [ordenacao, setOrdenacao] = useState<string>("data_criacao");
+  const [scoreRange, setScoreRange] = useState<[number, number]>([0, 10]);
 
   const { data: leads, isLoading, error } = useQuery({
-    queryKey: ['leads'],
+    queryKey: ['leads', ordenacao, scoreRange],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('leads')
         .select('id, nome, email, telefone, produto, status, score_cor, score_total, created_at, origem')
-        .order('created_at', { ascending: false });
+        .gte("score_total", scoreRange[0])
+        .lte("score_total", scoreRange[1]);
+
+      // Ordenação
+      if (ordenacao === "score") {
+        query = query.order("score_total", { ascending: false, nullsFirst: false });
+      } else if (ordenacao === "chegada") {
+        query = query.order("created_at", { ascending: true });
+      } else {
+        query = query.order("created_at", { ascending: false });
+      }
       
+      const { data, error } = await query;
       if (error) throw error;
       return data as Lead[];
     },
@@ -106,7 +122,50 @@ export default function Leads() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button variant="outline">Filtros</Button>
+
+          <Select value={ordenacao} onValueChange={setOrdenacao}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Ordenar por" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="data_criacao">Mais recentes</SelectItem>
+              <SelectItem value="score">Score (maior)</SelectItem>
+              <SelectItem value="chegada">Ordem de chegada</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline">
+                <Filter className="h-4 w-4 mr-2" />
+                Filtros
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-sm mb-3">Filtrar por Score</h4>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium w-8">{scoreRange[0]}</span>
+                    <Slider
+                      value={scoreRange}
+                      onValueChange={(value) => setScoreRange(value as [number, number])}
+                      min={0}
+                      max={10}
+                      step={1}
+                      minStepsBetweenThumbs={1}
+                      className="flex-1"
+                    />
+                    <span className="text-sm font-medium w-8">{scoreRange[1]}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Score entre {scoreRange[0]} e {scoreRange[1]}
+                  </p>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+
           <Button variant="outline">Exportar CSV</Button>
         </div>
 
