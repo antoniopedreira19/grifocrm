@@ -32,11 +32,8 @@ const formSchema = z.object({
     required_error: "Campo obrigatório"
   }),
   faixa_investimento: z.string().optional(),
-  anos_empresa: z.coerce.number().optional(),
-  modelo_negocio_detalhe: z.string().optional(),
-  motivo_mentoria: z.string().optional(),
-  por_que_escolher_voce: z.string().optional(),
-  objetivo_12m: z.string().optional(),
+  maior_dor: z.string().optional(),
+  prioridade_modulo: z.string().optional(),
   preferencia_canal: z.enum(["whatsapp", "telefone", "email"]).optional(),
   preferencia_horario: z.string().optional(),
   cidade: z.string().optional(),
@@ -48,7 +45,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface FormularioGBCProps {
+interface FormularioFastProps {
   utmParams: {
     utm_source?: string;
     utm_medium?: string;
@@ -81,7 +78,7 @@ const interesseLabels: Record<string, string> = {
   nao_nao_consigo: "Não, não consigo"
 };
 
-export function FormularioGBC({ utmParams }: FormularioGBCProps) {
+export function FormularioFast({ utmParams }: FormularioFastProps) {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -101,17 +98,16 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
     try {
       const formAnswers = {
         schema_version: "1.1",
-        form: "gbc",
-        anos_empresa: values.anos_empresa,
-        modelo_negocio_detalhe: values.modelo_negocio_detalhe,
-        motivo_mentoria: values.motivo_mentoria,
-        por_que_escolher_voce: values.por_que_escolher_voce,
-        objetivo_12m: values.objetivo_12m,
+        form: "mentoria_fast",
+        prioridade_modulo: values.prioridade_modulo,
+        maior_dor: values.maior_dor,
         investimento: {
-          pergunta_texto: "O investimento anual é de R$ 120.000. Você tem capacidade de investir agora?",
+          pergunta_texto: "O investimento é de 12× R$ 1.666,67 ou R$ 16.000 à vista. Você tem capacidade de investir agora?",
           resposta_raw: interesseLabels[values.interesse],
           resposta_enum: values.interesse,
-          valor_anual: 120000
+          parcelas_qtd: 12,
+          valor_parcela: 1666.67,
+          valor_pagamento_unico: 16000
         },
         preferencia_contato: {
           canal: values.preferencia_canal,
@@ -129,7 +125,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
       };
 
       const { data, error } = await supabase.rpc("capture_lead_public" as any, {
-        p_produto: "gbc",
+        p_produto: "mentoria_fast",
         p_nome: values.nome,
         p_email: values.email,
         p_telefone: values.telefone.replace(/\D/g, ""),
@@ -142,7 +138,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
         p_conhece_daniel: values.conhece_daniel,
         p_interesse: values.interesse,
         p_faixa_investimento: values.faixa_investimento || null,
-        p_origem: "lp_gbc",
+        p_origem: "lp_fast",
         p_utm_source: utmParams.utm_source || null,
         p_utm_medium: utmParams.utm_medium || null,
         p_utm_campaign: utmParams.utm_campaign || null,
@@ -150,7 +146,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
         p_utm_content: utmParams.utm_content || null,
         p_gclid: utmParams.gclid || null,
         p_fbclid: utmParams.fbclid || null,
-        p_tag_form: "form_gbc",
+        p_tag_form: "form_fast",
         p_form_answers: formAnswers
       } as any);
 
@@ -173,7 +169,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Grifo Builders' Club</h1>
+        <h1 className="text-3xl font-bold mb-2">Mentoria Fast</h1>
         <p className="text-muted-foreground">
           Preencha o formulário abaixo para se inscrever
         </p>
@@ -366,7 +362,8 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  O investimento anual é de R$ 120.000. Você tem capacidade de investir agora? *
+                  O investimento é de 12× R$ 1.666,67 ou R$ 16.000 à vista. Você tem capacidade de
+                  investir agora? *
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
@@ -395,7 +392,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                 <FormItem>
                   <FormLabel>Qual faixa de investimento faria sentido agora?</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: até R$ 50.000" {...field} />
+                    <Input placeholder="Ex: até R$ 10.000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -405,12 +402,12 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
 
           <FormField
             control={form.control}
-            name="anos_empresa"
+            name="maior_dor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Quantos anos de empresa você tem?</FormLabel>
+                <FormLabel>Maior dificuldade hoje (sua "dor")?</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} />
+                  <Textarea rows={4} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -419,62 +416,12 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
 
           <FormField
             control={form.control}
-            name="modelo_negocio_detalhe"
+            name="prioridade_modulo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Descreva de forma clara e objetiva seu modelo de negócio atual:</FormLabel>
+                <FormLabel>Prioridade de módulo/tema que quer aprofundar?</FormLabel>
                 <FormControl>
-                  <Textarea rows={5} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="motivo_mentoria"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Por que você acredita que participar dessa Mentoria é a oportunidade ideal para você
-                  e para o crescimento do seu negócio?
-                </FormLabel>
-                <FormControl>
-                  <Textarea rows={5} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="por_que_escolher_voce"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Esse é um Grupo seleto e restrito… por que devo escolher você entre os interessados?
-                </FormLabel>
-                <FormControl>
-                  <Textarea rows={5} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="objetivo_12m"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Caso você seja aceito no Grifo Builders' Club, o que precisa acontecer nos 12 meses
-                  para dizer que valeu?
-                </FormLabel>
-                <FormControl>
-                  <Textarea rows={5} {...field} />
+                  <Input placeholder="Ex: Marketing, Vendas, Gestão" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

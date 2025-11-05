@@ -1,5 +1,6 @@
 import { useParams, Navigate, useSearchParams } from "react-router-dom";
 import { FormularioGBC } from "@/components/forms/FormularioGBC";
+import { FormularioFast } from "@/components/forms/FormularioFast";
 import { useEffect, useState } from "react";
 
 interface UTMParams {
@@ -35,19 +36,14 @@ export default function FormularioPublico() {
     return <Navigate to="/" replace />;
   }
 
-  const produto = tipo === "gbc" ? "gbc" : "mentoria_fast";
-  const origem = tipo === "gbc" ? "lp_gbc" : "lp_fast";
-  const tagForm = tipo === "gbc" ? "form_gbc" : "form_fast";
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-12">
-        <FormularioGBC 
-          produto={produto}
-          origem={origem}
-          tagForm={tagForm}
-          utmParams={utmParams}
-        />
+        {tipo === "gbc" ? (
+          <FormularioGBC utmParams={utmParams} />
+        ) : (
+          <FormularioFast utmParams={utmParams} />
+        )}
       </div>
     </div>
   );
