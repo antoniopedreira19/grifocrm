@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { Status } from "@/types/lead";
+import { LeadDetailsModal } from "../lead/LeadDetailsModal";
 
 interface KanbanLead {
   id: string;
@@ -46,6 +48,8 @@ const faturamentoLabels: Record<string, string> = {
 };
 
 export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  
   const {
     attributes,
     listeners,
@@ -71,8 +75,18 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
   });
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <Card className={`cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
+    <>
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <Card 
+          className={`cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+          onClick={(e) => {
+            // Only open modal if not dragging
+            if (!isDragging) {
+              e.stopPropagation();
+              setDetailsOpen(true);
+            }
+          }}
+        >
         <CardContent className="p-3">
           {/* Título */}
           <h4 className="font-semibold mb-2 text-xs line-clamp-1">
@@ -110,5 +124,12 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
         </CardContent>
       </Card>
     </div>
+
+    <LeadDetailsModal
+      leadId={lead.id}
+      open={detailsOpen}
+      onClose={() => setDetailsOpen(false)}
+    />
+  </>
   );
 }
