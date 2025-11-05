@@ -318,20 +318,18 @@ export default function Kanban() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col h-screen overflow-x-hidden">
+      <div className="flex flex-col h-full">
         {/* Cabeçalho */}
-        <div className="px-8 pt-8 pb-4">
-          <div className="max-w-[1320px] mx-auto">
-            <h1 className="text-3xl font-bold text-foreground">Kanban</h1>
-            <p className="text-muted-foreground mt-2">
-              Pipeline visual de leads por etapa
-            </p>
-          </div>
+        <div className="px-4 md:px-8 pt-8 pb-4">
+          <h1 className="text-3xl font-bold text-foreground">Kanban</h1>
+          <p className="text-muted-foreground mt-2">
+            Pipeline visual de leads por etapa
+          </p>
         </div>
 
         {/* Barra de ferramentas sticky */}
-        <div className="sticky top-0 z-10 bg-background border-b px-8 py-3 overflow-x-hidden">
-          <div className="max-w-[1320px] mx-auto flex items-center justify-between gap-4 flex-wrap">
+        <div className="sticky top-0 z-10 bg-background border-b px-4 md:px-8 py-3">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3 flex-wrap">
               <Select value={produtoFilter} onValueChange={setProdutoFilter}>
                 <SelectTrigger className="w-48">
@@ -383,8 +381,8 @@ export default function Kanban() {
         </div>
 
         {/* Board do Kanban */}
-        <div className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-8 pr-12">
-          <div className="max-w-[1320px] mx-auto h-full min-w-fit">
+        <div className="flex-1 overflow-x-auto overflow-y-hidden px-4 md:px-8 pb-8">
+          <div className="h-full">
             <DndContext
               collisionDetection={closestCorners}
               onDragStart={handleDragStart}

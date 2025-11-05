@@ -90,10 +90,10 @@ export function AppLayout({
   children
 }: AppLayoutProps) {
   return <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full bg-background overflow-x-hidden">
         <AppSidebar />
         
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           {/* Header with Toggle */}
           <header className="border-b bg-background">
             <div className="h-14 flex items-center px-4">
@@ -103,7 +103,7 @@ export function AppLayout({
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto">
             {children}
           </main>
         </div>
