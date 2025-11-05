@@ -50,6 +50,7 @@ export default function Kanban() {
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
   const [responsavelFilter, setResponsavelFilter] = useState<string>("todos");
   const [ordenacao, setOrdenacao] = useState<string>("prioridade");
+  const [densidade, setDensidade] = useState<"compacta" | "confortavel">("compacta");
   const [activeLead, setActiveLead] = useState<KanbanLead | null>(null);
   const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
   
@@ -282,8 +283,10 @@ export default function Kanban() {
 
   const totalLeads = leads.length;
 
-  // Largura fixa das colunas (densidade compacta)
-  const columnWidth = "w-[280px]";
+  // Largura das colunas baseada na densidade
+  const columnWidth = densidade === "compacta" 
+    ? "w-[260px] xl:w-[280px] 2xl:w-[320px]" 
+    : "w-[300px] xl:w-[320px] 2xl:w-[340px]";
 
   if (isLoading) {
     return (
@@ -315,7 +318,7 @@ export default function Kanban() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden overflow-x-hidden">
+      <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden">
         {/* Cabeçalho */}
         <div className="px-8 pt-8 pb-4">
           <div className="max-w-[1320px] mx-auto">
@@ -361,6 +364,16 @@ export default function Kanban() {
                   <SelectItem value="data_criacao">Data de criação</SelectItem>
                 </SelectContent>
               </Select>
+
+              <Select value={densidade} onValueChange={(v) => setDensidade(v as "compacta" | "confortavel")}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Densidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="compacta">Compacta</SelectItem>
+                  <SelectItem value="confortavel">Confortável</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="text-sm text-muted-foreground">
@@ -371,7 +384,7 @@ export default function Kanban() {
 
         {/* Board do Kanban */}
         <div className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-8">
-          <div className="h-full pr-6">
+          <div className="max-w-[1320px] mx-auto h-full">
             <DndContext
               collisionDetection={closestCorners}
               onDragStart={handleDragStart}
@@ -385,7 +398,7 @@ export default function Kanban() {
                     title={statusLabels[status]}
                     leads={getLeadsByStatus(status)}
                     canDrag={canDrag}
-                    densidade="compacta"
+                    densidade={densidade}
                     columnWidth={columnWidth}
                   />
                 ))}
@@ -397,7 +410,7 @@ export default function Kanban() {
                     lead={activeLead} 
                     status={activeLead.status} 
                     disabled={false}
-                    densidade="compacta"
+                    densidade={densidade}
                   />
                 ) : null}
               </DragOverlay>
