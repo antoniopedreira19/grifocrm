@@ -75,20 +75,18 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
   });
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // Don't open modal while dragging
-    if (isDragging) return;
-    
+    e.preventDefault();
     e.stopPropagation();
     setDetailsOpen(true);
   };
 
   return (
     <>
-      <div ref={setNodeRef} style={style} {...attributes}>
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
         <Card 
-          className={`transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+          className={`cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
-        <CardContent className="p-3" {...listeners} onDoubleClick={handleCardClick}>
+        <CardContent className="p-3" onDoubleClick={handleCardClick}>
           {/* Título */}
           <h4 className="font-semibold mb-2 text-xs line-clamp-1">
             {lead.nome}
