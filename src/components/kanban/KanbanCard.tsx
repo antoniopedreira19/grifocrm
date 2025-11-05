@@ -87,17 +87,17 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
         <Card 
           className={`group relative transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
-        <CardContent className="p-3 pr-8" {...listeners}>
-          {/* Botão de abrir modal - fixed no canto superior direito */}
+          {/* Botão de abrir modal - absolutamente posicionado */}
           <Button
             size="icon"
             variant="ghost"
-            className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 hover:bg-primary/10 transition-opacity cursor-pointer z-10"
+            className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 hover:bg-primary/10 transition-opacity z-10"
             onClick={handleOpenModal}
-            onMouseDown={(e) => e.stopPropagation()}
           >
             <Plus className="h-4 w-4" />
           </Button>
+
+          <CardContent className="p-3 pr-8" {...listeners}>
           {/* Título */}
           <h4 className="font-semibold mb-2 text-xs line-clamp-1">
             {lead.nome}
