@@ -23,7 +23,7 @@ const formSchema = z.object({
     required_error: "Faturamento 2025 é obrigatório"
   }),
   faturamento_2024: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m"]).optional(),
-  num_funcionarios: z.coerce.number().optional(),
+  num_funcionarios: z.enum(["ate_10", "11_25", "26_50", "51_100", "mais_100"]).optional(),
   regiao: z.string().optional(),
   modelo_negocio: z.string().max(280, "Máximo de 280 caracteres").optional(),
   conhece_daniel: z.enum(["nao_conhece", "lt_3m", "m3_12m", "gt_1a"], {
@@ -80,6 +80,14 @@ const interesseLabels: Record<string, string> = {
   quero_entender: "Sim, mas quero entender antes com o time.",
   nao_mas_posso: "Não, mas posso conseguir",
   nao_nao_consigo: "Não, não consigo"
+};
+
+const numFuncionariosLabels: Record<string, string> = {
+  ate_10: "Até 10",
+  "11_25": "11 a 25",
+  "26_50": "26 a 50",
+  "51_100": "51 a 100",
+  mais_100: "Mais de 100"
 };
 
 export function FormularioGBC({ utmParams }: FormularioGBCProps) {
@@ -304,9 +312,20 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Número de funcionários</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} />
-                      </FormControl>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a faixa" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.entries(numFuncionariosLabels).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
