@@ -20,16 +20,16 @@ const formSchema = z.object({
   telefone: z.string().min(14, "Telefone inválido"),
   rede_social: z.string().optional(),
   faturamento_2025: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m"], {
-    required_error: "Faturamento 2025 é obrigatório"
+    required_error: "Faturamento 2025 é obrigatório",
   }),
   faturamento_2024: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m"]).optional(),
   num_funcionarios: z.enum(["ate_10", "11_25", "26_50", "51_100", "mais_100"]).optional(),
   regiao: z.string().optional(),
   conhece_daniel: z.enum(["nao_conhece", "lt_3m", "m3_12m", "gt_1a"], {
-    required_error: "Campo obrigatório"
+    required_error: "Campo obrigatório",
   }),
   interesse: z.enum(["quero_agora", "quero_entender", "nao_mas_posso", "nao_nao_consigo"], {
-    required_error: "Campo obrigatório"
+    required_error: "Campo obrigatório",
   }),
   faixa_investimento: z.string().optional(),
   anos_empresa: z.coerce.number().optional(),
@@ -42,8 +42,8 @@ const formSchema = z.object({
   cidade: z.string().optional(),
   uf: z.string().optional(),
   lgpd: z.boolean().refine((val) => val === true, {
-    message: "Você deve aceitar os termos"
-  })
+    message: "Você deve aceitar os termos",
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -64,21 +64,21 @@ const faturamentoLabels: Record<string, string> = {
   ate_500k: "até 500mil",
   entre_500k_1m: "entre 500mil e 1milhao",
   entre_1m_10m: "entre 1milhao e 10milhoes",
-  entre_10m_50m: "entre 10milhoes e 50milhoes"
+  entre_10m_50m: "entre 10milhoes e 50milhoes",
 };
 
 const conheceDanielLabels: Record<string, string> = {
   nao_conhece: "Não conhece",
   lt_3m: "<3 meses",
   m3_12m: "3–12 meses",
-  gt_1a: ">1 ano"
+  gt_1a: ">1 ano",
 };
 
 const interesseLabels: Record<string, string> = {
   quero_agora: "Sim, quero me inscrever agora!",
   quero_entender: "Sim, mas quero entender antes com o time.",
   nao_mas_posso: "Não, mas posso conseguir",
-  nao_nao_consigo: "Não, não consigo"
+  nao_nao_consigo: "Não, não consigo",
 };
 
 const numFuncionariosLabels: Record<string, string> = {
@@ -86,7 +86,7 @@ const numFuncionariosLabels: Record<string, string> = {
   "11_25": "11 a 25",
   "26_50": "26 a 50",
   "51_100": "51 a 100",
-  mais_100: "Mais de 100"
+  mais_100: "Mais de 100",
 };
 
 export function FormularioGBC({ utmParams }: FormularioGBCProps) {
@@ -96,8 +96,8 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      lgpd: false
-    }
+      lgpd: false,
+    },
   });
 
   const interesseValue = form.watch("interesse");
@@ -119,48 +119,51 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
           pergunta_texto: "O investimento anual é de R$ 120.000. Você tem capacidade de investir agora?",
           resposta_raw: interesseLabels[values.interesse],
           resposta_enum: values.interesse,
-          valor_anual: 120000
+          valor_anual: 120000,
         },
         preferencia_contato: {
           canal: values.preferencia_canal,
           melhor_horario: values.preferencia_horario,
-          timezone: "America/Sao_Paulo"
+          timezone: "America/Sao_Paulo",
         },
         empresa: {
           cidade: values.cidade,
           uf: values.uf,
-          pais: "BR"
+          pais: "BR",
         },
         lgpd: {
-          consent: values.lgpd
-        }
+          consent: values.lgpd,
+        },
       };
 
-      const { data, error } = await supabase.rpc("capture_lead_public" as any, {
-        p_produto: "gbc",
-        p_nome: values.nome,
-        p_email: values.email,
-        p_telefone: values.telefone.replace(/\D/g, ""),
-        p_rede_social: values.rede_social || null,
-        p_faturamento_2025: values.faturamento_2025,
-        p_faturamento_2024: values.faturamento_2024 || null,
-        p_num_funcionarios: values.num_funcionarios || null,
-        p_modelo_negocio: values.modelo_negocio || null,
-        p_regiao: values.regiao || null,
-        p_conhece_daniel: values.conhece_daniel,
-        p_interesse: values.interesse,
-        p_faixa_investimento: values.faixa_investimento || null,
-        p_origem: "lp_gbc",
-        p_utm_source: utmParams.utm_source || null,
-        p_utm_medium: utmParams.utm_medium || null,
-        p_utm_campaign: utmParams.utm_campaign || null,
-        p_utm_term: utmParams.utm_term || null,
-        p_utm_content: utmParams.utm_content || null,
-        p_gclid: utmParams.gclid || null,
-        p_fbclid: utmParams.fbclid || null,
-        p_tag_form: "form_gbc",
-        p_form_answers: formAnswers
-      } as any);
+      const { data, error } = await supabase.rpc(
+        "capture_lead_public" as any,
+        {
+          p_produto: "gbc",
+          p_nome: values.nome,
+          p_email: values.email,
+          p_telefone: values.telefone.replace(/\D/g, ""),
+          p_rede_social: values.rede_social || null,
+          p_faturamento_2025: values.faturamento_2025,
+          p_faturamento_2024: values.faturamento_2024 || null,
+          p_num_funcionarios: values.num_funcionarios || null,
+          p_modelo_negocio: values.modelo_negocio || null,
+          p_regiao: values.regiao || null,
+          p_conhece_daniel: values.conhece_daniel,
+          p_interesse: values.interesse,
+          p_faixa_investimento: values.faixa_investimento || null,
+          p_origem: "lp_gbc",
+          p_utm_source: utmParams.utm_source || null,
+          p_utm_medium: utmParams.utm_medium || null,
+          p_utm_campaign: utmParams.utm_campaign || null,
+          p_utm_term: utmParams.utm_term || null,
+          p_utm_content: utmParams.utm_content || null,
+          p_gclid: utmParams.gclid || null,
+          p_fbclid: utmParams.fbclid || null,
+          p_tag_form: "form_gbc",
+          p_form_answers: formAnswers,
+        } as any,
+      );
 
       if (error) throw error;
 
@@ -171,7 +174,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
       toast({
         title: "Erro",
         description: "Não conseguimos enviar agora; tente novamente",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -185,9 +188,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             {/* Seção 1: Seus dados */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
-                Seus dados
-              </h2>
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">Seus dados</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
@@ -251,9 +252,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
 
             {/* Seção 2: Perfil da empresa */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
-                Perfil da empresa
-              </h2>
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">Perfil da empresa</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
@@ -348,9 +347,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
 
             {/* Seção 3: Relação com Daniel */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
-                Relação com Daniel
-              </h2>
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">Relação com Daniel</h2>
               <FormField
                 control={form.control}
                 name="conhece_daniel"
@@ -382,7 +379,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
               <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
                 Sobre você e seu negócio
               </h2>
-              
+
               <FormField
                 control={form.control}
                 name="anos_empresa"
@@ -404,11 +401,11 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                   <FormItem>
                     <FormLabel>Descreva de forma clara e objetiva seu modelo de negócio atual:</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        rows={5} 
-                        placeholder="Explique como sua empresa gera valor e receita..." 
+                      <Textarea
+                        rows={5}
+                        placeholder="Explique como sua empresa gera valor e receita..."
                         maxLength={200}
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormDescription>Máximo de 200 caracteres</FormDescription>
@@ -423,8 +420,8 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Por que você acredita que participar dessa Mentoria é a oportunidade ideal para você
-                      e para o crescimento do seu negócio?
+                      Por que você acredita que participar dessa Mentoria é a oportunidade ideal para você e para o
+                      crescimento do seu negócio?
                     </FormLabel>
                     <FormControl>
                       <Textarea rows={5} placeholder="Compartilhe suas motivações..." {...field} />
@@ -456,8 +453,8 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Caso você seja aceito no Grifo Builders' Club, o que precisa acontecer nos 12 meses
-                      para dizer que valeu?
+                      Caso você seja aceito no Grifo Builders Club, o que precisa acontecer nos 12 meses para dizer que
+                      valeu?
                     </FormLabel>
                     <FormControl>
                       <Textarea rows={5} placeholder="Defina seus objetivos e metas..." {...field} />
@@ -543,9 +540,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
 
             {/* Seção 5: Investimento */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
-                Investimento
-              </h2>
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">Investimento</h2>
               <FormField
                 control={form.control}
                 name="interesse"
