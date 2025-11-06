@@ -20,9 +20,10 @@ interface LeadDetailsModalProps {
 }
 
 export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProps) {
-  const { currentUser, currentRole } = useAuth();
+  const { currentUser, currentRole, canEdit } = useAuth();
   const queryClient = useQueryClient();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Fetch lead details
   const { data: lead, isLoading } = useQuery({
@@ -161,6 +162,38 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
     deleteLeadMutation.mutate();
   };
 
+  // Update lead mutation
+  const updateLeadMutation = useMutation({
+    mutationFn: async (updatedData: any) => {
+      if (!leadId) throw new Error("Lead ID não encontrado");
+      
+      const { error } = await supabase
+        .from("leads")
+        .update(updatedData)
+        .eq("id", leadId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lead-details", leadId] });
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["kanban-leads"] });
+      toast({ title: "Lead atualizado com sucesso!" });
+      setIsEditing(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao atualizar lead",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveLead = async (updatedData: any) => {
+    await updateLeadMutation.mutateAsync(updatedData);
+  };
+
   // Check permissions
   const canComment = () => {
     if (!currentRole || !currentUser) return false;
@@ -180,6 +213,11 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
       return lead?.responsavel === currentUser.id;
     }
     return false;
+  };
+
+  const canEditLead = () => {
+    if (!lead) return false;
+    return canEdit(lead.responsavel);
   };
 
   const getUserName = (userId: string) => {
@@ -226,7 +264,14 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
 
             <ScrollArea className="h-[calc(90vh-180px)]">
               <TabsContent value="info" className="m-0 p-6">
-                <LeadInfoTab lead={lead} />
+                <LeadInfoTab 
+                  lead={lead} 
+                  isEditing={isEditing}
+                  canEdit={canEditLead()}
+                  onToggleEdit={() => setIsEditing(!isEditing)}
+                  onSave={handleSaveLead}
+                  isSaving={updateLeadMutation.isPending}
+                />
               </TabsContent>
 
               <TabsContent value="comments" className="m-0 p-6">
