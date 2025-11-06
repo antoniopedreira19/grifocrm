@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { statusLabels } from "@/utils/labels";
 import { LeadDetailsModal } from "@/components/lead/LeadDetailsModal";
+import { CreateLeadModal } from "@/components/lead/CreateLeadModal";
 
 interface Lead {
   id: string;
@@ -36,6 +37,7 @@ export default function Leads() {
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [ordenacao, setOrdenacao] = useState<string>("data_criacao");
   const [scoreRange, setScoreRange] = useState<[number, number] | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const { data: leads, isLoading, error } = useQuery({
     queryKey: ['leads', ordenacao, scoreRange],
@@ -108,7 +110,7 @@ export default function Leads() {
             </p>
           </div>
           {canCreateLead && (
-            <Button>
+            <Button onClick={() => setCreateModalOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Novo Lead
             </Button>
@@ -259,6 +261,11 @@ export default function Leads() {
         leadId={selectedLeadId}
         open={!!selectedLeadId}
         onClose={() => setSelectedLeadId(null)}
+      />
+
+      <CreateLeadModal
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
       />
     </AppLayout>
   );
