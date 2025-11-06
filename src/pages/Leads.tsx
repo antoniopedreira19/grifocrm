@@ -35,16 +35,19 @@ export default function Leads() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [ordenacao, setOrdenacao] = useState<string>("data_criacao");
-  const [scoreRange, setScoreRange] = useState<[number, number]>([0, 10]);
+  const [scoreRange, setScoreRange] = useState<[number, number] | null>(null);
 
   const { data: leads, isLoading, error } = useQuery({
     queryKey: ['leads', ordenacao, scoreRange],
     queryFn: async () => {
       let query = supabase
         .from('leads')
-        .select('id, nome, email, telefone, produto, status, score_cor, score_total, created_at, origem')
-        .gte("score_total", scoreRange[0])
-        .lte("score_total", scoreRange[1]);
+        .select('id, nome, email, telefone, produto, status, score_cor, score_total, created_at, origem');
+
+      // Aplicar filtro de score apenas se definido
+      if (scoreRange) {
+        query = query.gte("score_total", scoreRange[0]).lte("score_total", scoreRange[1]);
+      }
 
       // Ordenação
       if (ordenacao === "score") {
@@ -146,9 +149,9 @@ export default function Leads() {
                 <div>
                   <h4 className="font-medium text-sm mb-3">Filtrar por Score</h4>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium w-8">{scoreRange[0]}</span>
+                    <span className="text-sm font-medium w-8">{scoreRange?.[0] ?? 0}</span>
                     <Slider
-                      value={scoreRange}
+                      value={scoreRange ?? [0, 10]}
                       onValueChange={(value) => setScoreRange(value as [number, number])}
                       min={0}
                       max={10}
@@ -156,11 +159,19 @@ export default function Leads() {
                       minStepsBetweenThumbs={1}
                       className="flex-1"
                     />
-                    <span className="text-sm font-medium w-8">{scoreRange[1]}</span>
+                    <span className="text-sm font-medium w-8">{scoreRange?.[1] ?? 10}</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Score entre {scoreRange[0]} e {scoreRange[1]}
+                    {scoreRange ? `Score entre ${scoreRange[0]} e ${scoreRange[1]}` : 'Todos os scores'}
                   </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setScoreRange(null)}
+                    className="w-full mt-2"
+                  >
+                    Limpar filtro
+                  </Button>
                 </div>
               </div>
             </PopoverContent>
