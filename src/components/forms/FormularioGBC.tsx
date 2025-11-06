@@ -25,7 +25,6 @@ const formSchema = z.object({
   faturamento_2024: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m"]).optional(),
   num_funcionarios: z.enum(["ate_10", "11_25", "26_50", "51_100", "mais_100"]).optional(),
   regiao: z.string().optional(),
-  modelo_negocio: z.string().max(280, "Máximo de 280 caracteres").optional(),
   conhece_daniel: z.enum(["nao_conhece", "lt_3m", "m3_12m", "gt_1a"], {
     required_error: "Campo obrigatório"
   }),
@@ -34,7 +33,7 @@ const formSchema = z.object({
   }),
   faixa_investimento: z.string().optional(),
   anos_empresa: z.coerce.number().optional(),
-  modelo_negocio_detalhe: z.string().optional(),
+  modelo_negocio: z.string().max(200, "Máximo de 200 caracteres").optional(),
   motivo_mentoria: z.string().optional(),
   por_que_escolher_voce: z.string().optional(),
   objetivo_12m: z.string().optional(),
@@ -112,7 +111,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
         schema_version: "1.1",
         form: "gbc",
         anos_empresa: values.anos_empresa,
-        modelo_negocio_detalhe: values.modelo_negocio_detalhe,
+        modelo_negocio: values.modelo_negocio,
         motivo_mentoria: values.motivo_mentoria,
         por_que_escolher_voce: values.por_que_escolher_voce,
         objetivo_12m: values.objetivo_12m,
@@ -344,28 +343,6 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                     </FormItem>
                   )}
                 />
-
-                <div className="md:col-span-2">
-                  <FormField
-                    control={form.control}
-                    name="modelo_negocio"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Modelo de negócio (resumo)</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Descreva brevemente seu modelo de negócio"
-                            maxLength={280}
-                            rows={3}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>Máximo de 280 caracteres</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
               </div>
             </div>
 
@@ -400,56 +377,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
               />
             </div>
 
-            {/* Seção 4: Investimento */}
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
-                Investimento
-              </h2>
-              <FormField
-                control={form.control}
-                name="interesse"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      O investimento anual é de R$ 120.000. Você tem capacidade de investir agora? *
-                    </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione sua resposta" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Object.entries(interesseLabels).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>
-                            {label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {showFaixaInvestimento && (
-                <FormField
-                  control={form.control}
-                  name="faixa_investimento"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Qual faixa de investimento faria sentido agora?</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ex: até R$ 50.000" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-            </div>
-
-            {/* Seção 5: Perguntas abertas */}
+            {/* Seção 4: Perguntas abertas */}
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
                 Sobre você e seu negócio
@@ -471,13 +399,19 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
 
               <FormField
                 control={form.control}
-                name="modelo_negocio_detalhe"
+                name="modelo_negocio"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Descreva de forma clara e objetiva seu modelo de negócio atual:</FormLabel>
                     <FormControl>
-                      <Textarea rows={5} placeholder="Explique como sua empresa gera valor e receita..." {...field} />
+                      <Textarea 
+                        rows={5} 
+                        placeholder="Explique como sua empresa gera valor e receita..." 
+                        maxLength={200}
+                        {...field} 
+                      />
                     </FormControl>
+                    <FormDescription>Máximo de 200 caracteres</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -607,7 +541,56 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
               </div>
             </div>
 
-            {/* Seção 7: LGPD */}
+            {/* Seção 5: Investimento */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-foreground border-b border-border pb-3">
+                Investimento
+              </h2>
+              <FormField
+                control={form.control}
+                name="interesse"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      O investimento anual é de R$ 120.000. Você tem capacidade de investir agora? *
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione sua resposta" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.entries(interesseLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {showFaixaInvestimento && (
+                <FormField
+                  control={form.control}
+                  name="faixa_investimento"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Qual faixa de investimento faria sentido agora?</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: até R$ 50.000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+
+            {/* Seção 6: LGPD */}
             <div className="space-y-6 pt-4">
               <FormField
                 control={form.control}
