@@ -35,14 +35,21 @@ export default function Login() {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-black/40" />
       
-      <Card className="w-full max-w-md relative z-10 shadow-2xl border-grifo-gold/20 bg-card/95 backdrop-blur-sm">
+      <Card className="w-full max-w-md relative z-10 shadow-2xl border-0 bg-white">
         <CardHeader className="text-center space-y-4 pb-8">
           <div className="flex justify-center">
-            <img src={grifoLogo} alt="Grifo Logo" className="h-20 drop-shadow-lg" />
+            <img 
+              src={grifoLogo} 
+              alt="Grifo Logo" 
+              className="h-24"
+              style={{
+                filter: 'drop-shadow(0 4px 8px rgba(184, 134, 11, 0.4)) drop-shadow(0 8px 16px rgba(184, 134, 11, 0.3)) brightness(1.1) contrast(1.1)',
+              }}
+            />
           </div>
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-grifo-gold to-grifo-gold/80 bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold text-foreground">
             Bem-vindo ao Grifo CRM
           </CardTitle>
           <CardDescription className="text-base text-muted-foreground">
@@ -52,7 +59,7 @@ export default function Login() {
         <CardContent className="pb-8">
           <form onSubmit={handleEmailLogin} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">E-mail</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">E-mail</Label>
               <Input
                 id="email"
                 type="email"
@@ -60,11 +67,11 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-11 bg-background/50 border-border/50 focus:border-grifo-gold/50 focus:ring-grifo-gold/20"
+                className="h-11 border-input focus:border-grifo-gold focus:ring-grifo-gold/20"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">Senha</Label>
+              <Label htmlFor="password" className="text-sm font-medium text-foreground">Senha</Label>
               <Input
                 id="password"
                 type="password"
@@ -72,7 +79,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="h-11 bg-background/50 border-border/50 focus:border-grifo-gold/50 focus:ring-grifo-gold/20"
+                className="h-11 border-input focus:border-grifo-gold focus:ring-grifo-gold/20"
               />
             </div>
             <Button 
