@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import grifoLogo from '@/assets/grifo-logo.png';
+import grifoBackground from '@/assets/grifo-login-background.jpg';
 
 export default function Login() {
   const { signIn } = useAuth();
@@ -25,19 +26,33 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <img src={grifoLogo} alt="Grifo Logo" className="h-16" />
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 relative"
+      style={{
+        backgroundImage: `url(${grifoBackground})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+      
+      <Card className="w-full max-w-md relative z-10 shadow-2xl border-grifo-gold/20 bg-card/95 backdrop-blur-sm">
+        <CardHeader className="text-center space-y-4 pb-8">
+          <div className="flex justify-center">
+            <img src={grifoLogo} alt="Grifo Logo" className="h-20 drop-shadow-lg" />
           </div>
-          <CardTitle className="text-2xl">Bem-vindo ao Grifo CRM</CardTitle>
-          <CardDescription>Entre com sua conta para continuar</CardDescription>
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-grifo-gold to-grifo-gold/80 bg-clip-text text-transparent">
+            Bem-vindo ao Grifo CRM
+          </CardTitle>
+          <CardDescription className="text-base text-muted-foreground">
+            Entre com sua conta para continuar
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleEmailLogin} className="space-y-4">
+        <CardContent className="pb-8">
+          <form onSubmit={handleEmailLogin} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
+              <Label htmlFor="email" className="text-sm font-medium">E-mail</Label>
               <Input
                 id="email"
                 type="email"
@@ -45,10 +60,11 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="h-11 bg-background/50 border-border/50 focus:border-grifo-gold/50 focus:ring-grifo-gold/20"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password" className="text-sm font-medium">Senha</Label>
               <Input
                 id="password"
                 type="password"
@@ -56,9 +72,14 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="h-11 bg-background/50 border-border/50 focus:border-grifo-gold/50 focus:ring-grifo-gold/20"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full h-11 text-base font-semibold bg-grifo-gold hover:bg-grifo-gold/90 text-white shadow-lg hover:shadow-xl transition-all duration-200" 
+              disabled={loading}
+            >
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
           </form>
