@@ -62,10 +62,10 @@ interface FormularioGBCProps {
 }
 
 const faturamentoLabels: Record<string, string> = {
-  ate_500k: "até 500mil",
-  entre_500k_1m: "entre 500mil e 1milhao",
-  entre_1m_10m: "entre 1milhao e 10milhoes",
-  entre_10m_50m: "entre 10milhoes e 50milhoes",
+  ate_500k: "até R$ 500mil",
+  entre_500k_1m: "entre R$ 500mil e R$ 1milhão",
+  entre_1m_10m: "entre R$ 1milhão e R$ 10milhões",
+  entre_10m_50m: "entre R$ 10milhões e R$ 50milhões",
 };
 
 const conheceDanielLabels: Record<string, string> = {
