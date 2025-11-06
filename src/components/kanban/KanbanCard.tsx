@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSortable } from "@dnd-kit/sortable";
+import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -67,19 +67,18 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
     listeners,
     setNodeRef,
     transform,
-    transition,
     isDragging,
-  } = useSortable({ 
+  } = useDraggable({ 
     id: lead.id,
     data: { lead, status },
     disabled,
   });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.7 : 1,
-    cursor: disabled ? 'not-allowed' : 'grab',
+    transform: CSS.Translate.toString(transform),
+    cursor: disabled ? 'not-allowed' : isDragging ? 'grabbing' : 'grab',
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 'auto',
   };
 
   const createdAgo = formatDistanceToNow(new Date(lead.created_at), {
@@ -94,11 +93,11 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
 
   return (
     <>
-      <div ref={setNodeRef} style={style} {...attributes}>
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
         <Card 
-          className={`group relative transition-all duration-200 hover:shadow-lg ${
-            isDragging ? 'shadow-2xl ring-2 ring-primary rotate-2 scale-105' : 'hover:shadow-md'
-          } ${disabled ? 'opacity-60 cursor-not-allowed' : 'hover:-translate-y-1 active:cursor-grabbing'}`}
+          className={`group relative transition-shadow hover:shadow-md ${
+            disabled ? 'opacity-60 cursor-not-allowed' : ''
+          }`}
         >
           {/* Botão de abrir modal - absolutamente posicionado */}
           <Button
@@ -110,7 +109,7 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
             <Plus className="h-4 w-4" />
           </Button>
 
-          <CardContent className="p-3 pr-8" {...listeners}>
+          <CardContent className="p-3 pr-8">
           {/* Título */}
           <h4 className="font-semibold mb-2 text-xs line-clamp-1">
             {lead.nome}

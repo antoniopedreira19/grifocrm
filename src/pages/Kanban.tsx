@@ -203,12 +203,9 @@ export default function Kanban() {
 
     const lead = active.data.current?.lead as KanbanLead;
     const fromStatus = active.data.current?.status as Status;
-    
-    // Obter o status de destino
-    // Se arrastar sobre a coluna, over.id é o status
-    // Se arrastar sobre um card, over.data.current.status é o status
-    let toStatus: Status;
-    
+    const toStatus = over.id as Status;
+
+    // Validar se é um status válido
     const validStatuses: Status[] = [
       "primeiro_contato",
       "proximo_contato",
@@ -217,19 +214,7 @@ export default function Kanban() {
       "perdido",
     ];
     
-    // Primeiro verifica se over.id é um status válido (arrastou sobre a coluna)
-    if (validStatuses.includes(over.id as Status)) {
-      toStatus = over.id as Status;
-    } 
-    // Senão, pega o status do card sobre o qual foi arrastado
-    else if (over.data.current?.status && validStatuses.includes(over.data.current.status)) {
-      toStatus = over.data.current.status as Status;
-    } 
-    // Se não conseguir determinar o status, ignora
-    else {
-      return;
-    }
-
+    if (!validStatuses.includes(toStatus)) return;
     if (fromStatus === toStatus) return;
 
     // Verificar permissões
