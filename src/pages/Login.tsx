@@ -37,7 +37,7 @@ export default function Login() {
     >
       <div className="absolute inset-0 bg-black/40" />
       
-      <Card className="w-full max-w-md relative z-10 shadow-2xl border-0 bg-white">
+      <Card className="w-full max-w-md relative z-10 shadow-2xl border-0 bg-white/85 backdrop-blur-sm">
         <CardHeader className="text-center space-y-4 pb-8">
           <div className="flex justify-center">
             <img 
@@ -84,7 +84,7 @@ export default function Login() {
             </div>
             <Button 
               type="submit" 
-              className="w-full h-11 text-base font-semibold bg-grifo-gold hover:bg-grifo-gold/90 text-white shadow-lg hover:shadow-xl transition-all duration-200" 
+              className="w-full h-11 text-base font-semibold bg-grifo-gold hover:bg-grifo-gold/90 text-black shadow-lg hover:shadow-xl transition-all duration-200" 
               disabled={loading}
             >
               {loading ? 'Entrando...' : 'Entrar'}
