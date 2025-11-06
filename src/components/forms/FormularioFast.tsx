@@ -163,15 +163,24 @@ export function FormularioFast({ utmParams }: FormularioFastProps) {
         } as any,
       );
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro RPC:", error);
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error("Nenhum ID retornado do servidor");
+      }
 
       form.reset();
       navigate(`/obrigado?id=${data}`);
-    } catch (error) {
-      console.error("Erro ao enviar formulário:", error);
+    } catch (error: any) {
+      console.error("Erro completo ao enviar formulário:", error);
+      const errorMessage = error?.message || error?.hint || "Não conseguimos enviar agora; tente novamente";
+      
       toast({
-        title: "Erro",
-        description: "Não conseguimos enviar agora; tente novamente",
+        title: "Erro ao enviar",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
