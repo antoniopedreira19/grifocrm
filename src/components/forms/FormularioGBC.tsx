@@ -41,6 +41,7 @@ const formSchema = z.object({
   preferencia_horario: z.string().optional(),
   cidade: z.string().optional(),
   uf: z.string().optional(),
+  interesse_mentoria_fast: z.boolean().optional(),
   lgpd: z.boolean().refine((val) => val === true, {
     message: "Você deve aceitar os termos",
   }),
@@ -102,6 +103,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
 
   const interesseValue = form.watch("interesse");
   const showFaixaInvestimento = interesseValue === "nao_mas_posso" || interesseValue === "nao_nao_consigo";
+  const showMentoriaFast = interesseValue === "nao_nao_consigo";
 
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
@@ -166,6 +168,14 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
       );
 
       if (error) throw error;
+
+      // Se o lead demonstrou interesse na Mentoria Fast, atualiza o registro
+      if (values.interesse_mentoria_fast && data) {
+        await supabase
+          .from("leads")
+          .update({ interesse_mentoria_fast: true })
+          .eq("id", data);
+      }
 
       form.reset();
       navigate(`/obrigado?id=${data}`);
@@ -583,9 +593,78 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                   )}
                 />
               )}
+
+              {/* Mentoria Fast - Exibido quando seleciona "Não, não consigo" */}
+              {showMentoriaFast && (
+                <div className="mt-8 p-6 border-2 border-primary/20 rounded-lg bg-primary/5 space-y-4">
+                  <h3 className="text-lg font-semibold text-foreground">Mentoria Fast – Resultados rápidos com o método Grifo</h3>
+                  
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <p>
+                      Sabemos que nem todo empresário está no momento de investir no GBC, mas isso não significa que você precise esperar para profissionalizar sua gestão.
+                    </p>
+                    <p>
+                      A <strong className="text-foreground">Mentoria Fast</strong> foi criada exatamente para quem quer dar o próximo passo agora, aplicando os mesmos modelos e ferramentas que sustentam a performance da Grifo em mais de 250 obras — de forma enxuta, prática e com investimento reduzido.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">✅ Modelos de Gestão Comprovados</h4>
+                      <p className="text-muted-foreground">
+                        Acesso imediato às ferramentas e metodologias validadas pela Grifo: <strong>BI</strong> (inteligência de dados para tomada de decisão), <strong>Sienge</strong> (gestão integrada de obras e financeiro), <strong>Prevision</strong> (planejamento e simulação de cenários), <strong>PCP, PMP, PPC</strong> (gestão de curto, médio e longo prazo).
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">✅ Grupo Exclusivo de Mentoria no WhatsApp</h4>
+                      <p className="text-muted-foreground">
+                        Um ambiente de troca com empresários e profissionais selecionados, com suporte direto da equipe Grifo e insights práticos de quem enfrenta os mesmos desafios que você.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">✅ Aulas Práticas e Estudos de Caso Reais</h4>
+                      <p className="text-muted-foreground">
+                        Quatro aulas gravadas mostrando casos reais de empresas e obras que aplicaram o método, com passo a passo, erros, soluções e resultados.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Uma mentoria curta, direta e de alto impacto — feita para quem quer aplicar gestão de verdade e ver resultado rápido, sem precisar esperar o momento ideal.
+                    </p>
+                    
+                    <p className="text-base font-semibold text-foreground mb-4">
+                      💰 Investimento da Mentoria Fast: <span className="text-primary">12x R$ 1.666,67</span> ou <span className="text-primary">R$ 16.000 à vista</span>
+                    </p>
+
+                    <FormField
+                      control={form.control}
+                      name="interesse_mentoria_fast"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-background">
+                          <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="font-medium text-base">
+                              Tenho interesse na Mentoria Fast
+                            </FormLabel>
+                            <FormDescription className="text-sm">
+                              Marque esta opção se deseja receber mais informações sobre a Mentoria Fast
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Seção 6: LGPD */}
+            {/* Seção 7: LGPD */}
             <div className="space-y-6 pt-4">
               <FormField
                 control={form.control}
