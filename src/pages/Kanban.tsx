@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, closestCorners } from "@dnd-kit/core";
+import { 
+  DndContext, 
+  DragEndEvent, 
+  DragOverlay, 
+  DragStartEvent, 
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCenter
+} from "@dnd-kit/core";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { KanbanColumn } from "@/components/kanban/KanbanColumn";
 import { KanbanCard } from "@/components/kanban/KanbanCard";
@@ -62,6 +71,15 @@ export default function Kanban() {
   const [proximoContatoOpen, setProximoContatoOpen] = useState(false);
   const [ganhoOpen, setGanhoOpen] = useState(false);
   const [perdidoOpen, setPerdidoOpen] = useState(false);
+
+  // Configurar sensores para drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Pequeno movimento necessário para iniciar o drag
+      },
+    })
+  );
 
   // Fetch leads da tabela principal
   const { data: leads = [], isLoading } = useQuery({
@@ -451,7 +469,8 @@ export default function Kanban() {
         <div className="flex-1 overflow-x-auto overflow-y-hidden px-4 md:px-8 pb-8">
           <div className="h-full">
             <DndContext
-              collisionDetection={closestCorners}
+              sensors={sensors}
+              collisionDetection={closestCenter}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
