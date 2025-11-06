@@ -181,12 +181,13 @@ export type Database = {
           faixa_investimento: string | null
           fast_peso_geral: number | null
           faturamento_2024: Database["public"]["Enums"]["faturamento_t"] | null
-          faturamento_2025: Database["public"]["Enums"]["faturamento_t"]
+          faturamento_2025: Database["public"]["Enums"]["faturamento_t"] | null
           form_answers: Json | null
           id: string
           interesse: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast: boolean | null
           modelo_negocio: string | null
+          nao_interesse_motivo: string | null
           nome: string
           num_funcionarios: number | null
           observacao: string | null
@@ -222,12 +223,13 @@ export type Database = {
           faixa_investimento?: string | null
           fast_peso_geral?: number | null
           faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
-          faturamento_2025: Database["public"]["Enums"]["faturamento_t"]
+          faturamento_2025?: Database["public"]["Enums"]["faturamento_t"] | null
           form_answers?: Json | null
           id?: string
           interesse?: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast?: boolean | null
           modelo_negocio?: string | null
+          nao_interesse_motivo?: string | null
           nome: string
           num_funcionarios?: number | null
           observacao?: string | null
@@ -263,12 +265,13 @@ export type Database = {
           faixa_investimento?: string | null
           fast_peso_geral?: number | null
           faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
-          faturamento_2025?: Database["public"]["Enums"]["faturamento_t"]
+          faturamento_2025?: Database["public"]["Enums"]["faturamento_t"] | null
           form_answers?: Json | null
           id?: string
           interesse?: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast?: boolean | null
           modelo_negocio?: string | null
+          nao_interesse_motivo?: string | null
           nome?: string
           num_funcionarios?: number | null
           observacao?: string | null
@@ -303,6 +306,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stg_import_fast: {
+        Row: {
+          canal_preferido: string | null
+          cidade: string | null
+          email: string | null
+          faixa_investimento: string | null
+          faturamento_2024_raw: string | null
+          faturamento_2025_raw: string | null
+          interesse_raw: string | null
+          investimento_raw: string | null
+          melhor_horario: string | null
+          modelo_negocio: string | null
+          nao_interesse_motivo: string | null
+          nome: string | null
+          num_funcionarios_raw: string | null
+          origem: string | null
+          prioridade_modulo: string | null
+          rede_social: string | null
+          regiao: string | null
+          responsavel: string | null
+          tag_form: string | null
+          telefone: string | null
+          uf: string | null
+        }
+        Insert: {
+          canal_preferido?: string | null
+          cidade?: string | null
+          email?: string | null
+          faixa_investimento?: string | null
+          faturamento_2024_raw?: string | null
+          faturamento_2025_raw?: string | null
+          interesse_raw?: string | null
+          investimento_raw?: string | null
+          melhor_horario?: string | null
+          modelo_negocio?: string | null
+          nao_interesse_motivo?: string | null
+          nome?: string | null
+          num_funcionarios_raw?: string | null
+          origem?: string | null
+          prioridade_modulo?: string | null
+          rede_social?: string | null
+          regiao?: string | null
+          responsavel?: string | null
+          tag_form?: string | null
+          telefone?: string | null
+          uf?: string | null
+        }
+        Update: {
+          canal_preferido?: string | null
+          cidade?: string | null
+          email?: string | null
+          faixa_investimento?: string | null
+          faturamento_2024_raw?: string | null
+          faturamento_2025_raw?: string | null
+          interesse_raw?: string | null
+          investimento_raw?: string | null
+          melhor_horario?: string | null
+          modelo_negocio?: string | null
+          nao_interesse_motivo?: string | null
+          nome?: string | null
+          num_funcionarios_raw?: string | null
+          origem?: string | null
+          prioridade_modulo?: string | null
+          rede_social?: string | null
+          regiao?: string | null
+          responsavel?: string | null
+          tag_form?: string | null
+          telefone?: string | null
+          uf?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -592,6 +667,10 @@ export type Database = {
           user_nome: string
           user_role: Database["public"]["Enums"]["user_role_t"]
         }[]
+      }
+      safe_origem: {
+        Args: { label: string }
+        Returns: Database["public"]["Enums"]["origem_t"]
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
