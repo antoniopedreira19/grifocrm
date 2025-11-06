@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -236,15 +236,29 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
               <DialogTitle className="text-2xl">
                 {isLoading ? <Skeleton className="h-8 w-64" /> : `Detalhes do Lead: ${lead?.nome}`}
               </DialogTitle>
-              {!isLoading && lead && canDelete() && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setDeleteDialogOpen(true)}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </Button>
+              {!isLoading && lead && (
+                <div className="flex items-center gap-2">
+                  {canEditLead() && !isEditing && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsEditing(true)}
+                      className="hover:bg-primary/10"
+                    >
+                      <Pencil className="h-5 w-5" />
+                    </Button>
+                  )}
+                  {canDelete() && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setDeleteDialogOpen(true)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
           </DialogHeader>
@@ -267,8 +281,7 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
                 <LeadInfoTab 
                   lead={lead} 
                   isEditing={isEditing}
-                  canEdit={canEditLead()}
-                  onToggleEdit={() => setIsEditing(!isEditing)}
+                  onCancel={() => setIsEditing(false)}
                   onSave={handleSaveLead}
                   isSaving={updateLeadMutation.isPending}
                 />

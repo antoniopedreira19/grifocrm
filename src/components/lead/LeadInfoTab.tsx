@@ -13,8 +13,7 @@ import { Mail, Phone, Hash, User, Building2, DollarSign, MapPin, Calendar, Targe
 interface LeadInfoTabProps {
   lead: any;
   isEditing?: boolean;
-  canEdit?: boolean;
-  onToggleEdit?: () => void;
+  onCancel?: () => void;
   onSave?: (data: any) => void;
   isSaving?: boolean;
 }
@@ -40,7 +39,7 @@ const faturamentoLabels: Record<string, string> = {
   entre_10m_50m: "R$ 10M - R$ 50M",
 };
 
-export function LeadInfoTab({ lead, isEditing = false, canEdit = false, onToggleEdit, onSave, isSaving = false }: LeadInfoTabProps) {
+export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSaving = false }: LeadInfoTabProps) {
   const formAnswers = lead.form_answers || {};
   const isGBC = lead.produto === "gbc";
   const [editedData, setEditedData] = useState({
@@ -63,7 +62,7 @@ export function LeadInfoTab({ lead, isEditing = false, canEdit = false, onToggle
     }
   };
 
-  const handleCancel = () => {
+  const handleCancelEdit = () => {
     setEditedData({
       nome: lead.nome,
       email: lead.email,
@@ -77,33 +76,24 @@ export function LeadInfoTab({ lead, isEditing = false, canEdit = false, onToggle
       conhece_daniel: lead.conhece_daniel,
       faixa_investimento: lead.faixa_investimento || "",
     });
-    if (onToggleEdit) {
-      onToggleEdit();
+    if (onCancel) {
+      onCancel();
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Botões de ação */}
-      {canEdit && (
+      {/* Botões de ação - mostrados apenas no modo edição */}
+      {isEditing && (
         <div className="flex justify-end gap-2">
-          {!isEditing ? (
-            <Button onClick={onToggleEdit} variant="outline" size="sm">
-              <Pencil className="w-4 h-4 mr-2" />
-              Editar
-            </Button>
-          ) : (
-            <>
-              <Button onClick={handleCancel} variant="outline" size="sm" disabled={isSaving}>
-                <X className="w-4 h-4 mr-2" />
-                Cancelar
-              </Button>
-              <Button onClick={handleSave} size="sm" disabled={isSaving}>
-                <Save className="w-4 h-4 mr-2" />
-                {isSaving ? "Salvando..." : "Salvar"}
-              </Button>
-            </>
-          )}
+          <Button onClick={handleCancelEdit} variant="outline" size="sm" disabled={isSaving}>
+            <X className="w-4 h-4 mr-2" />
+            Cancelar
+          </Button>
+          <Button onClick={handleSave} size="sm" disabled={isSaving}>
+            <Save className="w-4 h-4 mr-2" />
+            {isSaving ? "Salvando..." : "Salvar"}
+          </Button>
         </div>
       )}
 
