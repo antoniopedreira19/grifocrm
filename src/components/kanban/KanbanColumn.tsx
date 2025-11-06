@@ -35,21 +35,32 @@ export function KanbanColumn({ status, title, leads, canDrag, columnWidth }: Kan
 
   return (
     <div ref={setNodeRef} className={`flex-shrink-0 ${columnWidth}`}>
-      <Card className={`h-full flex flex-col ${isOver ? 'ring-2 ring-primary' : ''}`}>
+      <Card className={`h-full flex flex-col transition-all duration-200 ${
+        isOver ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : ''
+      }`}>
         <CardHeader className="pb-3 flex-shrink-0">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-semibold">
               {title}
             </CardTitle>
-            <Badge variant="secondary" className="rounded-full">
+            <Badge 
+              variant="secondary" 
+              className={`rounded-full transition-all ${
+                isOver ? 'bg-primary text-primary-foreground' : ''
+              }`}
+            >
               {leads.length}
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="flex-1 overflow-y-auto min-h-0 space-y-3">
+        <CardContent className={`flex-1 overflow-y-auto min-h-0 space-y-3 transition-colors ${
+          isOver ? 'bg-primary/5' : ''
+        }`}>
           <SortableContext items={leadIds} strategy={verticalListSortingStrategy}>
             {leads.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className={`flex flex-col items-center justify-center py-12 text-center transition-all ${
+                isOver ? 'scale-105' : ''
+              }`}>
                 <div className="text-4xl mb-3 opacity-20">📭</div>
                 <p className="text-sm text-muted-foreground font-medium">
                   Nenhum lead nesta etapa

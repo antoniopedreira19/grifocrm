@@ -78,7 +78,8 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.7 : 1,
+    cursor: disabled ? 'not-allowed' : 'grab',
   };
 
   const createdAgo = formatDistanceToNow(new Date(lead.created_at), {
@@ -95,7 +96,9 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
     <>
       <div ref={setNodeRef} style={style} {...attributes}>
         <Card 
-          className={`group relative transition-shadow hover:shadow-md ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+          className={`group relative transition-all duration-200 hover:shadow-lg ${
+            isDragging ? 'shadow-2xl ring-2 ring-primary rotate-2 scale-105' : 'hover:shadow-md'
+          } ${disabled ? 'opacity-60 cursor-not-allowed' : 'hover:-translate-y-1 active:cursor-grabbing'}`}
         >
           {/* Botão de abrir modal - absolutamente posicionado */}
           <Button
