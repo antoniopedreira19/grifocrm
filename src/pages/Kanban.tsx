@@ -185,9 +185,11 @@ export default function Kanban() {
 
     const lead = active.data.current?.lead as KanbanLead;
     const fromStatus = active.data.current?.status as Status;
-    const toStatus = over.id as Status;
+    
+    // Obter o status de destino: primeiro tenta do data da coluna, senão usa o over.id
+    const toStatus = (over.data.current?.status || over.id) as Status;
 
-    // Validar se toStatus é um status válido (e não um ID de lead)
+    // Validar se toStatus é um status válido
     const validStatuses: Status[] = [
       "primeiro_contato",
       "proximo_contato",
@@ -197,7 +199,6 @@ export default function Kanban() {
     ];
     
     if (!validStatuses.includes(toStatus)) {
-      console.warn("Invalid status detected, ignoring drag event");
       return;
     }
 
