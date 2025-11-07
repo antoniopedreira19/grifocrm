@@ -38,10 +38,11 @@ export default function Leads() {
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [ordenacao, setOrdenacao] = useState<string>("data_criacao");
   const [scoreRange, setScoreRange] = useState<[number, number] | null>(null);
+  const [produtoFilter, setProdutoFilter] = useState<string>("todos");
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const { data: leads, isLoading, error } = useQuery({
-    queryKey: ['leads', ordenacao, scoreRange],
+    queryKey: ['leads', ordenacao, scoreRange, produtoFilter],
     queryFn: async () => {
       let query = supabase
         .from('leads')
@@ -50,6 +51,11 @@ export default function Leads() {
       // Aplicar filtro de score apenas se definido
       if (scoreRange) {
         query = query.gte("score_total", scoreRange[0]).lte("score_total", scoreRange[1]);
+      }
+
+      // Aplicar filtro de produto
+      if (produtoFilter !== "todos") {
+        query = query.eq("produto", produtoFilter as "gbc" | "mentoria_fast");
       }
 
       // Ordenação
@@ -150,6 +156,20 @@ export default function Leads() {
             <PopoverContent className="w-80">
               <div className="space-y-4">
                 <div>
+                  <h4 className="font-medium text-sm mb-3">Filtrar por Produto</h4>
+                  <Select value={produtoFilter} onValueChange={setProdutoFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o produto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos os produtos</SelectItem>
+                      <SelectItem value="gbc">GBC</SelectItem>
+                      <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
                   <h4 className="font-medium text-sm mb-3">Filtrar por Score</h4>
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-medium w-8">{scoreRange?.[0] ?? 0}</span>
@@ -167,15 +187,19 @@ export default function Leads() {
                   <p className="text-xs text-muted-foreground mt-2">
                     {scoreRange ? `Score entre ${scoreRange[0]} e ${scoreRange[1]}` : 'Todos os scores'}
                   </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setScoreRange(null)}
-                    className="w-full mt-2"
-                  >
-                    Limpar filtro
-                  </Button>
                 </div>
+
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    setScoreRange(null);
+                    setProdutoFilter("todos");
+                  }}
+                  className="w-full"
+                >
+                  Limpar todos os filtros
+                </Button>
               </div>
             </PopoverContent>
           </Popover>
