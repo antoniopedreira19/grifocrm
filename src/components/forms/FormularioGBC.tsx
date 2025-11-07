@@ -612,7 +612,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                     </p>
                     
                     <p className="text-base font-semibold text-foreground mb-4">
-                      💰 Investimento da Mentoria Fast: <span className="text-primary">12x R$ 1.666,67</span> ou <span className="text-primary">R$ 16.000 à vista</span>
+                      💰 Investimento da Mentoria Fast: <span className="text-primary">12x R$ 1.750</span> ou <span className="text-primary">R$ 18.000 à vista</span>
                     </p>
 
                     <FormField

@@ -111,12 +111,12 @@ export function FormularioFast({ utmParams }: FormularioFastProps) {
         maior_dor: values.maior_dor,
         investimento: {
           pergunta_texto:
-            "O investimento é de 12× R$ 1.666,67 ou R$ 16.000 à vista. Você tem capacidade de investir agora?",
+            "O investimento é de 12× R$ 1.750 ou R$ 18.000 à vista. Você tem capacidade de investir agora?",
           resposta_raw: interesseLabels[values.interesse],
           resposta_enum: values.interesse,
           parcelas_qtd: 12,
-          valor_parcela: 1666.67,
-          valor_pagamento_unico: 16000,
+          valor_parcela: 1750,
+          valor_pagamento_unico: 18000,
         },
         preferencia_contato: {
           canal: values.preferencia_canal,
@@ -494,7 +494,7 @@ export function FormularioFast({ utmParams }: FormularioFastProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      O investimento é de 12× R$ 1.666,67 ou R$ 16.000 à vista. Você tem capacidade de investir agora? *
+                      O investimento é de 12× R$ 1.750 ou R$ 18.000 à vista. Você tem capacidade de investir agora? *
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
