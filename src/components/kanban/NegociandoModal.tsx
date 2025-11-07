@@ -23,7 +23,7 @@ export function NegociandoModal({
   currentProduto,
   currentValor
 }: NegociandoModalProps) {
-  const [produto, setProduto] = useState<Produto>("GBC");
+  const [produto, setProduto] = useState<Produto>("gbc");
   const [dealValor, setDealValor] = useState("");
 
   // Atualiza os valores quando o modal abre
@@ -36,7 +36,7 @@ export function NegociandoModal({
         setDealValor(currentValor.toString());
       } else {
         // Define valor padrão baseado no produto
-        const defaultValue = currentProduto === "Mentoria Fast" ? 18000 : 120000;
+        const defaultValue = currentProduto === "mentoria_fast" ? 18000 : 120000;
         setDealValor(defaultValue.toString());
       }
     }
@@ -46,7 +46,7 @@ export function NegociandoModal({
   const handleProdutoChange = (newProduto: Produto) => {
     setProduto(newProduto);
     // Atualiza valor padrão baseado no produto
-    const defaultValue = newProduto === "Mentoria Fast" ? 18000 : 120000;
+    const defaultValue = newProduto === "mentoria_fast" ? 18000 : 120000;
     setDealValor(defaultValue.toString());
   };
 
@@ -59,7 +59,7 @@ export function NegociandoModal({
       deal_valor: valor,
     });
     
-    setProduto("GBC");
+    setProduto("gbc");
     setDealValor("");
   };
 
@@ -82,8 +82,8 @@ export function NegociandoModal({
                 <SelectValue placeholder="Selecione o produto" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="GBC">GBC</SelectItem>
-                <SelectItem value="Mentoria Fast">Mentoria Fast</SelectItem>
+                <SelectItem value="gbc">GBC</SelectItem>
+                <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
               </SelectContent>
             </Select>
           </div>

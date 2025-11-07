@@ -10,8 +10,8 @@ import type {
 } from "@/types/lead";
 
 export const produtoLabels: Record<Produto, string> = {
-  GBC: "GBC",
-  "Mentoria Fast": "Mentoria Fast",
+  gbc: "GBC",
+  mentoria_fast: "Mentoria Fast",
 };
 
 export const faturamentoLabels: Record<FaturamentoFaixa, string> = {

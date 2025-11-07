@@ -20,7 +20,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
     nome: "",
     email: "",
     telefone: "",
-    produto: "fast" as "fast" | "gbc",
+    produto: "mentoria_fast" as "mentoria_fast" | "gbc",
     rede_social: "",
     regiao: "",
     faturamento_2025: "",
@@ -41,7 +41,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
       };
 
       // Calcular deal_valor padrão baseado no produto e interesse
-      if (formData.produto === "fast") {
+      if (formData.produto === "mentoria_fast") {
         leadData.deal_valor = 18000;
       } else if (formData.produto === "gbc") {
         // Se marcou interesse na mentoria fast, valor é 18k, senão 120k
@@ -84,7 +84,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
       nome: "",
       email: "",
       telefone: "",
-      produto: "fast",
+      produto: "mentoria_fast",
       rede_social: "",
       regiao: "",
       faturamento_2025: "",
@@ -164,13 +164,13 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
                 <Label htmlFor="produto">Produto *</Label>
                 <Select
                   value={formData.produto}
-                  onValueChange={(value: "fast" | "gbc") => setFormData({ ...formData, produto: value })}
+                  onValueChange={(value: "mentoria_fast" | "gbc") => setFormData({ ...formData, produto: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fast">Mentoria Fast</SelectItem>
+                    <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
                     <SelectItem value="gbc">GBC</SelectItem>
                   </SelectContent>
                 </Select>
