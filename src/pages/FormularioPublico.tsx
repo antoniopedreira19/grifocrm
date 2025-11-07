@@ -34,6 +34,20 @@ export default function FormularioPublico() {
     setUtmParams(params);
   }, [searchParams]);
 
+  useEffect(() => {
+    // Atualiza o título do navegador baseado no tipo de formulário
+    if (tipo === "gbc") {
+      document.title = "Formulário GBC";
+    } else if (tipo === "fast") {
+      document.title = "Formulário Mentoria Fast";
+    }
+
+    // Restaura o título original quando o componente é desmontado
+    return () => {
+      document.title = "GrifoAcademy CRM";
+    };
+  }, [tipo]);
+
   if (tipo !== "gbc" && tipo !== "fast") {
     return <Navigate to="/" replace />;
   }
