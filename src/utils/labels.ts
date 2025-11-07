@@ -19,6 +19,7 @@ export const faturamentoLabels: Record<FaturamentoFaixa, string> = {
   entre_500mil_e_1milhao: "Entre R$ 500 mil e R$ 1 milhão",
   entre_1milhao_e_10milhoes: "Entre R$ 1 milhão e R$ 10 milhões",
   entre_10milhoes_e_50milhoes: "Entre R$ 10 milhões e R$ 50 milhões",
+  acima_50milhoes: "Acima de R$ 50 milhões",
 };
 
 export const conheceDanielLabels: Record<ConheceDaniel, string> = {

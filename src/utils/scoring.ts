@@ -16,6 +16,7 @@ export function calculateScoreFaturamento(faturamento_2025: FaturamentoFaixa): n
     entre_500mil_e_1milhao: 2,
     entre_1milhao_e_10milhoes: 3,
     entre_10milhoes_e_50milhoes: 4,
+    acima_50milhoes: 7,
   };
   return scores[faturamento_2025] || 0;
 }

@@ -4,7 +4,8 @@ export type FaturamentoFaixa =
   | "ate_500mil" 
   | "entre_500mil_e_1milhao" 
   | "entre_1milhao_e_10milhoes" 
-  | "entre_10milhoes_e_50milhoes";
+  | "entre_10milhoes_e_50milhoes"
+  | "acima_50milhoes";
 
 export type ConheceDaniel = "nao_conhece" | "menos_3_meses" | "3_12_meses" | "mais_1_ano";
 

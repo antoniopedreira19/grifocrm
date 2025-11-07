@@ -19,10 +19,10 @@ const formSchema = z.object({
   email: z.string().email("E-mail inválido"),
   telefone: z.string().min(14, "Telefone inválido"),
   rede_social: z.string().optional(),
-  faturamento_2025: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m"], {
+  faturamento_2025: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m", "acima_50m"], {
     required_error: "Faturamento 2025 é obrigatório",
   }),
-  faturamento_2024: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m"]).optional(),
+  faturamento_2024: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m", "acima_50m"]).optional(),
   num_funcionarios: z.enum(["ate_10", "11_25", "26_50", "51_100", "mais_100"]).optional(),
   regiao: z.string().optional(),
   conhece_daniel: z.enum(["nao_conhece", "lt_3m", "m3_12m", "gt_1a"], {
@@ -66,6 +66,7 @@ const faturamentoLabels: Record<string, string> = {
   entre_500k_1m: "entre R$ 500mil e R$ 1milhão",
   entre_1m_10m: "entre R$ 1milhão e R$ 10milhões",
   entre_10m_50m: "entre R$ 10milhões e R$ 50milhões",
+  acima_50m: "acima de R$ 50milhões",
 };
 
 const conheceDanielLabels: Record<string, string> = {
