@@ -30,6 +30,7 @@ interface KanbanCardProps {
   lead: KanbanLead;
   status: Status;
   disabled: boolean;
+  onEditProximoContato?: (leadId: string, leadNome: string, currentDate?: string) => void;
 }
 
 const interesseColors: Record<string, string> = {
@@ -61,7 +62,7 @@ const getScoreBadgeColor = (score: number | null | undefined): string => {
   return "bg-red-600";
 };
 
-export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
+export function KanbanCard({ lead, status, disabled, onEditProximoContato }: KanbanCardProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   
   const {
@@ -113,6 +114,13 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
     setDetailsOpen(true);
   };
 
+  const handleEditProximoContato = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEditProximoContato) {
+      onEditProximoContato(lead.id, lead.nome, lead.proximo_contato);
+    }
+  };
+
   return (
     <>
       <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
@@ -162,14 +170,20 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
 
           {/* Próximo Contato */}
           {proximoContatoInfo && (
-            <div className={cn(
-              "flex items-center gap-1 text-[10px] px-2 py-1 rounded mt-2",
-              proximoContatoInfo.overdue && "bg-red-500/10 text-red-700 font-medium",
-              proximoContatoInfo.urgent && !proximoContatoInfo.overdue && "bg-orange-500/10 text-orange-700 font-medium",
-              !proximoContatoInfo.urgent && !proximoContatoInfo.overdue && "bg-blue-500/10 text-blue-700"
-            )}>
-              <Clock className="h-3 w-3" />
-              <span>{proximoContatoInfo.text}</span>
+            <div 
+              className={cn(
+                "flex items-center justify-between gap-1 text-[10px] px-2 py-1 rounded mt-2 cursor-pointer hover:opacity-80 transition-opacity",
+                proximoContatoInfo.overdue && "bg-red-500/10 text-red-700 font-medium",
+                proximoContatoInfo.urgent && !proximoContatoInfo.overdue && "bg-orange-500/10 text-orange-700 font-medium",
+                !proximoContatoInfo.urgent && !proximoContatoInfo.overdue && "bg-blue-500/10 text-blue-700"
+              )}
+              onClick={handleEditProximoContato}
+              title="Clique para editar data/hora"
+            >
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span>{proximoContatoInfo.text}</span>
+              </div>
             </div>
           )}
 

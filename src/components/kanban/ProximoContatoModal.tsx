@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,11 +15,25 @@ interface ProximoContatoModalProps {
   onClose: () => void;
   onConfirm: (data: { proximo_contato: string }) => void;
   leadNome: string;
+  initialDate?: string;
 }
 
-export function ProximoContatoModal({ open, onClose, onConfirm, leadNome }: ProximoContatoModalProps) {
+export function ProximoContatoModal({ open, onClose, onConfirm, leadNome, initialDate }: ProximoContatoModalProps) {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [hora, setHora] = useState("09:00");
+
+  // Inicializar com data existente quando o modal abre
+  useEffect(() => {
+    if (open && initialDate) {
+      const date = new Date(initialDate);
+      setSelectedDate(date);
+      setHora(format(date, "HH:mm"));
+    } else if (open && !initialDate) {
+      // Resetar para valores padrão se não houver data inicial
+      setSelectedDate(undefined);
+      setHora("09:00");
+    }
+  }, [open, initialDate]);
 
   const handleConfirm = () => {
     if (!selectedDate) return;
@@ -34,8 +48,15 @@ export function ProximoContatoModal({ open, onClose, onConfirm, leadNome }: Prox
     setHora("09:00");
   };
 
+  const handleClose = () => {
+    // Resetar estado ao fechar
+    setSelectedDate(undefined);
+    setHora("09:00");
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Agendar Próximo Contato</DialogTitle>
@@ -87,7 +108,7 @@ export function ProximoContatoModal({ open, onClose, onConfirm, leadNome }: Prox
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={handleClose}>
             Cancelar
           </Button>
           <Button onClick={handleConfirm} disabled={!selectedDate}>

@@ -43,6 +43,7 @@ interface KanbanLead {
   score_cor?: string | null;
   deal_valor?: number | null;
   interesse_mentoria_fast?: boolean | null;
+  proximo_contato?: string;
 }
 
 interface PendingMove {
@@ -71,6 +72,13 @@ export default function Kanban() {
   const [activeLead, setActiveLead] = useState<KanbanLead | null>(null);
   const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
   
+  // Estado separado para edição de próximo contato (não é movimento de status)
+  const [editingProximoContato, setEditingProximoContato] = useState<{
+    leadId: string;
+    leadNome: string;
+    currentDate?: string;
+  } | null>(null);
+  
   const [proximoContatoOpen, setProximoContatoOpen] = useState(false);
   const [ganhoOpen, setGanhoOpen] = useState(false);
   const [perdidoOpen, setPerdidoOpen] = useState(false);
@@ -90,7 +98,7 @@ export default function Kanban() {
     queryFn: async () => {
       let query = supabase
         .from("leads")
-        .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast")
+        .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato")
         .in("status", ["primeiro_contato", "proximo_contato", "negociando", "ganho", "perdido"]);
 
       // Filtro de produto
@@ -268,6 +276,20 @@ export default function Kanban() {
   };
 
   const handleProximoContatoConfirm = (data: { proximo_contato: string }) => {
+    // Se está editando (não é movimento de status)
+    if (editingProximoContato) {
+      updateLeadMutation.mutate({
+        leadId: editingProximoContato.leadId,
+        updates: {
+          proximo_contato: data.proximo_contato,
+        },
+      });
+      setEditingProximoContato(null);
+      setProximoContatoOpen(false);
+      return;
+    }
+
+    // Se é movimento de status
     if (!pendingMove) return;
 
     updateLeadMutation.mutate({
@@ -280,6 +302,11 @@ export default function Kanban() {
 
     setProximoContatoOpen(false);
     setPendingMove(null);
+  };
+
+  const handleEditProximoContato = (leadId: string, leadNome: string, currentDate?: string) => {
+    setEditingProximoContato({ leadId, leadNome, currentDate });
+    setProximoContatoOpen(true);
   };
 
   const handleGanhoConfirm = async (data: { deal_valor: number; observacao: string }) => {
@@ -482,6 +509,7 @@ export default function Kanban() {
                     leads={getLeadsByStatus(status)}
                     canDrag={canDrag}
                     columnWidth="w-[280px]"
+                    onEditProximoContato={handleEditProximoContato}
                   />
                 ))}
               </div>
@@ -507,9 +535,11 @@ export default function Kanban() {
         onClose={() => {
           setProximoContatoOpen(false);
           setPendingMove(null);
+          setEditingProximoContato(null);
         }}
         onConfirm={handleProximoContatoConfirm}
-        leadNome={pendingMove?.leadNome || ""}
+        leadNome={editingProximoContato?.leadNome || pendingMove?.leadNome || ""}
+        initialDate={editingProximoContato?.currentDate}
       />
 
       <GanhoModal

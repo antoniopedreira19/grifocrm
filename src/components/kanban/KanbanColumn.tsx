@@ -14,6 +14,9 @@ interface KanbanLead {
   created_at: string;
   responsavel?: string;
   ultima_interacao?: string;
+  proximo_contato?: string;
+  score_total?: number | null;
+  score_cor?: string | null;
 }
 
 interface KanbanColumnProps {
@@ -22,9 +25,10 @@ interface KanbanColumnProps {
   leads: KanbanLead[];
   canDrag: (lead: KanbanLead) => boolean;
   columnWidth: string;
+  onEditProximoContato?: (leadId: string, leadNome: string, currentDate?: string) => void;
 }
 
-export function KanbanColumn({ status, title, leads, canDrag, columnWidth }: KanbanColumnProps) {
+export function KanbanColumn({ status, title, leads, canDrag, columnWidth, onEditProximoContato }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
     data: { status },
@@ -63,6 +67,7 @@ export function KanbanColumn({ status, title, leads, canDrag, columnWidth }: Kan
                 lead={lead}
                 status={status}
                 disabled={!canDrag(lead)}
+                onEditProximoContato={onEditProximoContato}
               />
             ))
           )}
