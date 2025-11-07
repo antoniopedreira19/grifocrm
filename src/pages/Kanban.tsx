@@ -112,7 +112,7 @@ export default function Kanban() {
       let query = supabase
         .from("leads")
         .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, valor_parcelado, valor_entrada, proximo_followup")
-        .in("status", ["primeiro_contato", "proximo_contato", "negociando", "proposta", "followup", "ganho", "perdido"]);
+        .in("status", ["primeiro_contato", "proximo_contato", "negociando", "proposta", "followup", "ganho", "perdido"] as any);
 
       // Filtro de produto
       if (produtoFilter !== "todos") {
@@ -131,10 +131,8 @@ export default function Kanban() {
           .lte("score_total", scoreRange[1]);
       }
 
-      // Ordenação
-      if (ordenacao === "prioridade") {
-        query = query.order("score_total", { ascending: false, nullsFirst: false });
-      } else if (ordenacao === "score") {
+      // Ordenação padrão por prioridade
+      if (ordenacao === "prioridade" || ordenacao === "score") {
         query = query.order("score_total", { ascending: false, nullsFirst: false });
       } else if (ordenacao === "chegada") {
         query = query.order("created_at", { ascending: true });
@@ -143,6 +141,9 @@ export default function Kanban() {
       } else if (ordenacao === "data_criacao") {
         query = query.order("created_at", { ascending: false });
       }
+
+      // Limite de 100 leads por query para performance
+      query = query.limit(100);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -426,6 +427,7 @@ export default function Kanban() {
   };
 
   const totalLeads = leads.length;
+  const isLimitReached = totalLeads >= 100;
 
   if (isLoading) {
     return (
@@ -546,6 +548,11 @@ export default function Kanban() {
 
             <div className="text-sm text-muted-foreground">
               {totalLeads} {totalLeads === 1 ? "lead" : "leads"}
+              {isLimitReached && (
+                <span className="ml-2 text-xs text-orange-600 dark:text-orange-400">
+                  (mostrando os 100 primeiros por prioridade)
+                </span>
+              )}
             </div>
           </div>
         </div>
