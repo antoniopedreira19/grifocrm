@@ -24,7 +24,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Filter, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -79,6 +80,7 @@ export default function Kanban() {
   const [responsavelFilter, setResponsavelFilter] = useState<string>("todos");
   const [ordenacao, setOrdenacao] = useState<string>("prioridade");
   const [scoreRange, setScoreRange] = useState<[number, number] | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeLead, setActiveLead] = useState<KanbanLead | null>(null);
   const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
   
@@ -107,7 +109,7 @@ export default function Kanban() {
 
   // Fetch leads da tabela principal
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: ["kanban-leads", produtoFilter, responsavelFilter, ordenacao, scoreRange],
+    queryKey: ["kanban-leads", produtoFilter, responsavelFilter, ordenacao, scoreRange, searchQuery],
     queryFn: async () => {
       let query = supabase
         .from("leads")
@@ -129,6 +131,11 @@ export default function Kanban() {
         query = query
           .gte("score_total", scoreRange[0])
           .lte("score_total", scoreRange[1]);
+      }
+
+      // Filtro de busca por nome
+      if (searchQuery.trim()) {
+        query = query.ilike("nome", `%${searchQuery.trim()}%`);
       }
 
       // Ordenação padrão por prioridade
@@ -532,6 +539,17 @@ export default function Kanban() {
         <div className="sticky top-0 z-10 bg-background border-b px-4 md:px-8 py-3">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3 flex-wrap">
+              <div className="relative w-64">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Buscar por nome..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
               <Select value={produtoFilter} onValueChange={setProdutoFilter}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Produto" />

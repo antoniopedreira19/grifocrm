@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 const statusLabels: Record<string, string> = {
   primeiro_contato: "Primeiro Contato",
@@ -30,13 +32,20 @@ const statusColors: Record<string, string> = {
 };
 
 export default function Dashboard() {
+  const [produtoFilter, setProdutoFilter] = useState<string>("todos");
+
   const { data: leadsData, isLoading } = useQuery({
-    queryKey: ["dashboard-leads"],
+    queryKey: ["dashboard-leads", produtoFilter],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("leads")
         .select("id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at, perdido_motivo_cat");
       
+      if (produtoFilter !== "todos") {
+        query = query.eq("produto", produtoFilter as any);
+      }
+      
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -163,11 +172,25 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <div className="p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Visão geral do pipeline e métricas principais
-          </p>
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+              <p className="text-muted-foreground mt-2">
+                Visão geral do pipeline e métricas principais
+              </p>
+            </div>
+            <Select value={produtoFilter} onValueChange={setProdutoFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filtrar por produto" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os produtos</SelectItem>
+                <SelectItem value="gbc">GBC</SelectItem>
+                <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Stats Grid */}
