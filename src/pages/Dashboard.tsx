@@ -361,14 +361,6 @@ export default function Dashboard() {
                     Potencial de {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorPipeline)}
                   </p>
                 </div>
-
-                {leadsGanhos > 0 && (
-                  <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
-                    <p className="text-sm font-medium text-green-800 dark:text-green-200">
-                      💰 Receita média por lead: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorTotalGanho / totalLeads)}
-                    </p>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
