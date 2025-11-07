@@ -35,7 +35,7 @@ export default function Dashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("leads")
-        .select("id, status, produto, score_total, nome, deal_valor, created_at");
+        .select("id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at");
       
       if (error) throw error;
       return data;
@@ -49,7 +49,22 @@ export default function Dashboard() {
   
   const valorPipeline = leadsData
     ?.filter(l => l.status === "negociando")
-    .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
+    .reduce((sum, l) => {
+      // Se já tem deal_valor definido, usa ele
+      if (l.deal_valor && l.deal_valor > 0) {
+        return sum + Number(l.deal_valor);
+      }
+      
+      // Senão, calcula baseado no produto
+      if (l.produto === "mentoria_fast") {
+        return sum + 18000;
+      } else if (l.produto === "gbc") {
+        // Se for GBC mas tem interesse em Mentoria Fast, valor é 18k
+        return sum + (l.interesse_mentoria_fast ? 18000 : 120000);
+      }
+      
+      return sum;
+    }, 0) || 0;
 
   const distribuicaoStatus = leadsData?.reduce((acc, lead) => {
     const status = lead.status;
