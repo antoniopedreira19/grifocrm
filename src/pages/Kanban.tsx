@@ -51,7 +51,7 @@ interface KanbanLead {
   valor_a_vista?: number | null;
   valor_parcelado?: number | null;
   valor_entrada?: number | null;
-  proximo_followup?: string;
+  proximo_followup?: string | null;
 }
 
 interface PendingMove {
@@ -112,7 +112,7 @@ export default function Kanban() {
       let query = supabase
         .from("leads")
         .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, valor_parcelado, valor_entrada, proximo_followup")
-        .in("status", ["primeiro_contato", "proximo_contato", "negociando", "proposta", "followup", "ganho", "perdido"]);
+        .in("status", ["primeiro_contato", "proximo_contato", "negociando", "proposta", "followup", "ganho", "perdido"] as any);
 
       // Filtro de produto
       if (produtoFilter !== "todos") {
@@ -421,6 +421,64 @@ export default function Kanban() {
     }
   };
 
+  const handlePropostaConfirm = async (data: {
+    tipo_pagamento: string;
+    valor_a_vista?: number;
+    valor_parcelado?: number;
+    valor_entrada?: number;
+  }) => {
+    if (!pendingMove) return;
+
+    try {
+      await updateLeadMutation.mutateAsync({
+        leadId: pendingMove.leadId,
+        updates: {
+          status: pendingMove.toStatus,
+          tipo_pagamento: data.tipo_pagamento,
+          valor_a_vista: data.valor_a_vista,
+          valor_parcelado: data.valor_parcelado,
+          valor_entrada: data.valor_entrada,
+        },
+      });
+
+      await createInteractionMutation.mutateAsync({
+        leadId: pendingMove.leadId,
+        conteudo: `Proposta enviada. Tipo: ${data.tipo_pagamento}`,
+        tipo: "comentario",
+      });
+
+      setPropostaOpen(false);
+      setPendingMove(null);
+    } catch (error) {
+      console.error("Erro ao registrar proposta:", error);
+    }
+  };
+
+  const handleFollowUpConfirm = async (data: { proximo_followup: string }) => {
+    if (!pendingMove) return;
+
+    try {
+      await updateLeadMutation.mutateAsync({
+        leadId: pendingMove.leadId,
+        updates: {
+          status: pendingMove.toStatus,
+          proximo_followup: data.proximo_followup,
+        },
+      });
+
+      await createInteractionMutation.mutateAsync({
+        leadId: pendingMove.leadId,
+        conteudo: `Follow-up agendado para ${new Date(data.proximo_followup).toLocaleString("pt-BR")}`,
+        tipo: "comentario",
+      });
+
+      setFollowUpOpen(false);
+      setPendingMove(null);
+    } catch (error) {
+      console.error("Erro ao agendar follow-up:", error);
+    }
+  };
+
   const getLeadsByStatus = (status: Status) => {
     return leads.filter((lead) => lead.status === status);
   };
@@ -622,6 +680,31 @@ export default function Kanban() {
         leadNome={pendingMove?.leadNome || ""}
         currentProduto={leads.find(l => l.id === pendingMove?.leadId)?.produto}
         currentValor={pendingMove?.dealValor}
+      />
+
+      <PropostaModal
+        open={propostaOpen}
+        onClose={() => {
+          setPropostaOpen(false);
+          setPendingMove(null);
+        }}
+        onConfirm={handlePropostaConfirm}
+        leadNome={pendingMove?.leadNome || ""}
+        currentTipoPagamento={leads.find(l => l.id === pendingMove?.leadId)?.tipo_pagamento as any}
+        currentValorAVista={leads.find(l => l.id === pendingMove?.leadId)?.valor_a_vista as any}
+        currentValorParcelado={leads.find(l => l.id === pendingMove?.leadId)?.valor_parcelado as any}
+        currentValorEntrada={leads.find(l => l.id === pendingMove?.leadId)?.valor_entrada as any}
+      />
+
+      <FollowUpModal
+        open={followUpOpen}
+        onClose={() => {
+          setFollowUpOpen(false);
+          setPendingMove(null);
+        }}
+        onConfirm={handleFollowUpConfirm}
+        leadNome={pendingMove?.leadNome || ""}
+        initialDate={leads.find(l => l.id === pendingMove?.leadId)?.proximo_followup as any}
       />
 
       <PerdidoModal

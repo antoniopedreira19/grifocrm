@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import type { TipoPagamento } from "@/types/lead";
+import { Card, CardContent } from "@/components/ui/card";
+
+type TipoPagamento = "a_vista" | "parcelado" | "entrada_parcelado";
 
 interface PropostaModalProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: (data: { 
+  onConfirm: (data: {
     tipo_pagamento: TipoPagamento;
     valor_a_vista?: number;
     valor_parcelado?: number;
@@ -22,22 +24,21 @@ interface PropostaModalProps {
   currentValorEntrada?: number;
 }
 
-export function PropostaModal({ 
-  open, 
-  onClose, 
-  onConfirm, 
+export function PropostaModal({
+  open,
+  onClose,
+  onConfirm,
   leadNome,
   currentTipoPagamento,
   currentValorAVista,
   currentValorParcelado,
-  currentValorEntrada
+  currentValorEntrada,
 }: PropostaModalProps) {
   const [tipoPagamento, setTipoPagamento] = useState<TipoPagamento>("a_vista");
   const [valorAVista, setValorAVista] = useState("");
   const [valorParcelado, setValorParcelado] = useState("");
   const [valorEntrada, setValorEntrada] = useState("");
 
-  // Atualiza os valores quando o modal abre
   useEffect(() => {
     if (open) {
       setTipoPagamento(currentTipoPagamento || "a_vista");
@@ -52,31 +53,16 @@ export function PropostaModal({
       tipo_pagamento: tipoPagamento,
     };
 
-    if (tipoPagamento === "a_vista") {
-      const valor = parseFloat(valorAVista);
-      if (!valor || valor <= 0) {
-        return;
-      }
-      data.valor_a_vista = valor;
-    } else if (tipoPagamento === "parcelado") {
-      const valor = parseFloat(valorParcelado);
-      if (!valor || valor <= 0) {
-        return;
-      }
-      data.valor_parcelado = valor;
+    if (tipoPagamento === "a_vista" && valorAVista) {
+      data.valor_a_vista = parseFloat(valorAVista);
+    } else if (tipoPagamento === "parcelado" && valorParcelado) {
+      data.valor_parcelado = parseFloat(valorParcelado);
     } else if (tipoPagamento === "entrada_parcelado") {
-      const entrada = parseFloat(valorEntrada);
-      const parcelado = parseFloat(valorParcelado);
-      if (!entrada || entrada <= 0 || !parcelado || parcelado <= 0) {
-        return;
-      }
-      data.valor_entrada = entrada;
-      data.valor_parcelado = parcelado;
+      if (valorEntrada) data.valor_entrada = parseFloat(valorEntrada);
+      if (valorParcelado) data.valor_parcelado = parseFloat(valorParcelado);
     }
-    
+
     onConfirm(data);
-    
-    // Reset
     setTipoPagamento("a_vista");
     setValorAVista("");
     setValorParcelado("");
@@ -84,36 +70,33 @@ export function PropostaModal({
   };
 
   const isValid = () => {
-    if (tipoPagamento === "a_vista") {
-      return valorAVista && parseFloat(valorAVista) > 0;
-    } else if (tipoPagamento === "parcelado") {
-      return valorParcelado && parseFloat(valorParcelado) > 0;
-    } else if (tipoPagamento === "entrada_parcelado") {
-      return valorEntrada && parseFloat(valorEntrada) > 0 && 
-             valorParcelado && parseFloat(valorParcelado) > 0;
+    if (tipoPagamento === "a_vista") return valorAVista && parseFloat(valorAVista) > 0;
+    if (tipoPagamento === "parcelado") return valorParcelado && parseFloat(valorParcelado) > 0;
+    if (tipoPagamento === "entrada_parcelado") {
+      return (valorEntrada && parseFloat(valorEntrada) > 0) || (valorParcelado && parseFloat(valorParcelado) > 0);
     }
     return false;
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Definir Proposta</DialogTitle>
+          <DialogTitle>Proposta Comercial</DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-6 py-4">
+
+        <div className="space-y-4 py-4">
           <p className="text-sm text-muted-foreground">
             Lead: <strong>{leadNome}</strong>
           </p>
-          
+
           <div className="space-y-3">
             <Label>Tipo de Pagamento *</Label>
             <RadioGroup value={tipoPagamento} onValueChange={(value) => setTipoPagamento(value as TipoPagamento)}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="a_vista" id="a_vista" />
                 <Label htmlFor="a_vista" className="font-normal cursor-pointer">
-                  À Vista
+                  À vista
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
@@ -131,78 +114,82 @@ export function PropostaModal({
             </RadioGroup>
           </div>
 
-          {tipoPagamento === "a_vista" && (
-            <div className="space-y-2">
-              <Label htmlFor="valor_a_vista">Valor à Vista (R$) *</Label>
-              <Input
-                id="valor_a_vista"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="120000.00"
-                value={valorAVista}
-                onChange={(e) => setValorAVista(e.target.value)}
-                required
-              />
-            </div>
-          )}
+          <Card className="border-primary/20">
+            <CardContent className="pt-6 space-y-4">
+              {tipoPagamento === "a_vista" && (
+                <div className="space-y-2">
+                  <Label htmlFor="valor_a_vista">Valor à Vista (R$) *</Label>
+                  <Input
+                    id="valor_a_vista"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="120000.00"
+                    value={valorAVista}
+                    onChange={(e) => setValorAVista(e.target.value)}
+                  />
+                </div>
+              )}
 
-          {tipoPagamento === "parcelado" && (
-            <div className="space-y-2">
-              <Label htmlFor="valor_parcelado">Valor Total Parcelado (R$) *</Label>
-              <Input
-                id="valor_parcelado"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="120000.00"
-                value={valorParcelado}
-                onChange={(e) => setValorParcelado(e.target.value)}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Valor total do parcelamento
-              </p>
-            </div>
-          )}
-
-          {tipoPagamento === "entrada_parcelado" && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="valor_entrada">Valor da Entrada (R$) *</Label>
-                <Input
-                  id="valor_entrada"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="30000.00"
-                  value={valorEntrada}
-                  onChange={(e) => setValorEntrada(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="valor_parcelado_resto">Valor Restante Parcelado (R$) *</Label>
-                <Input
-                  id="valor_parcelado_resto"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="90000.00"
-                  value={valorParcelado}
-                  onChange={(e) => setValorParcelado(e.target.value)}
-                  required
-                />
-              </div>
-              {valorEntrada && valorParcelado && (
-                <div className="p-3 bg-muted rounded-md">
-                  <p className="text-sm font-medium">
-                    Valor Total: R$ {(parseFloat(valorEntrada) + parseFloat(valorParcelado)).toFixed(2)}
+              {tipoPagamento === "parcelado" && (
+                <div className="space-y-2">
+                  <Label htmlFor="valor_parcelado">Valor Total Parcelado (R$) *</Label>
+                  <Input
+                    id="valor_parcelado"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="120000.00"
+                    value={valorParcelado}
+                    onChange={(e) => setValorParcelado(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Valor total considerando todas as parcelas
                   </p>
                 </div>
               )}
-            </div>
-          )}
+
+              {tipoPagamento === "entrada_parcelado" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="valor_entrada">Valor da Entrada (R$)</Label>
+                    <Input
+                      id="valor_entrada"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="30000.00"
+                      value={valorEntrada}
+                      onChange={(e) => setValorEntrada(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="valor_parcelado_entrada">Valor Parcelado (R$)</Label>
+                    <Input
+                      id="valor_parcelado_entrada"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="90000.00"
+                      value={valorParcelado}
+                      onChange={(e) => setValorParcelado(e.target.value)}
+                    />
+                  </div>
+                  {valorEntrada && valorParcelado && (
+                    <div className="pt-2 border-t">
+                      <p className="text-sm font-medium">
+                        Valor Total: R${" "}
+                        {(parseFloat(valorEntrada || "0") + parseFloat(valorParcelado || "0")).toLocaleString(
+                          "pt-BR",
+                          { minimumFractionDigits: 2 }
+                        )}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         <DialogFooter>

@@ -20,21 +20,21 @@ interface FollowUpModalProps {
 
 export function FollowUpModal({ open, onClose, onConfirm, leadNome, initialDate }: FollowUpModalProps) {
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedTime, setSelectedTime] = useState("09:00");
 
   useEffect(() => {
     if (open && initialDate) {
       const date = new Date(initialDate);
       setSelectedDate(date);
       setSelectedTime(format(date, "HH:mm"));
-    } else if (open && !initialDate) {
+    } else if (open) {
       setSelectedDate(undefined);
-      setSelectedTime("");
+      setSelectedTime("09:00");
     }
   }, [open, initialDate]);
 
   const handleConfirm = () => {
-    if (!selectedDate || !selectedTime) return;
+    if (!selectedDate) return;
 
     const [hours, minutes] = selectedTime.split(":").map(Number);
     const dateTime = new Date(selectedDate);
@@ -43,25 +43,22 @@ export function FollowUpModal({ open, onClose, onConfirm, leadNome, initialDate 
     onConfirm({
       proximo_followup: dateTime.toISOString(),
     });
-
-    setSelectedDate(undefined);
-    setSelectedTime("");
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Agendar Follow-Up</DialogTitle>
+          <DialogTitle>Agendar Follow-up</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <p className="text-sm text-muted-foreground">
             Lead: <strong>{leadNome}</strong>
           </p>
-          
+
           <div className="space-y-2">
-            <Label>Data do Follow-Up *</Label>
+            <Label>Data do Follow-up *</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -94,7 +91,7 @@ export function FollowUpModal({ open, onClose, onConfirm, leadNome, initialDate 
               type="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              required
+              className="w-full"
             />
           </div>
         </div>
@@ -103,7 +100,7 @@ export function FollowUpModal({ open, onClose, onConfirm, leadNome, initialDate 
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={handleConfirm} disabled={!selectedDate || !selectedTime}>
+          <Button onClick={handleConfirm} disabled={!selectedDate}>
             Confirmar
           </Button>
         </DialogFooter>
