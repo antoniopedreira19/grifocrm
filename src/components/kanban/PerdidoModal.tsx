@@ -14,11 +14,11 @@ interface PerdidoModalProps {
 
 const motivosCategoria = [
   { value: "preco", label: "Preço alto" },
-  { value: "timing", label: "Momento errado" },
-  { value: "fit", label: "Não é o fit ideal" },
+  { value: "tempo", label: "Momento errado" },
+  { value: "sem_fit", label: "Não é o fit ideal" },
   { value: "concorrente", label: "Optou por concorrente" },
   { value: "sem_resposta", label: "Sem resposta" },
-  { value: "outro", label: "Outro" },
+  { value: "outros", label: "Outro" },
 ];
 
 export function PerdidoModal({ open, onClose, onConfirm, leadNome }: PerdidoModalProps) {
