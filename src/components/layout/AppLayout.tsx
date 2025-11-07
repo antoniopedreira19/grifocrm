@@ -31,6 +31,7 @@ function AppSidebar() {
   const { signOut, currentUser } = useAuth();
   
   return <Sidebar 
+      collapsible="icon"
       className="bg-sidebar border-r border-sidebar-border"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
