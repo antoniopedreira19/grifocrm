@@ -29,11 +29,15 @@ export type Status =
   | "primeiro_contato" 
   | "proximo_contato" 
   | "negociando" 
+  | "proposta"
+  | "followup"
   | "stand_by" 
   | "pode_fechar" 
   | "pagamento" 
   | "ganho" 
   | "perdido";
+
+export type TipoPagamento = "a_vista" | "parcelado" | "entrada_parcelado";
 
 export type ScoreCor = "verde" | "verde_claro" | "amarelo" | "vermelho" | "cinza";
 

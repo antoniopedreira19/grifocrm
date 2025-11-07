@@ -828,6 +828,8 @@ export type Database = {
         | "negociando"
         | "ganho"
         | "perdido"
+        | "proposta"
+        | "followup"
       tipo_pagamento_t: "a_vista" | "parcelado" | "entrada_parcelado"
       user_role_t: "admin" | "closer" | "sdr" | "viewer"
     }
@@ -998,6 +1000,8 @@ export const Constants = {
         "negociando",
         "ganho",
         "perdido",
+        "proposta",
+        "followup",
       ],
       tipo_pagamento_t: ["a_vista", "parcelado", "entrada_parcelado"],
       user_role_t: ["admin", "closer", "sdr", "viewer"],
