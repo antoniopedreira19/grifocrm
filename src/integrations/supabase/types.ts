@@ -798,6 +798,7 @@ export type Database = {
         | "entre_500k_1m"
         | "entre_1m_10m"
         | "entre_10m_50m"
+        | "acima_50m"
       interaction_t: "chamada" | "whatsapp" | "email" | "reuniao" | "comentario"
       interesse_t:
         | "quero_agora"
@@ -966,6 +967,7 @@ export const Constants = {
         "entre_500k_1m",
         "entre_1m_10m",
         "entre_10m_50m",
+        "acima_50m",
       ],
       interaction_t: ["chamada", "whatsapp", "email", "reuniao", "comentario"],
       interesse_t: [
