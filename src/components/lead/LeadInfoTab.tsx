@@ -48,6 +48,7 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
     telefone: lead.telefone,
     rede_social: lead.rede_social || "",
     regiao: lead.regiao || "",
+    produto: lead.produto,
     faturamento_2025: lead.faturamento_2025,
     faturamento_2024: lead.faturamento_2024,
     num_funcionarios: lead.num_funcionarios,
@@ -69,6 +70,7 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
       telefone: lead.telefone,
       rede_social: lead.rede_social || "",
       regiao: lead.regiao || "",
+      produto: lead.produto,
       faturamento_2025: lead.faturamento_2025,
       faturamento_2024: lead.faturamento_2024,
       num_funcionarios: lead.num_funcionarios,
@@ -138,6 +140,21 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
                     value={editedData.rede_social} 
                     onChange={(e) => setEditedData({...editedData, rede_social: e.target.value})}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="produto">Produto</Label>
+                  <Select 
+                    value={editedData.produto} 
+                    onValueChange={(value) => setEditedData({...editedData, produto: value})}
+                  >
+                    <SelectTrigger id="produto">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gbc">GBC</SelectItem>
+                      <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </>
             ) : (
