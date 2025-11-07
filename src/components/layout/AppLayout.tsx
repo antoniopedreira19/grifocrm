@@ -27,9 +27,14 @@ const navigation = [{
   icon: FileText
 }];
 function AppSidebar() {
-  const { open } = useSidebar();
+  const { open, setOpen } = useSidebar();
   const { signOut, currentUser } = useAuth();
-  return <Sidebar className="bg-sidebar border-r border-sidebar-border">
+  
+  return <Sidebar 
+      className="bg-sidebar border-r border-sidebar-border"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
       <SidebarContent className="bg-sidebar">
         {/* Logo/Title */}
         <div className="p-6 border-b border-sidebar-border flex items-center gap-3">
@@ -89,15 +94,15 @@ function AppSidebar() {
 export function AppLayout({
   children
 }: AppLayoutProps) {
-  return <SidebarProvider>
+  return <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full bg-background overflow-x-hidden">
         <AppSidebar />
         
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Header with Toggle */}
+          {/* Header */}
           <header className="border-b bg-background">
             <div className="h-14 flex items-center px-4">
-              <SidebarTrigger />
+              {/* Removido SidebarTrigger - agora é automático com hover */}
             </div>
             <ReadOnlyBanner />
           </header>
