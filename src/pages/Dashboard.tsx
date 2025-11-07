@@ -47,6 +47,27 @@ export default function Dashboard() {
   const leadsGanhos = leadsData?.filter(l => l.status === "ganho").length || 0;
   const taxaConversao = totalLeads > 0 ? ((leadsGanhos / totalLeads) * 100).toFixed(1) : "0";
   
+  // Cálculo do valor total de deals ganhos
+  const valorTotalGanho = leadsData
+    ?.filter(l => l.status === "ganho")
+    .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
+  
+  // Ticket médio dos ganhos
+  const ticketMedio = leadsGanhos > 0 ? valorTotalGanho / leadsGanhos : 0;
+  
+  // Leads ganhos por produto
+  const ganhosGBC = leadsData?.filter(l => l.status === "ganho" && l.produto === "gbc").length || 0;
+  const ganhosFast = leadsData?.filter(l => l.status === "ganho" && l.produto === "mentoria_fast").length || 0;
+  
+  // Valor ganho por produto
+  const valorGanhoGBC = leadsData
+    ?.filter(l => l.status === "ganho" && l.produto === "gbc")
+    .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
+  
+  const valorGanhoFast = leadsData
+    ?.filter(l => l.status === "ganho" && l.produto === "mentoria_fast")
+    .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
+  
   const valorPipeline = leadsData
     ?.filter(l => l.status === "negociando")
     .reduce((sum, l) => {
@@ -192,6 +213,163 @@ export default function Dashboard() {
               <p className="text-xs text-muted-foreground mt-1">
                 Deals em negociação
               </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* KPIs de Vendas Fechadas */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">📊 Análise de Vendas Fechadas</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Leads Ganhos
+                </CardTitle>
+                <Target className="h-4 w-4 text-green-600 dark:text-green-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{leadsGanhos}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Deals fechados com sucesso
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Valor Total Ganho
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotalGanho)}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Receita total fechada
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Ticket Médio
+                </CardTitle>
+                <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ticketMedio)}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Valor médio por deal
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Potencial em Pipeline
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorPipeline)}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {leadsNegociando} deals em negociação
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Vendas por Produto */}
+        <div className="grid gap-6 md:grid-cols-2 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Vendas por Produto</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
+                  <div>
+                    <p className="font-medium">GBC</p>
+                    <p className="text-sm text-muted-foreground">{ganhosGBC} deals fechados</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-green-600">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorGanhoGBC)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {ganhosGBC > 0 ? `Média: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorGanhoGBC / ganhosGBC)}` : '-'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
+                  <div>
+                    <p className="font-medium">Mentoria FAST</p>
+                    <p className="text-sm text-muted-foreground">{ganhosFast} deals fechados</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-green-600">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorGanhoFast)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {ganhosFast > 0 ? `Média: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorGanhoFast / ganhosFast)}` : '-'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Performance de Conversão</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg border bg-card">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Taxa de Fechamento</span>
+                    <span className="text-2xl font-bold text-green-600">{taxaConversao}%</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full bg-green-600"
+                      style={{ width: `${taxaConversao}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {leadsGanhos} ganhos de {totalLeads} leads totais
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-lg border bg-card">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Em Negociação</span>
+                    <span className="text-2xl font-bold text-blue-600">{leadsNegociando}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Potencial de {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorPipeline)}
+                  </p>
+                </div>
+
+                {leadsGanhos > 0 && (
+                  <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
+                    <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                      💰 Receita média por lead: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorTotalGanho / totalLeads)}
+                    </p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
