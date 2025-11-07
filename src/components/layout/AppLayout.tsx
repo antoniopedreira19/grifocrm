@@ -27,14 +27,19 @@ const navigation = [{
   icon: FileText
 }];
 function AppSidebar() {
-  const { open } = useSidebar();
-  const { signOut, currentUser } = useAuth();
+  const {
+    open
+  } = useSidebar();
+  const {
+    signOut,
+    currentUser
+  } = useAuth();
   return <Sidebar className="bg-sidebar border-r border-sidebar-border">
       <SidebarContent className="bg-sidebar">
         {/* Logo/Title */}
         <div className="p-6 border-b border-sidebar-border flex items-center gap-3">
           <img src={grifoLogo} alt="Grifo" className="h-10 w-10 object-contain flex-shrink-0" />
-          {open && <h1 className="text-xl font-bold text-sidebar-foreground whitespace-nowrap">GRIFO CRM</h1>}
+          {open && <h1 className="text-xl font-bold text-sidebar-foreground whitespace-nowrap">GrifoCRM</h1>}
         </div>
 
         {/* Navigation */}
@@ -72,16 +77,10 @@ function AppSidebar() {
                 </p>
               </div>}
           </div>
-          {open && (
-            <Button
-              variant="ghost"
-              onClick={signOut}
-              className="w-full mt-2 flex items-center gap-2 justify-start px-4 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-            >
+          {open && <Button variant="ghost" onClick={signOut} className="w-full mt-2 flex items-center gap-2 justify-start px-4 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent">
               <LogOut className="w-4 h-4" />
               <span>Sair</span>
-            </Button>
-          )}
+            </Button>}
         </div>
       </SidebarContent>
     </Sidebar>;
