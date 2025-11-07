@@ -50,7 +50,7 @@ export default function Login() {
             />
           </div>
           <CardTitle className="text-3xl font-bold text-foreground">
-            Bem-vindo ao Grifo CRM
+            Bem-vindo ao GrifoCRM
           </CardTitle>
           <CardDescription className="text-base text-muted-foreground">
             Entre com sua conta para continuar

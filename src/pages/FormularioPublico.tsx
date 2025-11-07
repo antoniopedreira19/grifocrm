@@ -44,7 +44,7 @@ export default function FormularioPublico() {
 
     // Restaura o título original quando o componente é desmontado
     return () => {
-      document.title = "GrifoAcademy CRM";
+      document.title = "GrifoCRM";
     };
   }, [tipo]);
 
