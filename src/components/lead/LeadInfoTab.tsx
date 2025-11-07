@@ -343,6 +343,101 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
             </CardContent>
           </Card>
 
+          {/* Informações Financeiras */}
+          {(lead.status === 'negociando' || lead.status === 'proposta' || lead.status === 'followup' || lead.status === 'pode_fechar' || lead.status === 'pagamento' || lead.status === 'ganho') && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Informações Financeiras</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {/* Valor do Deal */}
+                {lead.deal_valor && (
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Valor do Deal:</span>
+                    <span className="text-sm font-bold text-green-600">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.deal_valor)}
+                    </span>
+                  </div>
+                )}
+
+                {/* Tipo de Pagamento */}
+                {lead.tipo_pagamento && (
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Tipo de Pagamento:</span>
+                    <Badge variant="outline">
+                      {lead.tipo_pagamento === 'a_vista' ? 'À Vista' : 
+                       lead.tipo_pagamento === 'parcelado' ? 'Parcelado' : 
+                       'Entrada + Parcelado'}
+                    </Badge>
+                  </div>
+                )}
+
+                {/* Valor à Vista */}
+                {lead.valor_a_vista && (
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Valor à Vista:</span>
+                    <span className="text-sm">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.valor_a_vista)}
+                    </span>
+                  </div>
+                )}
+
+                {/* Valor Parcelado */}
+                {lead.valor_parcelado && (
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Valor Parcelado:</span>
+                    <span className="text-sm">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.valor_parcelado)}
+                    </span>
+                  </div>
+                )}
+
+                {/* Valor de Entrada */}
+                {lead.valor_entrada && (
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Valor de Entrada:</span>
+                    <span className="text-sm">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.valor_entrada)}
+                    </span>
+                  </div>
+                )}
+
+                {/* Follow-up */}
+                {lead.proximo_followup && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Próximo Follow-up:</span>
+                    <span className="text-sm">
+                      {format(new Date(lead.proximo_followup), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                    </span>
+                  </div>
+                )}
+
+                {/* Status do Deal */}
+                {lead.status === 'ganho' && (
+                  <div className="mt-4 p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                    <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                      ✅ Deal Fechado com Sucesso!
+                    </p>
+                  </div>
+                )}
+
+                {lead.status === 'pagamento' && (
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                      💰 Aguardando Pagamento
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Informações do Sistema</CardTitle>
