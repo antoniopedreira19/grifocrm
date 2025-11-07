@@ -4,11 +4,12 @@ import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { Plus, Clock } from "lucide-react";
+import { formatDistanceToNow, format, isPast, isToday, isTomorrow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { Status } from "@/types/lead";
 import { LeadDetailsModal } from "../lead/LeadDetailsModal";
+import { cn } from "@/lib/utils";
 
 interface KanbanLead {
   id: string;
@@ -22,6 +23,7 @@ interface KanbanLead {
   ultima_interacao?: string;
   score_total?: number | null;
   score_cor?: string | null;
+  proximo_contato?: string;
 }
 
 interface KanbanCardProps {
@@ -86,6 +88,26 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
     locale: ptBR,
   });
 
+  const getProximoContatoDisplay = () => {
+    if (!lead.proximo_contato) return null;
+    
+    const date = new Date(lead.proximo_contato);
+    const time = format(date, "HH:mm");
+    
+    if (isToday(date)) {
+      return { text: `Hoje às ${time}`, urgent: true };
+    }
+    if (isTomorrow(date)) {
+      return { text: `Amanhã às ${time}`, urgent: true };
+    }
+    if (isPast(date)) {
+      return { text: `Atrasado: ${format(date, "dd/MM 'às' HH:mm")}`, overdue: true };
+    }
+    return { text: format(date, "dd/MM 'às' HH:mm"), urgent: false };
+  };
+
+  const proximoContatoInfo = getProximoContatoDisplay();
+
   const handleOpenModal = (e: React.MouseEvent) => {
     e.stopPropagation();
     setDetailsOpen(true);
@@ -138,8 +160,21 @@ export function KanbanCard({ lead, status, disabled }: KanbanCardProps) {
             )}
           </div>
 
+          {/* Próximo Contato */}
+          {proximoContatoInfo && (
+            <div className={cn(
+              "flex items-center gap-1 text-[10px] px-2 py-1 rounded mt-2",
+              proximoContatoInfo.overdue && "bg-red-500/10 text-red-700 font-medium",
+              proximoContatoInfo.urgent && !proximoContatoInfo.overdue && "bg-orange-500/10 text-orange-700 font-medium",
+              !proximoContatoInfo.urgent && !proximoContatoInfo.overdue && "bg-blue-500/10 text-blue-700"
+            )}>
+              <Clock className="h-3 w-3" />
+              <span>{proximoContatoInfo.text}</span>
+            </div>
+          )}
+
           {/* Info adicional */}
-          <div className="space-y-1 text-[11px] text-muted-foreground line-clamp-1">
+          <div className="space-y-1 text-[11px] text-muted-foreground line-clamp-1 mt-2">
             <div className="flex items-center gap-1">
               {lead.regiao && (
                 <>
