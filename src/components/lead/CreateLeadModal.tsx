@@ -28,6 +28,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
     num_funcionarios: "",
     interesse: "",
     conhece_daniel: "",
+    interesse_mentoria_fast: false,
   });
 
   const createLeadMutation = useMutation({
@@ -39,11 +40,13 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
         produto: formData.produto,
       };
 
-      // Calcular deal_valor padrão baseado no produto
+      // Calcular deal_valor padrão baseado no produto e interesse
       if (formData.produto === "fast") {
         leadData.deal_valor = 18000;
       } else if (formData.produto === "gbc") {
-        leadData.deal_valor = 120000;
+        // Se marcou interesse na mentoria fast, valor é 18k, senão 120k
+        leadData.deal_valor = formData.interesse_mentoria_fast ? 18000 : 120000;
+        leadData.interesse_mentoria_fast = formData.interesse_mentoria_fast;
       }
 
       // Adicionar campos opcionais apenas se preenchidos
@@ -89,6 +92,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
       num_funcionarios: "",
       interesse: "",
       conhece_daniel: "",
+      interesse_mentoria_fast: false,
     });
     onClose();
   };
@@ -281,6 +285,23 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
                   </SelectContent>
                 </Select>
               </div>
+
+              {formData.produto === "gbc" && (
+                <div className="space-y-2 md:col-span-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="interesse_mentoria_fast"
+                      checked={formData.interesse_mentoria_fast}
+                      onChange={(e) => setFormData({ ...formData, interesse_mentoria_fast: e.target.checked })}
+                      className="h-4 w-4 rounded border-border"
+                    />
+                    <Label htmlFor="interesse_mentoria_fast" className="cursor-pointer">
+                      Tem interesse na Mentoria Fast (valor: R$ 18.000)
+                    </Label>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
