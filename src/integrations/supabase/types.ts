@@ -172,9 +172,7 @@ export type Database = {
       }
       leads: {
         Row: {
-          acontecer_prox12m: string | null
           anos_empresa: number | null
-          capacidade_investimento_gbc: string | null
           conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at: string
           deal_fase: Database["public"]["Enums"]["deal_fase_t"] | null
@@ -189,12 +187,10 @@ export type Database = {
           interesse: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast: boolean | null
           modelo_negocio: string | null
-          motivo_ser_escolhido: string | null
           nao_interesse_motivo: string | null
           nome: string
           num_funcionarios: number | null
           observacao: string | null
-          oportunidade_ideal: string | null
           origem: Database["public"]["Enums"]["origem_t"] | null
           perdido_motivo_cat:
             | Database["public"]["Enums"]["perdido_motivo_t"]
@@ -203,7 +199,6 @@ export type Database = {
           primeiro_contato: string | null
           produto: Database["public"]["Enums"]["produto_t"]
           proximo_contato: string | null
-          proximo_followup: string | null
           rede_social: string | null
           regiao: string | null
           responsavel: string | null
@@ -215,17 +210,11 @@ export type Database = {
           status: Database["public"]["Enums"]["status_t"]
           tag_form: string | null
           telefone: string
-          tipo_pagamento: Database["public"]["Enums"]["tipo_pagamento_t"] | null
           ultima_interacao: string | null
           updated_at: string
-          valor_a_vista: number | null
-          valor_entrada: number | null
-          valor_parcelado: number | null
         }
         Insert: {
-          acontecer_prox12m?: string | null
           anos_empresa?: number | null
-          capacidade_investimento_gbc?: string | null
           conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at?: string
           deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
@@ -240,12 +229,10 @@ export type Database = {
           interesse?: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast?: boolean | null
           modelo_negocio?: string | null
-          motivo_ser_escolhido?: string | null
           nao_interesse_motivo?: string | null
           nome: string
           num_funcionarios?: number | null
           observacao?: string | null
-          oportunidade_ideal?: string | null
           origem?: Database["public"]["Enums"]["origem_t"] | null
           perdido_motivo_cat?:
             | Database["public"]["Enums"]["perdido_motivo_t"]
@@ -254,7 +241,6 @@ export type Database = {
           primeiro_contato?: string | null
           produto: Database["public"]["Enums"]["produto_t"]
           proximo_contato?: string | null
-          proximo_followup?: string | null
           rede_social?: string | null
           regiao?: string | null
           responsavel?: string | null
@@ -266,19 +252,11 @@ export type Database = {
           status?: Database["public"]["Enums"]["status_t"]
           tag_form?: string | null
           telefone: string
-          tipo_pagamento?:
-            | Database["public"]["Enums"]["tipo_pagamento_t"]
-            | null
           ultima_interacao?: string | null
           updated_at?: string
-          valor_a_vista?: number | null
-          valor_entrada?: number | null
-          valor_parcelado?: number | null
         }
         Update: {
-          acontecer_prox12m?: string | null
           anos_empresa?: number | null
-          capacidade_investimento_gbc?: string | null
           conhece_daniel?: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at?: string
           deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
@@ -293,12 +271,10 @@ export type Database = {
           interesse?: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast?: boolean | null
           modelo_negocio?: string | null
-          motivo_ser_escolhido?: string | null
           nao_interesse_motivo?: string | null
           nome?: string
           num_funcionarios?: number | null
           observacao?: string | null
-          oportunidade_ideal?: string | null
           origem?: Database["public"]["Enums"]["origem_t"] | null
           perdido_motivo_cat?:
             | Database["public"]["Enums"]["perdido_motivo_t"]
@@ -307,7 +283,6 @@ export type Database = {
           primeiro_contato?: string | null
           produto?: Database["public"]["Enums"]["produto_t"]
           proximo_contato?: string | null
-          proximo_followup?: string | null
           rede_social?: string | null
           regiao?: string | null
           responsavel?: string | null
@@ -319,14 +294,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["status_t"]
           tag_form?: string | null
           telefone?: string
-          tipo_pagamento?:
-            | Database["public"]["Enums"]["tipo_pagamento_t"]
-            | null
           ultima_interacao?: string | null
           updated_at?: string
-          valor_a_vista?: number | null
-          valor_entrada?: number | null
-          valor_parcelado?: number | null
         }
         Relationships: [
           {
@@ -401,90 +370,6 @@ export type Database = {
           num_funcionarios_raw?: string | null
           origem?: string | null
           prioridade_modulo?: string | null
-          rede_social?: string | null
-          regiao?: string | null
-          responsavel?: string | null
-          tag_form?: string | null
-          telefone?: string | null
-          uf?: string | null
-        }
-        Relationships: []
-      }
-      stg_import_gbc: {
-        Row: {
-          anos_empresa: string | null
-          canal_preferido: string | null
-          cidade: string | null
-          email: string | null
-          entendeu_gbc: string | null
-          faixa_investimento: string | null
-          faturamento_2024_raw: string | null
-          faturamento_2025_raw: string | null
-          gbc_capacidade_investimento: string | null
-          gbc_motivo_ser_escolhido: string | null
-          gbc_objetivo_12m: string | null
-          gbc_oportunidade_ideal: string | null
-          interesse_mentoria_fast: string | null
-          investimento_raw: string | null
-          melhor_horario: string | null
-          modelo_negocio: string | null
-          nome: string | null
-          num_funcionarios_raw: string | null
-          origem: string | null
-          rede_social: string | null
-          regiao: string | null
-          responsavel: string | null
-          tag_form: string | null
-          telefone: string | null
-          uf: string | null
-        }
-        Insert: {
-          anos_empresa?: string | null
-          canal_preferido?: string | null
-          cidade?: string | null
-          email?: string | null
-          entendeu_gbc?: string | null
-          faixa_investimento?: string | null
-          faturamento_2024_raw?: string | null
-          faturamento_2025_raw?: string | null
-          gbc_capacidade_investimento?: string | null
-          gbc_motivo_ser_escolhido?: string | null
-          gbc_objetivo_12m?: string | null
-          gbc_oportunidade_ideal?: string | null
-          interesse_mentoria_fast?: string | null
-          investimento_raw?: string | null
-          melhor_horario?: string | null
-          modelo_negocio?: string | null
-          nome?: string | null
-          num_funcionarios_raw?: string | null
-          origem?: string | null
-          rede_social?: string | null
-          regiao?: string | null
-          responsavel?: string | null
-          tag_form?: string | null
-          telefone?: string | null
-          uf?: string | null
-        }
-        Update: {
-          anos_empresa?: string | null
-          canal_preferido?: string | null
-          cidade?: string | null
-          email?: string | null
-          entendeu_gbc?: string | null
-          faixa_investimento?: string | null
-          faturamento_2024_raw?: string | null
-          faturamento_2025_raw?: string | null
-          gbc_capacidade_investimento?: string | null
-          gbc_motivo_ser_escolhido?: string | null
-          gbc_objetivo_12m?: string | null
-          gbc_oportunidade_ideal?: string | null
-          interesse_mentoria_fast?: string | null
-          investimento_raw?: string | null
-          melhor_horario?: string | null
-          modelo_negocio?: string | null
-          nome?: string | null
-          num_funcionarios_raw?: string | null
-          origem?: string | null
           rede_social?: string | null
           regiao?: string | null
           responsavel?: string | null
@@ -828,7 +713,6 @@ export type Database = {
         | "negociando"
         | "ganho"
         | "perdido"
-      tipo_pagamento_t: "a_vista" | "parcelado" | "entrada_parcelado"
       user_role_t: "admin" | "closer" | "sdr" | "viewer"
     }
     CompositeTypes: {
@@ -999,7 +883,6 @@ export const Constants = {
         "ganho",
         "perdido",
       ],
-      tipo_pagamento_t: ["a_vista", "parcelado", "entrada_parcelado"],
       user_role_t: ["admin", "closer", "sdr", "viewer"],
     },
   },

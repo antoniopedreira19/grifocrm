@@ -51,8 +51,6 @@ export const statusLabels: Record<Status, string> = {
   primeiro_contato: "Primeiro Contato",
   proximo_contato: "Qualificação",
   negociando: "Negociando",
-  proposta: "Proposta",
-  followup: "Follow-Up",
   stand_by: "Stand-by",
   pode_fechar: "Pode Fechar / Contrato",
   pagamento: "Pagamento",
