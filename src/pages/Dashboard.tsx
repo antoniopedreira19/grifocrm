@@ -35,7 +35,7 @@ export default function Dashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("leads")
-        .select("id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at");
+        .select("id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at, perdido_motivo_cat");
       
       if (error) throw error;
       return data;
@@ -113,6 +113,24 @@ export default function Dashboard() {
     .filter(l => l.score_total !== null)
     .sort((a, b) => (b.score_total || 0) - (a.score_total || 0))
     .slice(0, 10);
+
+  // Principais causas de perda
+  const causasPerda = leadsData
+    ?.filter(l => l.status === "perdido" && l.perdido_motivo_cat)
+    .reduce((acc, lead) => {
+      const motivo = lead.perdido_motivo_cat!;
+      const existing = acc.find(item => item.motivo === motivo);
+      if (existing) {
+        existing.total += 1;
+      } else {
+        acc.push({ motivo, total: 1 });
+      }
+      return acc;
+    }, [] as Array<{ motivo: string; total: number }>)
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5) || [];
+
+  const totalPerdidos = leadsData?.filter(l => l.status === "perdido").length || 0;
 
   if (isLoading) {
     return (
@@ -289,7 +307,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Vendas por Produto */}
+        {/* Vendas por Produto e Causas de Perda */}
         <div className="grid gap-6 md:grid-cols-2 mb-8">
           <Card>
             <CardHeader>
@@ -332,10 +350,50 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader>
+              <CardTitle>Principais Causas de Perda</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {causasPerda.length > 0 ? (
+                <div className="space-y-3">
+                  {causasPerda.map((item, idx) => (
+                    <div key={item.motivo} className="flex items-center justify-between p-3 rounded-lg border bg-card">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 font-bold text-sm">
+                          {idx + 1}
+                        </div>
+                        <span className="text-sm font-medium">{item.motivo}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-red-600">{item.total}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {((item.total / totalPerdidos) * 100).toFixed(0)}%
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mt-4 pt-3 border-t">
+                    <p className="text-xs text-muted-foreground text-center">
+                      Total de {totalPerdidos} leads perdidos
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground text-center py-8">
+                  Nenhum lead perdido com motivo registrado
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Performance de Conversão */}
+        <div className="mb-8">
+          <Card>
+            <CardHeader>
               <CardTitle>Performance de Conversão</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
                 <div className="p-4 rounded-lg border bg-card">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium">Taxa de Fechamento</span>
