@@ -237,7 +237,7 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
                 {isLoading ? <Skeleton className="h-8 w-64" /> : `Detalhes do Lead: ${lead?.nome}`}
               </DialogTitle>
               {!isLoading && lead && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mr-8">
                   {canEditLead() && !isEditing && (
                     <Button
                       variant="ghost"
