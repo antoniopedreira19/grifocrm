@@ -5,8 +5,8 @@ import { ExternalLink, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Forms() {
-  const gbcUrl = `${window.location.origin}/form/gbc`;
-  const fastUrl = `${window.location.origin}/form/fast`;
+  const gbcUrl = `https://grifocrm.com.br/form/gbc`;
+  const fastUrl = `https://grifocrm.com.br/form/fast`;
 
   const copyToClipboard = (url: string, name: string) => {
     navigator.clipboard.writeText(url);
@@ -84,21 +84,6 @@ export default function Forms() {
             </CardContent>
           </Card>
         </div>
-
-        <Card className="mt-6 max-w-4xl">
-          <CardHeader>
-            <CardTitle>Integrações</CardTitle>
-            <CardDescription>
-              Configure integrações com Meta Lead Ads, Google Analytics e mais
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              As integrações com Meta Lead Ads e Conversions API, UTM tracking e pixel do Google 
-              serão configuradas em breve. Por enquanto, use os formulários diretos acima.
-            </p>
-          </CardContent>
-        </Card>
       </div>
     </AppLayout>
   );
