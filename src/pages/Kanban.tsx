@@ -17,6 +17,8 @@ import { ProximoContatoModal } from "@/components/kanban/ProximoContatoModal";
 import { GanhoModal } from "@/components/kanban/GanhoModal";
 import { PerdidoModal } from "@/components/kanban/PerdidoModal";
 import { NegociandoModal } from "@/components/kanban/NegociandoModal";
+import { PropostaModal } from "@/components/kanban/PropostaModal";
+import { FollowUpModal } from "@/components/kanban/FollowUpModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,7 +29,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { statusLabels } from "@/utils/labels";
-import type { Status, Produto } from "@/types/lead";
+import type { Status, Produto, TipoPagamento } from "@/types/lead";
 
 interface KanbanLead {
   id: string;
@@ -45,6 +47,11 @@ interface KanbanLead {
   deal_valor?: number | null;
   interesse_mentoria_fast?: boolean | null;
   proximo_contato?: string;
+  tipo_pagamento?: string | null;
+  valor_a_vista?: number | null;
+  valor_parcelado?: number | null;
+  valor_entrada?: number | null;
+  proximo_followup?: string;
 }
 
 interface PendingMove {
@@ -59,6 +66,8 @@ const columns: Status[] = [
   "primeiro_contato",
   "proximo_contato",
   "negociando",
+  "proposta",
+  "followup",
   "ganho",
   "perdido",
 ];
@@ -82,6 +91,8 @@ export default function Kanban() {
   
   const [proximoContatoOpen, setProximoContatoOpen] = useState(false);
   const [negociandoOpen, setNegociandoOpen] = useState(false);
+  const [propostaOpen, setPropostaOpen] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
   const [ganhoOpen, setGanhoOpen] = useState(false);
   const [perdidoOpen, setPerdidoOpen] = useState(false);
 
@@ -100,8 +111,8 @@ export default function Kanban() {
     queryFn: async () => {
       let query = supabase
         .from("leads")
-        .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato")
-        .in("status", ["primeiro_contato", "proximo_contato", "negociando", "ganho", "perdido"]);
+        .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, valor_parcelado, valor_entrada, proximo_followup")
+        .in("status", ["primeiro_contato", "proximo_contato", "negociando", "proposta", "followup", "ganho", "perdido"]);
 
       // Filtro de produto
       if (produtoFilter !== "todos") {
@@ -223,6 +234,8 @@ export default function Kanban() {
       "primeiro_contato",
       "proximo_contato",
       "negociando",
+      "proposta",
+      "followup",
       "ganho",
       "perdido",
     ];
@@ -250,6 +263,18 @@ export default function Kanban() {
     if (toStatus === "negociando") {
       setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus, dealValor: lead.deal_valor });
       setNegociandoOpen(true);
+      return;
+    }
+
+    if (toStatus === "proposta") {
+      setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus });
+      setPropostaOpen(true);
+      return;
+    }
+
+    if (toStatus === "followup") {
+      setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus });
+      setFollowUpOpen(true);
       return;
     }
 
