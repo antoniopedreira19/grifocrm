@@ -39,8 +39,6 @@ const formSchema = z.object({
   objetivo_12m: z.string().optional(),
   preferencia_canal: z.enum(["whatsapp", "telefone", "email"]).optional(),
   preferencia_horario: z.string().optional(),
-  cidade: z.string().optional(),
-  uf: z.string().optional(),
   interesse_mentoria_fast: z.boolean().optional(),
   lgpd: z.boolean().refine((val) => val === true, {
     message: "Você deve aceitar os termos",
@@ -128,11 +126,6 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
           canal: values.preferencia_canal,
           melhor_horario: values.preferencia_horario,
           timezone: "America/Sao_Paulo",
-        },
-        empresa: {
-          cidade: values.cidade,
-          uf: values.uf,
-          pais: "BR",
         },
         lgpd: {
           consent: values.lgpd,
@@ -522,34 +515,6 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                       <FormLabel>Melhor horário</FormLabel>
                       <FormControl>
                         <Input placeholder="Ex: Manhã, tarde, após 18h" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="cidade"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cidade</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Sua cidade" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="uf"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>UF</FormLabel>
-                      <FormControl>
-                        <Input placeholder="SP" maxLength={2} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
