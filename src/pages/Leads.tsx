@@ -16,6 +16,7 @@ import { ptBR } from "date-fns/locale";
 import { statusLabels } from "@/utils/labels";
 import { LeadDetailsModal } from "@/components/lead/LeadDetailsModal";
 import { CreateLeadModal } from "@/components/lead/CreateLeadModal";
+import { formatPhoneNumber, capitalizeName } from "@/lib/utils";
 
 interface Lead {
   id: string;
@@ -220,11 +221,11 @@ export default function Leads() {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => setSelectedLeadId(lead.id)}
                   >
-                    <TableCell className="font-medium">{lead.nome}</TableCell>
+                    <TableCell className="font-medium">{capitalizeName(lead.nome)}</TableCell>
                     <TableCell>
                       <div className="text-sm">
                         <div>{lead.email}</div>
-                        <div className="text-muted-foreground">{lead.telefone}</div>
+                        <div className="text-muted-foreground">{formatPhoneNumber(lead.telefone)}</div>
                       </div>
                     </TableCell>
                     <TableCell>
