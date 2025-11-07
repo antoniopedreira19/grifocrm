@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,11 +10,19 @@ interface GanhoModalProps {
   onClose: () => void;
   onConfirm: (data: { deal_valor: number; observacao: string }) => void;
   leadNome: string;
+  defaultValor?: number;
 }
 
-export function GanhoModal({ open, onClose, onConfirm, leadNome }: GanhoModalProps) {
+export function GanhoModal({ open, onClose, onConfirm, leadNome, defaultValor }: GanhoModalProps) {
   const [dealValor, setDealValor] = useState("");
   const [observacao, setObservacao] = useState("");
+
+  // Atualiza o valor quando o modal abre com um novo defaultValor
+  useEffect(() => {
+    if (open && defaultValor) {
+      setDealValor(defaultValor.toString());
+    }
+  }, [open, defaultValor]);
 
   const handleConfirm = () => {
     const valor = parseFloat(dealValor);

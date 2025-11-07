@@ -39,6 +39,13 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
         produto: formData.produto,
       };
 
+      // Calcular deal_valor padrão baseado no produto
+      if (formData.produto === "fast") {
+        leadData.deal_valor = 18000;
+      } else if (formData.produto === "gbc") {
+        leadData.deal_valor = 120000;
+      }
+
       // Adicionar campos opcionais apenas se preenchidos
       if (formData.rede_social) leadData.rede_social = formData.rede_social;
       if (formData.regiao) leadData.regiao = formData.regiao;

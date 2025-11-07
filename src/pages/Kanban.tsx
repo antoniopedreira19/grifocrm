@@ -41,6 +41,8 @@ interface KanbanLead {
   status: Status;
   score_total?: number | null;
   score_cor?: string | null;
+  deal_valor?: number | null;
+  interesse_mentoria_fast?: boolean | null;
 }
 
 interface PendingMove {
@@ -48,6 +50,7 @@ interface PendingMove {
   leadNome: string;
   fromStatus: Status;
   toStatus: Status;
+  dealValor?: number;
 }
 
 const columns: Status[] = [
@@ -87,7 +90,7 @@ export default function Kanban() {
     queryFn: async () => {
       let query = supabase
         .from("leads")
-        .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor")
+        .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast")
         .in("status", ["primeiro_contato", "proximo_contato", "negociando", "ganho", "perdido"]);
 
       // Filtro de produto
@@ -235,7 +238,18 @@ export default function Kanban() {
     }
 
     if (toStatus === "ganho") {
-      setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus });
+      // Calcular o valor padrão do lead
+      let dealValor = lead.deal_valor;
+      if (!dealValor) {
+        if (lead.produto === "mentoria_fast" || lead.produto === "fast") {
+          dealValor = 18000;
+        } else if (lead.produto === "gbc") {
+          // Se for GBC mas tem interesse em Mentoria Fast, valor é 18k
+          dealValor = lead.interesse_mentoria_fast ? 18000 : 120000;
+        }
+      }
+      
+      setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus, dealValor });
       setGanhoOpen(true);
       return;
     }
@@ -506,6 +520,7 @@ export default function Kanban() {
         }}
         onConfirm={handleGanhoConfirm}
         leadNome={pendingMove?.leadNome || ""}
+        defaultValor={pendingMove?.dealValor}
       />
 
       <PerdidoModal
