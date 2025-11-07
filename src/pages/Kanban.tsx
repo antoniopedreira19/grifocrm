@@ -16,6 +16,7 @@ import { KanbanCard } from "@/components/kanban/KanbanCard";
 import { ProximoContatoModal } from "@/components/kanban/ProximoContatoModal";
 import { GanhoModal } from "@/components/kanban/GanhoModal";
 import { PerdidoModal } from "@/components/kanban/PerdidoModal";
+import { NegociandoModal } from "@/components/kanban/NegociandoModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,7 +27,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { statusLabels } from "@/utils/labels";
-import type { Status } from "@/types/lead";
+import type { Status, Produto } from "@/types/lead";
 
 interface KanbanLead {
   id: string;
@@ -80,6 +81,7 @@ export default function Kanban() {
   } | null>(null);
   
   const [proximoContatoOpen, setProximoContatoOpen] = useState(false);
+  const [negociandoOpen, setNegociandoOpen] = useState(false);
   const [ganhoOpen, setGanhoOpen] = useState(false);
   const [perdidoOpen, setPerdidoOpen] = useState(false);
 
@@ -245,6 +247,12 @@ export default function Kanban() {
       return;
     }
 
+    if (toStatus === "negociando") {
+      setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus, dealValor: lead.deal_valor });
+      setNegociandoOpen(true);
+      return;
+    }
+
     if (toStatus === "ganho") {
       // Calcular o valor padrão do lead
       let dealValor = lead.deal_valor;
@@ -333,6 +341,32 @@ export default function Kanban() {
       setPendingMove(null);
     } catch (error) {
       console.error("Erro ao marcar como ganho:", error);
+    }
+  };
+
+  const handleNegociandoConfirm = async (data: { produto: Produto; deal_valor: number }) => {
+    if (!pendingMove) return;
+
+    try {
+      await updateLeadMutation.mutateAsync({
+        leadId: pendingMove.leadId,
+        updates: {
+          status: pendingMove.toStatus,
+          produto: data.produto,
+          deal_valor: data.deal_valor,
+        },
+      });
+
+      await createInteractionMutation.mutateAsync({
+        leadId: pendingMove.leadId,
+        conteudo: `Lead movido para Negociando. Produto: ${data.produto}, Valor: R$ ${data.deal_valor.toFixed(2)}`,
+        tipo: "comentario",
+      });
+
+      setNegociandoOpen(false);
+      setPendingMove(null);
+    } catch (error) {
+      console.error("Erro ao atualizar negociação:", error);
     }
   };
 
@@ -551,6 +585,18 @@ export default function Kanban() {
         onConfirm={handleGanhoConfirm}
         leadNome={pendingMove?.leadNome || ""}
         defaultValor={pendingMove?.dealValor}
+      />
+
+      <NegociandoModal
+        open={negociandoOpen}
+        onClose={() => {
+          setNegociandoOpen(false);
+          setPendingMove(null);
+        }}
+        onConfirm={handleNegociandoConfirm}
+        leadNome={pendingMove?.leadNome || ""}
+        currentProduto={leads.find(l => l.id === pendingMove?.leadId)?.produto}
+        currentValor={pendingMove?.dealValor}
       />
 
       <PerdidoModal
