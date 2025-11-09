@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, TrendingUp, Target, DollarSign } from "lucide-react";
+import { Users, TrendingUp, Target, DollarSign, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -52,7 +52,7 @@ export default function Dashboard() {
       let query = supabase
         .from("leads")
         .select(
-          "id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at, perdido_motivo_cat",
+          "id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at, perdido_motivo_cat, tempo_qualificacao_dias, tempo_negociacao_dias, tempo_total_conversao_dias",
         );
 
       if (produtoFilter !== "todos") {
@@ -166,6 +166,22 @@ export default function Dashboard() {
       .slice(0, 5) || [];
 
   const totalPerdidos = leadsData?.filter((l) => l.status === "perdido").length || 0;
+
+  // Cálculo de métricas de tempo
+  const leadsComQualificacao = leadsData?.filter((l) => l.tempo_qualificacao_dias !== null) || [];
+  const tempoMedioQualificacao = leadsComQualificacao.length > 0
+    ? leadsComQualificacao.reduce((sum, l) => sum + (Number(l.tempo_qualificacao_dias) || 0), 0) / leadsComQualificacao.length
+    : 0;
+
+  const leadsComNegociacao = leadsData?.filter((l) => l.tempo_negociacao_dias !== null) || [];
+  const tempoMedioNegociacao = leadsComNegociacao.length > 0
+    ? leadsComNegociacao.reduce((sum, l) => sum + (Number(l.tempo_negociacao_dias) || 0), 0) / leadsComNegociacao.length
+    : 0;
+
+  const leadsComConversaoTotal = leadsData?.filter((l) => l.tempo_total_conversao_dias !== null) || [];
+  const tempoMedioConversaoTotal = leadsComConversaoTotal.length > 0
+    ? leadsComConversaoTotal.reduce((sum, l) => sum + (Number(l.tempo_total_conversao_dias) || 0), 0) / leadsComConversaoTotal.length
+    : 0;
 
   if (isLoading) {
     return (
@@ -313,6 +329,57 @@ export default function Dashboard() {
                   {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valorPipeline)}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">{leadsNegociando} deals em negociação</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Métricas de Tempo de Conversão */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">⏱️ Tempo de Conversão</h2>
+          <div className="grid gap-6 md:grid-cols-3">
+            <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Tempo Médio em Qualificação</CardTitle>
+                <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {tempoMedioQualificacao > 0 ? `${tempoMedioQualificacao.toFixed(1)} dias` : '-'}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {leadsComQualificacao.length} leads com dados
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Tempo Médio em Negociação</CardTitle>
+                <Clock className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {tempoMedioNegociacao > 0 ? `${tempoMedioNegociacao.toFixed(1)} dias` : '-'}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {leadsComNegociacao.length} leads com dados
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/20">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Tempo Total de Conversão</CardTitle>
+                <Clock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  {tempoMedioConversaoTotal > 0 ? `${tempoMedioConversaoTotal.toFixed(1)} dias` : '-'}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {leadsComConversaoTotal.length} leads ganhos
+                </p>
               </CardContent>
             </Card>
           </div>
