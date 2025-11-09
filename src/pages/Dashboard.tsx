@@ -32,7 +32,7 @@ const statusOrder = [
 
 const produtoLabels: Record<string, string> = {
   gbc: "GBC",
-  mentoria_fast: "Mentoria FAST",
+  mentoria_fast: "Mentoria Fast",
 };
 
 const statusColors: Record<string, string> = {
@@ -349,7 +349,7 @@ export default function Dashboard() {
 
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div>
-                    <p className="font-medium">Mentoria FAST</p>
+                    <p className="font-medium">Mentoria Fast</p>
                     <p className="text-sm text-muted-foreground">{ganhosFast} deals fechados</p>
                   </div>
                   <div className="text-right">

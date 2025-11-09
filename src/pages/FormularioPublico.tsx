@@ -52,7 +52,7 @@ export default function FormularioPublico() {
     return <Navigate to="/" replace />;
   }
 
-  const formTitle = tipo === "gbc" ? "GRIFO BUILDERS CLUB" : "MENTORIA FAST";
+  const formTitle = tipo === "gbc" ? "GRIFO BUILDERS CLUB" : "Mentoria Fast";
   const formSubtitle =
     tipo === "gbc"
       ? "Programa exclusivo para empresários que querem acelerar seus resultados"
