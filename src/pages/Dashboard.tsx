@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, TrendingUp, Target, DollarSign, Clock } from "lucide-react";
+import { Users, TrendingUp, Target, DollarSign, Clock, AlertCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -68,7 +68,9 @@ export default function Dashboard() {
   const totalLeads = leadsData?.length || 0;
   const leadsNegociando = leadsData?.filter((l) => l.status === "negociando").length || 0;
   const leadsGanhos = leadsData?.filter((l) => l.status === "ganho").length || 0;
+  const leadsPerdidos = leadsData?.filter((l) => l.status === "perdido").length || 0;
   const taxaConversao = totalLeads > 0 ? ((leadsGanhos / totalLeads) * 100).toFixed(1) : "0";
+  const taxaPerdas = totalLeads > 0 ? ((leadsPerdidos / totalLeads) * 100).toFixed(1) : "0";
 
   // Cálculo do valor total de deals ganhos
   const valorTotalGanho =
@@ -268,12 +270,12 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Valor em Pipeline</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Taxa de Perdas</CardTitle>
+              <AlertCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">R$ {valorPipeline.toLocaleString("pt-BR")}</div>
-              <p className="text-xs text-muted-foreground mt-1">Deals em negociação</p>
+              <div className="text-2xl font-bold">{taxaPerdas}%</div>
+              <p className="text-xs text-muted-foreground mt-1">{leadsPerdidos} leads perdidos</p>
             </CardContent>
           </Card>
         </div>
