@@ -177,6 +177,11 @@ export type Database = {
           capacidade_investimento_gbc: string | null
           conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at: string
+          data_entrada_negociacao: string | null
+          data_entrada_qualificacao: string | null
+          data_ganho: string | null
+          data_saida_negociacao: string | null
+          data_saida_qualificacao: string | null
           deal_fase: Database["public"]["Enums"]["deal_fase_t"] | null
           deal_valor: number | null
           email: string
@@ -215,6 +220,9 @@ export type Database = {
           status: Database["public"]["Enums"]["status_t"]
           tag_form: string | null
           telefone: string
+          tempo_negociacao_dias: number | null
+          tempo_qualificacao_dias: number | null
+          tempo_total_conversao_dias: number | null
           tipo_pagamento: Database["public"]["Enums"]["tipo_pagamento_t"] | null
           ultima_interacao: string | null
           updated_at: string
@@ -228,6 +236,11 @@ export type Database = {
           capacidade_investimento_gbc?: string | null
           conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at?: string
+          data_entrada_negociacao?: string | null
+          data_entrada_qualificacao?: string | null
+          data_ganho?: string | null
+          data_saida_negociacao?: string | null
+          data_saida_qualificacao?: string | null
           deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
           deal_valor?: number | null
           email: string
@@ -266,6 +279,9 @@ export type Database = {
           status?: Database["public"]["Enums"]["status_t"]
           tag_form?: string | null
           telefone: string
+          tempo_negociacao_dias?: number | null
+          tempo_qualificacao_dias?: number | null
+          tempo_total_conversao_dias?: number | null
           tipo_pagamento?:
             | Database["public"]["Enums"]["tipo_pagamento_t"]
             | null
@@ -281,6 +297,11 @@ export type Database = {
           capacidade_investimento_gbc?: string | null
           conhece_daniel?: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at?: string
+          data_entrada_negociacao?: string | null
+          data_entrada_qualificacao?: string | null
+          data_ganho?: string | null
+          data_saida_negociacao?: string | null
+          data_saida_qualificacao?: string | null
           deal_fase?: Database["public"]["Enums"]["deal_fase_t"] | null
           deal_valor?: number | null
           email?: string
@@ -319,6 +340,9 @@ export type Database = {
           status?: Database["public"]["Enums"]["status_t"]
           tag_form?: string | null
           telefone?: string
+          tempo_negociacao_dias?: number | null
+          tempo_qualificacao_dias?: number | null
+          tempo_total_conversao_dias?: number | null
           tipo_pagamento?:
             | Database["public"]["Enums"]["tipo_pagamento_t"]
             | null
