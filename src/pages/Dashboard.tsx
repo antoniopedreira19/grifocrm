@@ -12,15 +12,15 @@ import { useState } from "react";
 
 const statusLabels: Record<string, string> = {
   primeiro_contato: "Primeiro Contato",
-  proximo_contato: "Próximo Contato",
+  proximo_contato: "Negociação",
   negociando: "Negociando",
   ganho: "Ganho",
-  perdido: "Perdido"
+  perdido: "Perdido",
 };
 
 const produtoLabels: Record<string, string> = {
   gbc: "GBC",
-  mentoria_fast: "Mentoria FAST"
+  mentoria_fast: "Mentoria FAST",
 };
 
 const statusColors: Record<string, string> = {
@@ -28,7 +28,7 @@ const statusColors: Record<string, string> = {
   proximo_contato: "hsl(var(--chart-2))",
   negociando: "hsl(var(--chart-3))",
   ganho: "hsl(var(--chart-4))",
-  perdido: "hsl(var(--chart-5))"
+  perdido: "hsl(var(--chart-5))",
 };
 
 export default function Dashboard() {
@@ -39,12 +39,14 @@ export default function Dashboard() {
     queryFn: async () => {
       let query = supabase
         .from("leads")
-        .select("id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at, perdido_motivo_cat");
-      
+        .select(
+          "id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at, perdido_motivo_cat",
+        );
+
       if (produtoFilter !== "todos") {
         query = query.eq("produto", produtoFilter as any);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data;
@@ -52,94 +54,106 @@ export default function Dashboard() {
   });
 
   const totalLeads = leadsData?.length || 0;
-  const leadsNegociando = leadsData?.filter(l => l.status === "negociando").length || 0;
-  const leadsGanhos = leadsData?.filter(l => l.status === "ganho").length || 0;
+  const leadsNegociando = leadsData?.filter((l) => l.status === "negociando").length || 0;
+  const leadsGanhos = leadsData?.filter((l) => l.status === "ganho").length || 0;
   const taxaConversao = totalLeads > 0 ? ((leadsGanhos / totalLeads) * 100).toFixed(1) : "0";
-  
+
   // Cálculo do valor total de deals ganhos
-  const valorTotalGanho = leadsData
-    ?.filter(l => l.status === "ganho")
-    .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
-  
+  const valorTotalGanho =
+    leadsData?.filter((l) => l.status === "ganho").reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
+
   // Ticket médio dos ganhos
   const ticketMedio = leadsGanhos > 0 ? valorTotalGanho / leadsGanhos : 0;
-  
+
   // Leads ganhos por produto
-  const ganhosGBC = leadsData?.filter(l => l.status === "ganho" && l.produto === "gbc").length || 0;
-  const ganhosFast = leadsData?.filter(l => l.status === "ganho" && l.produto === "mentoria_fast").length || 0;
-  
+  const ganhosGBC = leadsData?.filter((l) => l.status === "ganho" && l.produto === "gbc").length || 0;
+  const ganhosFast = leadsData?.filter((l) => l.status === "ganho" && l.produto === "mentoria_fast").length || 0;
+
   // Valor ganho por produto
-  const valorGanhoGBC = leadsData
-    ?.filter(l => l.status === "ganho" && l.produto === "gbc")
-    .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
-  
-  const valorGanhoFast = leadsData
-    ?.filter(l => l.status === "ganho" && l.produto === "mentoria_fast")
-    .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
-  
-  const valorPipeline = leadsData
-    ?.filter(l => l.status === "negociando")
-    .reduce((sum, l) => {
-      // Se já tem deal_valor definido, usa ele
-      if (l.deal_valor && l.deal_valor > 0) {
-        return sum + Number(l.deal_valor);
-      }
-      
-      // Senão, calcula baseado no produto
-      if (l.produto === "mentoria_fast") {
-        return sum + 18000;
-      } else if (l.produto === "gbc") {
-        // Se for GBC mas tem interesse em Mentoria Fast, valor é 18k
-        return sum + (l.interesse_mentoria_fast ? 18000 : 120000);
-      }
-      
-      return sum;
-    }, 0) || 0;
+  const valorGanhoGBC =
+    leadsData
+      ?.filter((l) => l.status === "ganho" && l.produto === "gbc")
+      .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
 
-  const distribuicaoStatus = leadsData?.reduce((acc, lead) => {
-    const status = lead.status;
-    const existing = acc.find(item => item.status === status);
-    if (existing) {
-      existing.total += 1;
-    } else {
-      acc.push({ status, total: 1 });
-    }
-    return acc;
-  }, [] as Array<{ status: string; total: number }>);
+  const valorGanhoFast =
+    leadsData
+      ?.filter((l) => l.status === "ganho" && l.produto === "mentoria_fast")
+      .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
 
-  const distribuicaoProduto = leadsData?.reduce((acc, lead) => {
-    const produto = lead.produto;
-    const existing = acc.find(item => item.produto === produto);
-    if (existing) {
-      existing.total += 1;
-    } else {
-      acc.push({ produto, total: 1 });
-    }
-    return acc;
-  }, [] as Array<{ produto: string; total: number }>);
+  const valorPipeline =
+    leadsData
+      ?.filter((l) => l.status === "negociando")
+      .reduce((sum, l) => {
+        // Se já tem deal_valor definido, usa ele
+        if (l.deal_valor && l.deal_valor > 0) {
+          return sum + Number(l.deal_valor);
+        }
+
+        // Senão, calcula baseado no produto
+        if (l.produto === "mentoria_fast") {
+          return sum + 18000;
+        } else if (l.produto === "gbc") {
+          // Se for GBC mas tem interesse em Mentoria Fast, valor é 18k
+          return sum + (l.interesse_mentoria_fast ? 18000 : 120000);
+        }
+
+        return sum;
+      }, 0) || 0;
+
+  const distribuicaoStatus = leadsData?.reduce(
+    (acc, lead) => {
+      const status = lead.status;
+      const existing = acc.find((item) => item.status === status);
+      if (existing) {
+        existing.total += 1;
+      } else {
+        acc.push({ status, total: 1 });
+      }
+      return acc;
+    },
+    [] as Array<{ status: string; total: number }>,
+  );
+
+  const distribuicaoProduto = leadsData?.reduce(
+    (acc, lead) => {
+      const produto = lead.produto;
+      const existing = acc.find((item) => item.produto === produto);
+      if (existing) {
+        existing.total += 1;
+      } else {
+        acc.push({ produto, total: 1 });
+      }
+      return acc;
+    },
+    [] as Array<{ produto: string; total: number }>,
+  );
 
   const topLeads = [...(leadsData || [])]
-    .filter(l => l.score_total !== null)
+    .filter((l) => l.score_total !== null)
     .sort((a, b) => (b.score_total || 0) - (a.score_total || 0))
     .slice(0, 10);
 
   // Principais causas de perda
-  const causasPerda = leadsData
-    ?.filter(l => l.status === "perdido" && l.perdido_motivo_cat)
-    .reduce((acc, lead) => {
-      const motivo = lead.perdido_motivo_cat!;
-      const existing = acc.find(item => item.motivo === motivo);
-      if (existing) {
-        existing.total += 1;
-      } else {
-        acc.push({ motivo, total: 1 });
-      }
-      return acc;
-    }, [] as Array<{ motivo: string; total: number }>)
-    .sort((a, b) => b.total - a.total)
-    .slice(0, 5) || [];
+  const causasPerda =
+    leadsData
+      ?.filter((l) => l.status === "perdido" && l.perdido_motivo_cat)
+      .reduce(
+        (acc, lead) => {
+          const motivo = lead.perdido_motivo_cat!;
+          const existing = acc.find((item) => item.motivo === motivo);
+          if (existing) {
+            existing.total += 1;
+          } else {
+            acc.push({ motivo, total: 1 });
+          }
+          return acc;
+        },
+        [] as Array<{ motivo: string; total: number }>,
+      )
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 5) || [];
 
-  const totalPerdidos = leadsData?.filter(l => l.status === "perdido").length || 0;
+  const totalPerdidos = leadsData?.filter((l) => l.status === "perdido").length || 0;
 
   if (isLoading) {
     return (
@@ -147,9 +161,7 @@ export default function Dashboard() {
         <div className="p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground mt-2">
-              Visão geral do pipeline e métricas principais
-            </p>
+            <p className="text-muted-foreground mt-2">Visão geral do pipeline e métricas principais</p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
             {[...Array(4)].map((_, i) => (
@@ -176,9 +188,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-2">
             <div>
               <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-              <p className="text-muted-foreground mt-2">
-                Visão geral do pipeline e métricas principais
-              </p>
+              <p className="text-muted-foreground mt-2">Visão geral do pipeline e métricas principais</p>
             </div>
             <Select value={produtoFilter} onValueChange={setProdutoFilter}>
               <SelectTrigger className="w-[200px]">
@@ -197,63 +207,45 @@ export default function Dashboard() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total de Leads
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total de Leads</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalLeads}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Cadastrados no sistema
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Cadastrados no sistema</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Em Negociação
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Em Negociação</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{leadsNegociando}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Leads ativos no pipeline
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Leads ativos no pipeline</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Taxa de Conversão
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Taxa de Conversão</CardTitle>
               <Target className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{taxaConversao}%</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Leads ganhos / total
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Leads ganhos / total</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Valor em Pipeline
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Valor em Pipeline</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                R$ {valorPipeline.toLocaleString("pt-BR")}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Deals em negociação
-              </p>
+              <div className="text-2xl font-bold">R$ {valorPipeline.toLocaleString("pt-BR")}</div>
+              <p className="text-xs text-muted-foreground mt-1">Deals em negociação</p>
             </CardContent>
           </Card>
         </div>
@@ -264,67 +256,51 @@ export default function Dashboard() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Leads Ganhos
-                </CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Leads Ganhos</CardTitle>
                 <Target className="h-4 w-4 text-green-600 dark:text-green-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">{leadsGanhos}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Deals fechados com sucesso
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">Deals fechados com sucesso</p>
               </CardContent>
             </Card>
 
             <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Valor Total Ganho
-                </CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Valor Total Ganho</CardTitle>
                 <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotalGanho)}
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valorTotalGanho)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Receita total fechada
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">Receita total fechada</p>
               </CardContent>
             </Card>
 
             <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Ticket Médio
-                </CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Ticket Médio</CardTitle>
                 <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ticketMedio)}
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(ticketMedio)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Valor médio por deal
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">Valor médio por deal</p>
               </CardContent>
             </Card>
 
             <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Potencial em Pipeline
-                </CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Potencial em Pipeline</CardTitle>
                 <DollarSign className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorPipeline)}
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valorPipeline)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {leadsNegociando} deals em negociação
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">{leadsNegociando} deals em negociação</p>
               </CardContent>
             </Card>
           </div>
@@ -345,10 +321,16 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-green-600">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorGanhoGBC)}
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                        minimumFractionDigits: 0,
+                      }).format(valorGanhoGBC)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {ganhosGBC > 0 ? `Média: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorGanhoGBC / ganhosGBC)}` : '-'}
+                      {ganhosGBC > 0
+                        ? `Média: ${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0 }).format(valorGanhoGBC / ganhosGBC)}`
+                        : "-"}
                     </p>
                   </div>
                 </div>
@@ -360,10 +342,16 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-green-600">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorGanhoFast)}
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                        minimumFractionDigits: 0,
+                      }).format(valorGanhoFast)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {ganhosFast > 0 ? `Média: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorGanhoFast / ganhosFast)}` : '-'}
+                      {ganhosFast > 0
+                        ? `Média: ${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0 }).format(valorGanhoFast / ganhosFast)}`
+                        : "-"}
                     </p>
                   </div>
                 </div>
@@ -395,9 +383,7 @@ export default function Dashboard() {
                     </div>
                   ))}
                   <div className="mt-4 pt-3 border-t">
-                    <p className="text-xs text-muted-foreground text-center">
-                      Total de {totalPerdidos} leads perdidos
-                    </p>
+                    <p className="text-xs text-muted-foreground text-center">Total de {totalPerdidos} leads perdidos</p>
                   </div>
                 </div>
               ) : (
@@ -423,10 +409,7 @@ export default function Dashboard() {
                     <span className="text-2xl font-bold text-green-600">{taxaConversao}%</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div
-                      className="h-2 rounded-full bg-green-600"
-                      style={{ width: `${taxaConversao}%` }}
-                    />
+                    <div className="h-2 rounded-full bg-green-600" style={{ width: `${taxaConversao}%` }} />
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
                     {leadsGanhos} ganhos de {totalLeads} leads totais
@@ -439,7 +422,12 @@ export default function Dashboard() {
                     <span className="text-2xl font-bold text-blue-600">{leadsNegociando}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Potencial de {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 }).format(valorPipeline)}
+                    Potencial de{" "}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                      minimumFractionDigits: 0,
+                    }).format(valorPipeline)}
                   </p>
                 </div>
               </div>
@@ -465,7 +453,7 @@ export default function Dashboard() {
                             className="h-2 rounded-full"
                             style={{
                               width: `${(item.total / totalLeads) * 100}%`,
-                              backgroundColor: statusColors[item.status]
+                              backgroundColor: statusColors[item.status],
                             }}
                           />
                         </div>
@@ -475,9 +463,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-sm text-muted-foreground text-center py-8">
-                  Nenhum lead cadastrado ainda
-                </div>
+                <div className="text-sm text-muted-foreground text-center py-8">Nenhum lead cadastrado ainda</div>
               )}
             </CardContent>
           </Card>
@@ -498,7 +484,7 @@ export default function Dashboard() {
                             className="h-2 rounded-full"
                             style={{
                               width: `${(item.total / totalLeads) * 100}%`,
-                              backgroundColor: `hsl(var(--chart-${idx + 1}))`
+                              backgroundColor: `hsl(var(--chart-${idx + 1}))`,
                             }}
                           />
                         </div>
@@ -508,9 +494,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-sm text-muted-foreground text-center py-8">
-                  Nenhum lead cadastrado ainda
-                </div>
+                <div className="text-sm text-muted-foreground text-center py-8">Nenhum lead cadastrado ainda</div>
               )}
             </CardContent>
           </Card>
@@ -539,9 +523,7 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-sm text-muted-foreground text-center py-8">
-                Nenhum lead cadastrado ainda
-              </div>
+              <div className="text-sm text-muted-foreground text-center py-8">Nenhum lead cadastrado ainda</div>
             )}
           </CardContent>
         </Card>
