@@ -14,9 +14,21 @@ const statusLabels: Record<string, string> = {
   primeiro_contato: "Primeiro Contato",
   proximo_contato: "Qualificação",
   negociando: "Negociando",
+  proposta: "Proposta",
+  followup: "Followup",
   ganho: "Ganho",
   perdido: "Perdido",
 };
+
+const statusOrder = [
+  "primeiro_contato",
+  "proximo_contato",
+  "negociando",
+  "proposta",
+  "followup",
+  "ganho",
+  "perdido",
+];
 
 const produtoLabels: Record<string, string> = {
   gbc: "GBC",
@@ -444,23 +456,26 @@ export default function Dashboard() {
             <CardContent>
               {distribuicaoStatus && distribuicaoStatus.length > 0 ? (
                 <div className="space-y-4">
-                  {distribuicaoStatus.map((item) => (
-                    <div key={item.status} className="flex items-center justify-between">
-                      <span className="text-sm">{statusLabels[item.status] || item.status}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-32 bg-muted rounded-full h-2">
-                          <div
-                            className="h-2 rounded-full"
-                            style={{
-                              width: `${(item.total / totalLeads) * 100}%`,
-                              backgroundColor: statusColors[item.status],
-                            }}
-                          />
+                  {statusOrder
+                    .map((status) => distribuicaoStatus.find((item) => item.status === status))
+                    .filter((item) => item !== undefined)
+                    .map((item) => (
+                      <div key={item.status} className="flex items-center justify-between">
+                        <span className="text-sm">{statusLabels[item.status] || item.status}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-32 bg-muted rounded-full h-2">
+                            <div
+                              className="h-2 rounded-full"
+                              style={{
+                                width: `${(item.total / totalLeads) * 100}%`,
+                                backgroundColor: statusColors[item.status],
+                              }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium w-12 text-right">{item.total}</span>
                         </div>
-                        <span className="text-sm font-medium w-12 text-right">{item.total}</span>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               ) : (
                 <div className="text-sm text-muted-foreground text-center py-8">Nenhum lead cadastrado ainda</div>
