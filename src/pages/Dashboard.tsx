@@ -345,10 +345,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {tempoMedioQualificacao > 0 ? `${tempoMedioQualificacao.toFixed(1)} dias` : '-'}
+                  {leadsComQualificacao.length > 0 ? `${tempoMedioQualificacao.toFixed(1)} dias` : '-'}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {leadsComQualificacao.length} leads com dados
+                  {leadsComQualificacao.length > 0 ? `${leadsComQualificacao.length} leads analisados` : 'Aguardando dados'}
                 </p>
               </CardContent>
             </Card>
@@ -360,10 +360,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {tempoMedioNegociacao > 0 ? `${tempoMedioNegociacao.toFixed(1)} dias` : '-'}
+                  {leadsComNegociacao.length > 0 ? `${tempoMedioNegociacao.toFixed(1)} dias` : '-'}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {leadsComNegociacao.length} leads com dados
+                  {leadsComNegociacao.length > 0 ? `${leadsComNegociacao.length} leads analisados` : 'Aguardando dados'}
                 </p>
               </CardContent>
             </Card>
@@ -375,10 +375,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                  {tempoMedioConversaoTotal > 0 ? `${tempoMedioConversaoTotal.toFixed(1)} dias` : '-'}
+                  {leadsComConversaoTotal.length > 0 ? `${tempoMedioConversaoTotal.toFixed(1)} dias` : '-'}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {leadsComConversaoTotal.length} leads ganhos
+                  {leadsComConversaoTotal.length > 0 ? `${leadsComConversaoTotal.length} leads ganhos` : 'Aguardando conversões'}
                 </p>
               </CardContent>
             </Card>
