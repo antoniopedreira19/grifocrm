@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { statusLabels } from "@/utils/labels";
+import { statusLabels, origemLabels } from "@/utils/labels";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Mail, Phone, Hash, User, Building2, DollarSign, MapPin, Calendar, Target, Pencil, X, Save } from "lucide-react";
@@ -55,6 +55,7 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
     interesse: lead.interesse,
     conhece_daniel: lead.conhece_daniel,
     faixa_investimento: lead.faixa_investimento || "",
+    origem: lead.origem || "",
   });
 
   const handleSave = () => {
@@ -77,6 +78,7 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
       interesse: lead.interesse,
       conhece_daniel: lead.conhece_daniel,
       faixa_investimento: lead.faixa_investimento || "",
+      origem: lead.origem || "",
     });
     if (onCancel) {
       onCancel();
@@ -459,18 +461,44 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
             <CardHeader>
               <CardTitle className="text-lg">Informações do Sistema</CardTitle>
             </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="text-sm">
-              <span className="font-medium">Origem:</span>
-              <span className="ml-2 text-muted-foreground">{lead.origem || "Não informado"}</span>
-            </div>
+            <CardContent className="space-y-3">
+              {isEditing ? (
+                <div className="space-y-2">
+                  <Label htmlFor="origem">Origem</Label>
+                  <Select 
+                    value={editedData.origem} 
+                    onValueChange={(value) => setEditedData({...editedData, origem: value})}
+                  >
+                    <SelectTrigger id="origem">
+                      <SelectValue placeholder="Selecione a origem" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="lp_gbc">LP GBC</SelectItem>
+                      <SelectItem value="lp_fast">LP Fast</SelectItem>
+                      <SelectItem value="criativo_x">Criativo X</SelectItem>
+                      <SelectItem value="instagram">Instagram</SelectItem>
+                      <SelectItem value="board">Board</SelectItem>
+                      <SelectItem value="meta_lead_ads">Meta Lead Ads</SelectItem>
+                      <SelectItem value="social_seller">Social Seller</SelectItem>
+                      <SelectItem value="outro">Outro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div className="text-sm">
+                  <span className="font-medium">Origem:</span>
+                  <span className="ml-2 text-muted-foreground">
+                    {lead.origem ? origemLabels[lead.origem as keyof typeof origemLabels] : "Não informado"}
+                  </span>
+                </div>
+              )}
             
-            <div className="text-sm">
-              <span className="font-medium">Criado em:</span>
-              <span className="ml-2 text-muted-foreground">
-                {format(new Date(lead.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-              </span>
-            </div>
+              <div className="text-sm">
+                <span className="font-medium">Criado em:</span>
+                <span className="ml-2 text-muted-foreground">
+                  {format(new Date(lead.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                </span>
+              </div>
             </CardContent>
           </Card>
         </div>
