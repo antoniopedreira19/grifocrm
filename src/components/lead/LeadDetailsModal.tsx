@@ -191,7 +191,15 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
   });
 
   const handleSaveLead = async (updatedData: any) => {
-    await updateLeadMutation.mutateAsync(updatedData);
+    // Converter strings vazias em null para campos enum
+    const cleanedData = {
+      ...updatedData,
+      origem: updatedData.origem === "" ? null : updatedData.origem,
+      rede_social: updatedData.rede_social === "" ? null : updatedData.rede_social,
+      regiao: updatedData.regiao === "" ? null : updatedData.regiao,
+      faixa_investimento: updatedData.faixa_investimento === "" ? null : updatedData.faixa_investimento,
+    };
+    await updateLeadMutation.mutateAsync(cleanedData);
   };
 
   // Check permissions

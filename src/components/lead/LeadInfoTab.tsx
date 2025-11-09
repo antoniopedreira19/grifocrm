@@ -466,13 +466,14 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
                 <div className="space-y-2">
                   <Label htmlFor="origem">Origem</Label>
                   <Select 
-                    value={editedData.origem} 
-                    onValueChange={(value) => setEditedData({...editedData, origem: value})}
+                    value={editedData.origem || "none"} 
+                    onValueChange={(value) => setEditedData({...editedData, origem: value === "none" ? "" : value})}
                   >
                     <SelectTrigger id="origem">
                       <SelectValue placeholder="Selecione a origem" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="none">Não informado</SelectItem>
                       <SelectItem value="lp_gbc">LP GBC</SelectItem>
                       <SelectItem value="lp_fast">LP Fast</SelectItem>
                       <SelectItem value="criativo_x">Criativo X</SelectItem>
