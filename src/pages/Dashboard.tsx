@@ -12,7 +12,7 @@ import { useState } from "react";
 
 const statusLabels: Record<string, string> = {
   primeiro_contato: "Primeiro Contato",
-  proximo_contato: "Negociação",
+  proximo_contato: "Qualificação",
   negociando: "Negociando",
   ganho: "Ganho",
   perdido: "Perdido",
