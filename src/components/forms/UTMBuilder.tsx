@@ -1,11 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Copy, ExternalLink, Link2 } from "lucide-react";
+import { Copy, ExternalLink, Link2, Trash2, Save } from "lucide-react";
 import { toast } from "sonner";
+
+interface SavedLink {
+  id: string;
+  url: string;
+  formType: string;
+  utmParams: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+    term?: string;
+    content?: string;
+    id?: string;
+  };
+  createdAt: string;
+}
 
 export function UTMBuilder() {
   const [formType, setFormType] = useState<"gbc" | "fast">("gbc");
@@ -15,6 +30,22 @@ export function UTMBuilder() {
   const [utmTerm, setUtmTerm] = useState("");
   const [utmContent, setUtmContent] = useState("");
   const [utmId, setUtmId] = useState("");
+  const [savedLinks, setSavedLinks] = useState<SavedLink[]>([]);
+
+  // Carregar links salvos do localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("utm-saved-links");
+    if (saved) {
+      setSavedLinks(JSON.parse(saved));
+    }
+  }, []);
+
+  // Salvar no localStorage quando mudar
+  useEffect(() => {
+    if (savedLinks.length > 0) {
+      localStorage.setItem("utm-saved-links", JSON.stringify(savedLinks));
+    }
+  }, [savedLinks]);
 
   const baseUrl = `${window.location.origin}/form/${formType}`;
 
@@ -50,6 +81,35 @@ export function UTMBuilder() {
     setUtmTerm("");
     setUtmContent("");
     setUtmId("");
+  };
+
+  const saveLink = () => {
+    const newLink: SavedLink = {
+      id: Date.now().toString(),
+      url: generatedURL,
+      formType,
+      utmParams: {
+        source: utmSource,
+        medium: utmMedium,
+        campaign: utmCampaign,
+        term: utmTerm,
+        content: utmContent,
+        id: utmId,
+      },
+      createdAt: new Date().toISOString(),
+    };
+    setSavedLinks([newLink, ...savedLinks]);
+    toast.success("Link salvo com sucesso!");
+  };
+
+  const deleteLink = (id: string) => {
+    setSavedLinks(savedLinks.filter((link) => link.id !== id));
+    toast.success("Link removido!");
+  };
+
+  const copyLink = (url: string) => {
+    navigator.clipboard.writeText(url);
+    toast.success("URL copiada!");
   };
 
   return (
@@ -178,6 +238,10 @@ export function UTMBuilder() {
             <Copy className="w-4 h-4 mr-2" />
             Copiar URL
           </Button>
+          <Button variant="outline" onClick={saveLink}>
+            <Save className="w-4 h-4 mr-2" />
+            Salvar
+          </Button>
           <Button variant="outline" onClick={openInNewTab}>
             <ExternalLink className="w-4 h-4 mr-2" />
             Abrir
@@ -186,6 +250,84 @@ export function UTMBuilder() {
             Limpar
           </Button>
         </div>
+
+        {/* Links Salvos */}
+        {savedLinks.length > 0 && (
+          <div className="space-y-3 pt-4 border-t">
+            <Label className="text-base">Links Salvos ({savedLinks.length})</Label>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {savedLinks.map((link) => (
+                <div
+                  key={link.id}
+                  className="p-3 bg-muted/50 rounded-lg space-y-2 hover:bg-muted transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold text-primary px-2 py-0.5 bg-primary/10 rounded">
+                          {link.formType.toUpperCase()}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(link.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                          {new Date(link.createdAt).toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                      <p className="text-xs font-mono break-all text-foreground/80">
+                        {link.url}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {link.utmParams.source && (
+                          <span className="text-xs px-2 py-0.5 bg-background rounded border">
+                            source: {link.utmParams.source}
+                          </span>
+                        )}
+                        {link.utmParams.medium && (
+                          <span className="text-xs px-2 py-0.5 bg-background rounded border">
+                            medium: {link.utmParams.medium}
+                          </span>
+                        )}
+                        {link.utmParams.campaign && (
+                          <span className="text-xs px-2 py-0.5 bg-background rounded border">
+                            campaign: {link.utmParams.campaign}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-1 flex-shrink-0">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => copyLink(link.url)}
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => window.open(link.url, "_blank")}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        onClick={() => deleteLink(link.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Dicas */}
         <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
