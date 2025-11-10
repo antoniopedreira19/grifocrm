@@ -24,11 +24,6 @@ export default function Forms() {
           </p>
         </div>
 
-        {/* UTM Builder */}
-        <div className="mb-8">
-          <UTMBuilder />
-        </div>
-
         {/* Links Base dos Formulários */}
         <div className="mb-4">
           <h2 className="text-xl font-semibold text-foreground">Links Base</h2>
@@ -97,6 +92,11 @@ export default function Forms() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* UTM Builder */}
+        <div className="mt-8">
+          <UTMBuilder />
         </div>
       </div>
     </AppLayout>
