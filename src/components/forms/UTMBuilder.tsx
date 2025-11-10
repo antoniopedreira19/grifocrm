@@ -51,7 +51,7 @@ export function UTMBuilder() {
 
   const generateURL = () => {
     const params = new URLSearchParams();
-    
+
     if (utmSource) params.append("utm_source", utmSource);
     if (utmMedium) params.append("utm_medium", utmMedium);
     if (utmCampaign) params.append("utm_campaign", utmCampaign);
@@ -119,9 +119,7 @@ export function UTMBuilder() {
           <Link2 className="w-5 h-5 text-primary" />
           <CardTitle>Gerador de Links com UTM</CardTitle>
         </div>
-        <CardDescription>
-          Crie links rastreáveis para suas campanhas de marketing
-        </CardDescription>
+        <CardDescription>Crie links rastreáveis para suas campanhas de marketing</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Seleção do Formulário */}
@@ -159,23 +157,18 @@ export function UTMBuilder() {
               Mídia (utm_medium)
               <span className="text-muted-foreground text-xs ml-1">ex: cpc, email</span>
             </Label>
-            <Input
-              id="utm_medium"
-              placeholder="cpc"
-              value={utmMedium}
-              onChange={(e) => setUtmMedium(e.target.value)}
-            />
+            <Input id="utm_medium" placeholder="cpc" value={utmMedium} onChange={(e) => setUtmMedium(e.target.value)} />
           </div>
 
           {/* UTM Campaign */}
           <div className="space-y-2">
             <Label htmlFor="utm_campaign">
               Campanha (utm_campaign)
-              <span className="text-muted-foreground text-xs ml-1">ex: lancamento_2024</span>
+              <span className="text-muted-foreground text-xs ml-1">ex: criativo_x</span>
             </Label>
             <Input
               id="utm_campaign"
-              placeholder="lancamento_2024"
+              placeholder="criativo_x"
               value={utmCampaign}
               onChange={(e) => setUtmCampaign(e.target.value)}
             />
@@ -215,21 +208,14 @@ export function UTMBuilder() {
               ID (utm_id)
               <span className="text-muted-foreground text-xs ml-1">ex: abc123</span>
             </Label>
-            <Input
-              id="utm_id"
-              placeholder="abc123"
-              value={utmId}
-              onChange={(e) => setUtmId(e.target.value)}
-            />
+            <Input id="utm_id" placeholder="abc123" value={utmId} onChange={(e) => setUtmId(e.target.value)} />
           </div>
         </div>
 
         {/* URL Gerada */}
         <div className="space-y-2">
           <Label>URL Gerada</Label>
-          <div className="p-3 bg-muted rounded-lg text-sm font-mono break-all">
-            {generatedURL}
-          </div>
+          <div className="p-3 bg-muted rounded-lg text-sm font-mono break-all">{generatedURL}</div>
         </div>
 
         {/* Ações */}
@@ -257,10 +243,7 @@ export function UTMBuilder() {
             <Label className="text-base">Links Salvos ({savedLinks.length})</Label>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {savedLinks.map((link) => (
-                <div
-                  key={link.id}
-                  className="p-3 bg-muted/50 rounded-lg space-y-2 hover:bg-muted transition-colors"
-                >
+                <div key={link.id} className="p-3 bg-muted/50 rounded-lg space-y-2 hover:bg-muted transition-colors">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -268,16 +251,14 @@ export function UTMBuilder() {
                           {link.formType.toUpperCase()}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(link.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                          {new Date(link.createdAt).toLocaleTimeString('pt-BR', {
-                            hour: '2-digit',
-                            minute: '2-digit',
+                          {new Date(link.createdAt).toLocaleDateString("pt-BR")} às{" "}
+                          {new Date(link.createdAt).toLocaleTimeString("pt-BR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
                           })}
                         </span>
                       </div>
-                      <p className="text-xs font-mono break-all text-foreground/80">
-                        {link.url}
-                      </p>
+                      <p className="text-xs font-mono break-all text-foreground/80">{link.url}</p>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {link.utmParams.source && (
                           <span className="text-xs px-2 py-0.5 bg-background rounded border">
@@ -297,12 +278,7 @@ export function UTMBuilder() {
                       </div>
                     </div>
                     <div className="flex gap-1 flex-shrink-0">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8"
-                        onClick={() => copyLink(link.url)}
-                      >
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => copyLink(link.url)}>
                         <Copy className="w-4 h-4" />
                       </Button>
                       <Button
@@ -333,11 +309,21 @@ export function UTMBuilder() {
         <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
           <p className="font-semibold text-foreground">💡 Dicas de uso:</p>
           <ul className="space-y-1 text-muted-foreground ml-4">
-            <li>• <strong>utm_source:</strong> De onde vem o tráfego (google, facebook, instagram, email)</li>
-            <li>• <strong>utm_medium:</strong> Tipo de mídia (cpc, organic, social, email, referral)</li>
-            <li>• <strong>utm_campaign:</strong> Nome da campanha específica</li>
-            <li>• <strong>utm_term:</strong> Palavras-chave para anúncios pagos</li>
-            <li>• <strong>utm_content:</strong> Diferenciar versões de anúncios ou links</li>
+            <li>
+              • <strong>utm_source:</strong> De onde vem o tráfego (google, facebook, instagram, email)
+            </li>
+            <li>
+              • <strong>utm_medium:</strong> Tipo de mídia (cpc, organic, social, email, referral)
+            </li>
+            <li>
+              • <strong>utm_campaign:</strong> Nome da campanha específica
+            </li>
+            <li>
+              • <strong>utm_term:</strong> Palavras-chave para anúncios pagos
+            </li>
+            <li>
+              • <strong>utm_content:</strong> Diferenciar versões de anúncios ou links
+            </li>
           </ul>
         </div>
       </CardContent>
