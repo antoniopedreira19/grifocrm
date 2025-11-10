@@ -11,8 +11,11 @@ interface UTMParams {
   utm_campaign?: string;
   utm_term?: string;
   utm_content?: string;
+  utm_id?: string;
   gclid?: string;
   fbclid?: string;
+  referrer?: string;
+  landing_page?: string;
 }
 
 export default function FormularioPublico() {
@@ -21,15 +24,18 @@ export default function FormularioPublico() {
   const [utmParams, setUtmParams] = useState<UTMParams>({});
 
   useEffect(() => {
-    // Captura UTMs e CLIDs da URL ao carregar
+    // Captura UTMs, CLIDs, referrer e landing page
     const params: UTMParams = {
-      utm_source: searchParams.get("utm_source") || undefined,
-      utm_medium: searchParams.get("utm_medium") || undefined,
-      utm_campaign: searchParams.get("utm_campaign") || undefined,
-      utm_term: searchParams.get("utm_term") || undefined,
-      utm_content: searchParams.get("utm_content") || undefined,
-      gclid: searchParams.get("gclid") || undefined,
-      fbclid: searchParams.get("fbclid") || undefined,
+      utm_source: searchParams.get("utm_source") || "",
+      utm_medium: searchParams.get("utm_medium") || "",
+      utm_campaign: searchParams.get("utm_campaign") || "",
+      utm_term: searchParams.get("utm_term") || "",
+      utm_content: searchParams.get("utm_content") || "",
+      utm_id: searchParams.get("utm_id") || "",
+      gclid: searchParams.get("gclid") || "",
+      fbclid: searchParams.get("fbclid") || "",
+      referrer: document.referrer || "",
+      landing_page: window.location.href || "",
     };
     setUtmParams(params);
   }, [searchParams]);

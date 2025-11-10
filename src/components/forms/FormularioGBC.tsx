@@ -54,8 +54,11 @@ interface FormularioGBCProps {
     utm_campaign?: string;
     utm_term?: string;
     utm_content?: string;
+    utm_id?: string;
     gclid?: string;
     fbclid?: string;
+    referrer?: string;
+    landing_page?: string;
   };
 }
 
@@ -108,6 +111,22 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
     setIsSubmitting(true);
 
     try {
+      // Calcula origem automaticamente baseado nas regras
+      let calculatedOrigem = "lp_gbc"; // default
+      const medium = (utmParams.utm_medium || "").toLowerCase();
+      const source = (utmParams.utm_source || "").toLowerCase();
+      const ref = (utmParams.referrer || "").toLowerCase();
+
+      if (["cpc", "paid", "ads"].includes(medium)) {
+        calculatedOrigem = "meta_lead_ads";
+      } else if (["lp_fast", "lp_gbc"].includes(source)) {
+        calculatedOrigem = source;
+      } else if (ref.includes("instagram.com")) {
+        calculatedOrigem = "instagram";
+      } else if (ref.includes("google.")) {
+        calculatedOrigem = "instagram"; // organic google -> instagram como fallback
+      }
+
       const formAnswers = {
         schema_version: "1.1",
         form: "gbc",
@@ -148,14 +167,17 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
           p_conhece_daniel: values.conhece_daniel,
           p_interesse: values.interesse,
           p_faixa_investimento: values.faixa_investimento || null,
-          p_origem: "lp_gbc",
-          p_utm_source: utmParams.utm_source || null,
-          p_utm_medium: utmParams.utm_medium || null,
-          p_utm_campaign: utmParams.utm_campaign || null,
-          p_utm_term: utmParams.utm_term || null,
-          p_utm_content: utmParams.utm_content || null,
-          p_gclid: utmParams.gclid || null,
-          p_fbclid: utmParams.fbclid || null,
+          p_origem: calculatedOrigem,
+          p_utm_source: utmParams.utm_source || "",
+          p_utm_medium: utmParams.utm_medium || "",
+          p_utm_campaign: utmParams.utm_campaign || "",
+          p_utm_term: utmParams.utm_term || "",
+          p_utm_content: utmParams.utm_content || "",
+          p_utm_id: utmParams.utm_id || "",
+          p_referrer: utmParams.referrer || "",
+          p_landing_page: utmParams.landing_page || "",
+          p_gclid: utmParams.gclid || "",
+          p_fbclid: utmParams.fbclid || "",
           p_tag_form: "form_gbc",
           p_form_answers: formAnswers,
         } as any,
