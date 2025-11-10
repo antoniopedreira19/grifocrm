@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { UTMBuilder } from "@/components/forms/UTMBuilder";
 
 export default function Forms() {
   const gbcUrl = `https://grifocrm.com.br/form/gbc`;
@@ -19,7 +20,20 @@ export default function Forms() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground">Formulários</h1>
           <p className="text-muted-foreground mt-2">
-            Links públicos para captação de leads
+            Links públicos para captação de leads e gerador de URLs com rastreamento
+          </p>
+        </div>
+
+        {/* UTM Builder */}
+        <div className="mb-8">
+          <UTMBuilder />
+        </div>
+
+        {/* Links Base dos Formulários */}
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold text-foreground">Links Base</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            URLs dos formulários sem parâmetros de rastreamento
           </p>
         </div>
 
