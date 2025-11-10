@@ -189,10 +189,13 @@ export type Database = {
           fast_peso_geral: number | null
           faturamento_2024: Database["public"]["Enums"]["faturamento_t"] | null
           faturamento_2025: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid: string | null
           form_answers: Json | null
+          gclid: string | null
           id: string
           interesse: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast: boolean | null
+          landing_page: string | null
           modelo_negocio: string | null
           motivo_ser_escolhido: string | null
           nao_interesse_motivo: string | null
@@ -210,6 +213,7 @@ export type Database = {
           proximo_contato: string | null
           proximo_followup: string | null
           rede_social: string | null
+          referrer: string | null
           regiao: string | null
           responsavel: string | null
           score_cor: Database["public"]["Enums"]["score_cor_t"] | null
@@ -226,6 +230,12 @@ export type Database = {
           tipo_pagamento: Database["public"]["Enums"]["tipo_pagamento_t"] | null
           ultima_interacao: string | null
           updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_id: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
           valor_a_vista: number | null
           valor_entrada: number | null
           valor_parcelado: number | null
@@ -248,10 +258,13 @@ export type Database = {
           fast_peso_geral?: number | null
           faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
           faturamento_2025?: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid?: string | null
           form_answers?: Json | null
+          gclid?: string | null
           id?: string
           interesse?: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast?: boolean | null
+          landing_page?: string | null
           modelo_negocio?: string | null
           motivo_ser_escolhido?: string | null
           nao_interesse_motivo?: string | null
@@ -269,6 +282,7 @@ export type Database = {
           proximo_contato?: string | null
           proximo_followup?: string | null
           rede_social?: string | null
+          referrer?: string | null
           regiao?: string | null
           responsavel?: string | null
           score_cor?: Database["public"]["Enums"]["score_cor_t"] | null
@@ -287,6 +301,12 @@ export type Database = {
             | null
           ultima_interacao?: string | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_id?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           valor_a_vista?: number | null
           valor_entrada?: number | null
           valor_parcelado?: number | null
@@ -309,10 +329,13 @@ export type Database = {
           fast_peso_geral?: number | null
           faturamento_2024?: Database["public"]["Enums"]["faturamento_t"] | null
           faturamento_2025?: Database["public"]["Enums"]["faturamento_t"] | null
+          fbclid?: string | null
           form_answers?: Json | null
+          gclid?: string | null
           id?: string
           interesse?: Database["public"]["Enums"]["interesse_t"] | null
           interesse_mentoria_fast?: boolean | null
+          landing_page?: string | null
           modelo_negocio?: string | null
           motivo_ser_escolhido?: string | null
           nao_interesse_motivo?: string | null
@@ -330,6 +353,7 @@ export type Database = {
           proximo_contato?: string | null
           proximo_followup?: string | null
           rede_social?: string | null
+          referrer?: string | null
           regiao?: string | null
           responsavel?: string | null
           score_cor?: Database["public"]["Enums"]["score_cor_t"] | null
@@ -348,6 +372,12 @@ export type Database = {
             | null
           ultima_interacao?: string | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_id?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           valor_a_vista?: number | null
           valor_entrada?: number | null
           valor_parcelado?: number | null
@@ -764,6 +794,37 @@ export type Database = {
               p_telefone: string
               p_utm_campaign?: string
               p_utm_content?: string
+              p_utm_medium?: string
+              p_utm_source?: string
+              p_utm_term?: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
+              p_email: string
+              p_faixa_investimento?: string
+              p_faturamento_2024?: Database["public"]["Enums"]["faturamento_t"]
+              p_faturamento_2025: Database["public"]["Enums"]["faturamento_t"]
+              p_fbclid?: string
+              p_form_answers?: Json
+              p_gclid?: string
+              p_interesse: Database["public"]["Enums"]["interesse_t"]
+              p_landing_page?: string
+              p_modelo_negocio?: string
+              p_nome: string
+              p_num_funcionarios?: number
+              p_origem: Database["public"]["Enums"]["origem_t"]
+              p_produto: Database["public"]["Enums"]["produto_t"]
+              p_rede_social?: string
+              p_referrer?: string
+              p_regiao?: string
+              p_tag_form?: string
+              p_telefone: string
+              p_utm_campaign?: string
+              p_utm_content?: string
+              p_utm_id?: string
               p_utm_medium?: string
               p_utm_source?: string
               p_utm_term?: string
