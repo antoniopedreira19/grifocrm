@@ -47,7 +47,7 @@ export function UTMBuilder() {
     }
   }, [savedLinks]);
 
-  const baseUrl = `${window.location.origin}/form/${formType}`;
+  const baseUrl = `https://grifocrm.com.br/form/${formType}`;
 
   const generateURL = () => {
     const params = new URLSearchParams();
