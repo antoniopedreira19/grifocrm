@@ -332,9 +332,12 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
                 <Building2 className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Nº Funcionários:</span>
                 <span className="text-sm">
-                  {numFuncionariosLabels[lead.num_funcionarios] || 
-                   numFuncionariosLabels[lead.num_funcionarios.replace(/(\d+)(\d{2})$/, '$1_$2')] || 
-                   lead.num_funcionarios}
+                  {(() => {
+                    const value = String(lead.num_funcionarios);
+                    return numFuncionariosLabels[value] || 
+                           numFuncionariosLabels[value.replace(/(\d+)(\d{2})$/, '$1_$2')] || 
+                           value;
+                  })()}
                 </span>
               </div>
             )}
