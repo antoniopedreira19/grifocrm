@@ -331,7 +331,11 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
               <div className="flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Nº Funcionários:</span>
-                <span className="text-sm">{numFuncionariosLabels[lead.num_funcionarios] || lead.num_funcionarios}</span>
+                <span className="text-sm">
+                  {numFuncionariosLabels[lead.num_funcionarios] || 
+                   numFuncionariosLabels[lead.num_funcionarios.replace(/(\d+)(\d{2})$/, '$1_$2')] || 
+                   lead.num_funcionarios}
+                </span>
               </div>
             )}
 
