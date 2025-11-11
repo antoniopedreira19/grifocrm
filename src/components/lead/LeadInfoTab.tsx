@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { statusLabels, origemLabels } from "@/utils/labels";
+import { statusLabels, origemLabels, numFuncionariosLabels } from "@/utils/labels";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Mail, Phone, Hash, User, Building2, DollarSign, MapPin, Calendar, Target, Pencil, X, Save } from "lucide-react";
@@ -242,12 +242,21 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="num_funcionarios">Nº Funcionários</Label>
-                  <Input 
-                    id="num_funcionarios"
-                    type="number"
-                    value={editedData.num_funcionarios || ""} 
-                    onChange={(e) => setEditedData({...editedData, num_funcionarios: parseInt(e.target.value) || null})}
-                  />
+                  <Select 
+                    value={editedData.num_funcionarios} 
+                    onValueChange={(value) => setEditedData({...editedData, num_funcionarios: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ate_10">Até 10</SelectItem>
+                      <SelectItem value="11_25">11-25</SelectItem>
+                      <SelectItem value="26_50">26-50</SelectItem>
+                      <SelectItem value="51_100">51-100</SelectItem>
+                      <SelectItem value="mais_100">Mais de 100</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="regiao">Região</Label>
@@ -322,7 +331,7 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
               <div className="flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Nº Funcionários:</span>
-                <span className="text-sm">{lead.num_funcionarios}</span>
+                <span className="text-sm">{numFuncionariosLabels[lead.num_funcionarios] || lead.num_funcionarios}</span>
               </div>
             )}
 

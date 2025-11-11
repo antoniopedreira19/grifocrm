@@ -54,7 +54,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
       if (formData.regiao) leadData.regiao = formData.regiao;
       if (formData.faturamento_2025) leadData.faturamento_2025 = formData.faturamento_2025;
       if (formData.faturamento_2024) leadData.faturamento_2024 = formData.faturamento_2024;
-      if (formData.num_funcionarios) leadData.num_funcionarios = parseInt(formData.num_funcionarios);
+      if (formData.num_funcionarios) leadData.num_funcionarios = formData.num_funcionarios;
       if (formData.interesse) leadData.interesse = formData.interesse;
       if (formData.conhece_daniel) leadData.conhece_daniel = formData.conhece_daniel;
 
@@ -241,13 +241,21 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="num_funcionarios">Nº de Funcionários</Label>
-                <Input
-                  id="num_funcionarios"
-                  type="number"
+                <Select
                   value={formData.num_funcionarios}
-                  onChange={(e) => setFormData({ ...formData, num_funcionarios: e.target.value })}
-                  placeholder="0"
-                />
+                  onValueChange={(value) => setFormData({ ...formData, num_funcionarios: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ate_10">Até 10</SelectItem>
+                    <SelectItem value="11_25">11-25</SelectItem>
+                    <SelectItem value="26_50">26-50</SelectItem>
+                    <SelectItem value="51_100">51-100</SelectItem>
+                    <SelectItem value="mais_100">Mais de 100</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">

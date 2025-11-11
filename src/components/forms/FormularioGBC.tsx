@@ -86,9 +86,9 @@ const interesseLabels: Record<string, string> = {
 
 const numFuncionariosLabels: Record<string, string> = {
   ate_10: "Até 10",
-  "11_25": "11 a 25",
-  "26_50": "26 a 50",
-  "51_100": "51 a 100",
+  "11_25": "11-25",
+  "26_50": "26-50",
+  "51_100": "51-100",
   mais_100: "Mais de 100",
 };
 

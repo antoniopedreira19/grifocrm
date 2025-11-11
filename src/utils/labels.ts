@@ -22,6 +22,14 @@ export const faturamentoLabels: Record<FaturamentoFaixa, string> = {
   acima_50milhoes: "Acima de R$ 50 milhões",
 };
 
+export const numFuncionariosLabels: Record<string, string> = {
+  ate_10: "Até 10",
+  "11_25": "11-25",
+  "26_50": "26-50",
+  "51_100": "51-100",
+  mais_100: "Mais de 100",
+};
+
 export const conheceDanielLabels: Record<ConheceDaniel, string> = {
   nao_conhece: "Não conhece",
   menos_3_meses: "Menos de 3 meses",
