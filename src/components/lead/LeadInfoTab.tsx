@@ -56,6 +56,7 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
     conhece_daniel: lead.conhece_daniel,
     faixa_investimento: lead.faixa_investimento || "",
     origem: lead.origem || "",
+    deal_valor: lead.deal_valor || "",
   });
 
   const handleSave = () => {
@@ -79,6 +80,7 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
       conhece_daniel: lead.conhece_daniel,
       faixa_investimento: lead.faixa_investimento || "",
       origem: lead.origem || "",
+      deal_valor: lead.deal_valor || "",
     });
     if (onCancel) {
       onCancel();
@@ -385,8 +387,20 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
                 <CardTitle className="text-lg">Informações Financeiras</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {/* Valor do Deal */}
-                {lead.deal_valor && (
+                {/* Valor do Deal - Editável quando ganho */}
+                {isEditing && lead.status === 'ganho' ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="deal_valor">Valor Final do Deal</Label>
+                    <Input
+                      id="deal_valor"
+                      type="number"
+                      step="0.01"
+                      value={editedData.deal_valor || ""}
+                      onChange={(e) => setEditedData({...editedData, deal_valor: e.target.value})}
+                      placeholder="Ex: 120000.00"
+                    />
+                  </div>
+                ) : lead.deal_valor ? (
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm font-medium">Valor do Deal:</span>
@@ -394,7 +408,7 @@ export function LeadInfoTab({ lead, isEditing = false, onCancel, onSave, isSavin
                       {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.deal_valor)}
                     </span>
                   </div>
-                )}
+                ) : null}
 
                 {/* Tipo de Pagamento */}
                 {lead.tipo_pagamento && (

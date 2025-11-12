@@ -198,6 +198,7 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
       rede_social: updatedData.rede_social === "" ? null : updatedData.rede_social,
       regiao: updatedData.regiao === "" ? null : updatedData.regiao,
       faixa_investimento: updatedData.faixa_investimento === "" ? null : updatedData.faixa_investimento,
+      deal_valor: updatedData.deal_valor === "" ? null : parseFloat(updatedData.deal_valor),
     };
     await updateLeadMutation.mutateAsync(cleanedData);
   };
