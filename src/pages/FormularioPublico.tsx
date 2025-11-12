@@ -2,6 +2,7 @@ import { useParams, Navigate, useSearchParams } from "react-router-dom";
 import { FormularioGBC } from "@/components/forms/FormularioGBC";
 import { FormularioFast } from "@/components/forms/FormularioFast";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import grifoIcon from "@/assets/grifo-icon.png";
 import grifoBackground from "@/assets/grifo-background.jpg";
 
@@ -41,33 +42,6 @@ export default function FormularioPublico() {
   }, [searchParams]);
 
   useEffect(() => {
-    // Meta Pixel tracking based on form type
-    const pixelId = tipo === "gbc" ? "1315010886552983" : "1336671737870979";
-    
-    // Load Meta Pixel script
-    (function(f: any, b: Document, e: string, v: string, n: any, t: HTMLScriptElement, s: HTMLScriptElement) {
-      if (f.fbq) return;
-      n = f.fbq = function() {
-        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-      };
-      if (!f._fbq) f._fbq = n;
-      n.push = n;
-      n.loaded = true;
-      n.version = '2.0';
-      n.queue = [];
-      t = b.createElement(e) as HTMLScriptElement;
-      t.async = true;
-      t.src = v;
-      s = b.getElementsByTagName(e)[0] as HTMLScriptElement;
-      s.parentNode!.insertBefore(t, s);
-    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js', null, null as any, null as any);
-    
-    // Initialize pixel and track PageView
-    (window as any).fbq('init', pixelId);
-    (window as any).fbq('track', 'PageView');
-  }, [tipo]);
-
-  useEffect(() => {
     // Atualiza o título do navegador baseado no tipo de formulário
     if (tipo === "gbc") {
       document.title = "Formulário GBC";
@@ -91,8 +65,30 @@ export default function FormularioPublico() {
       ? "Programa exclusivo para empresários que querem acelerar seus resultados"
       : "Mentoria intensiva para transformar seu negócio";
 
+  const pixelId = tipo === "gbc" ? "1315010886552983" : "1336671737870979";
+
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <Helmet>
+        <script>
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${pixelId}');
+            fbq('track', 'PageView');
+          `}
+        </script>
+        <noscript>
+          {`<img height="1" width="1" style="display:none"
+          src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1" />`}
+        </noscript>
+      </Helmet>
       {/* Background with overlay */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat"
