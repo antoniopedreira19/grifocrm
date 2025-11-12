@@ -41,6 +41,33 @@ export default function FormularioPublico() {
   }, [searchParams]);
 
   useEffect(() => {
+    // Meta Pixel tracking based on form type
+    const pixelId = tipo === "gbc" ? "1315010886552983" : "1336671737870979";
+    
+    // Load Meta Pixel script
+    (function(f: any, b: Document, e: string, v: string, n: any, t: HTMLScriptElement, s: HTMLScriptElement) {
+      if (f.fbq) return;
+      n = f.fbq = function() {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = true;
+      n.version = '2.0';
+      n.queue = [];
+      t = b.createElement(e) as HTMLScriptElement;
+      t.async = true;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0] as HTMLScriptElement;
+      s.parentNode!.insertBefore(t, s);
+    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js', null, null as any, null as any);
+    
+    // Initialize pixel and track PageView
+    (window as any).fbq('init', pixelId);
+    (window as any).fbq('track', 'PageView');
+  }, [tipo]);
+
+  useEffect(() => {
     // Atualiza o título do navegador baseado no tipo de formulário
     if (tipo === "gbc") {
       document.title = "Formulário GBC";
