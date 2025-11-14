@@ -750,7 +750,7 @@ export type Database = {
         | "sem_resposta"
         | "outros"
         | "concorrente"
-      produto_t: "gbc" | "mentoria_fast"
+      produto_t: "gbc" | "mentoria_fast" | "board"
       score_cor_t: "verde" | "verde_claro" | "amarelo" | "vermelho" | "cinza"
       status_t:
         | "primeiro_contato"
@@ -923,7 +923,7 @@ export const Constants = {
         "outros",
         "concorrente",
       ],
-      produto_t: ["gbc", "mentoria_fast"],
+      produto_t: ["gbc", "mentoria_fast", "board"],
       score_cor_t: ["verde", "verde_claro", "amarelo", "vermelho", "cinza"],
       status_t: [
         "primeiro_contato",
