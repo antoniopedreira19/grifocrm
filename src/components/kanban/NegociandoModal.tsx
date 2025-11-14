@@ -36,7 +36,7 @@ export function NegociandoModal({
         setDealValor(currentValor.toString());
       } else {
         // Define valor padrão baseado no produto
-        const defaultValue = currentProduto === "mentoria_fast" ? 18000 : 120000;
+        const defaultValue = currentProduto === "mentoria_fast" ? 18000 : currentProduto === "board" ? 2000 : 120000;
         setDealValor(defaultValue.toString());
       }
     }
@@ -46,7 +46,7 @@ export function NegociandoModal({
   const handleProdutoChange = (newProduto: Produto) => {
     setProduto(newProduto);
     // Atualiza valor padrão baseado no produto
-    const defaultValue = newProduto === "mentoria_fast" ? 18000 : 120000;
+    const defaultValue = newProduto === "mentoria_fast" ? 18000 : newProduto === "board" ? 2000 : 120000;
     setDealValor(defaultValue.toString());
   };
 
@@ -84,6 +84,7 @@ export function NegociandoModal({
               <SelectContent>
                 <SelectItem value="gbc">GBC</SelectItem>
                 <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+                <SelectItem value="board">Board</SelectItem>
               </SelectContent>
             </Select>
           </div>
