@@ -12,6 +12,7 @@ import type {
 export const produtoLabels: Record<Produto, string> = {
   gbc: "GBC",
   mentoria_fast: "Mentoria Fast",
+  board: "Board",
 };
 
 export const faturamentoLabels: Record<FaturamentoFaixa, string> = {

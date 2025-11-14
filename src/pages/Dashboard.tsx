@@ -33,6 +33,7 @@ const statusOrder = [
 const produtoLabels: Record<string, string> = {
   gbc: "GBC",
   mentoria_fast: "Mentoria Fast",
+  board: "Board",
 };
 
 const statusColors: Record<string, string> = {
@@ -82,6 +83,7 @@ export default function Dashboard() {
   // Leads ganhos por produto
   const ganhosGBC = leadsData?.filter((l) => l.status === "ganho" && l.produto === "gbc").length || 0;
   const ganhosFast = leadsData?.filter((l) => l.status === "ganho" && l.produto === "mentoria_fast").length || 0;
+  const ganhosBoard = leadsData?.filter((l) => l.status === "ganho" && l.produto === "board").length || 0;
 
   // Valor ganho por produto
   const valorGanhoGBC =
@@ -92,6 +94,11 @@ export default function Dashboard() {
   const valorGanhoFast =
     leadsData
       ?.filter((l) => l.status === "ganho" && l.produto === "mentoria_fast")
+      .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
+
+  const valorGanhoBoard =
+    leadsData
+      ?.filter((l) => l.status === "ganho" && l.produto === "board")
       .reduce((sum, l) => sum + (Number(l.deal_valor) || 0), 0) || 0;
 
   const valorPipeline =
@@ -109,6 +116,8 @@ export default function Dashboard() {
         } else if (l.produto === "gbc") {
           // Se for GBC mas tem interesse em Mentoria Fast, valor é 18k
           return sum + (l.interesse_mentoria_fast ? 18000 : 120000);
+        } else if (l.produto === "board") {
+          return sum + 120000; // Valor padrão para Board
         }
 
         return sum;
@@ -228,6 +237,7 @@ export default function Dashboard() {
                 <SelectItem value="todos">Todos os produtos</SelectItem>
                 <SelectItem value="gbc">GBC</SelectItem>
                 <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+                <SelectItem value="board">Board</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -432,6 +442,27 @@ export default function Dashboard() {
                     <p className="text-xs text-muted-foreground">
                       {ganhosFast > 0
                         ? `Média: ${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0 }).format(valorGanhoFast / ganhosFast)}`
+                        : "-"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
+                  <div>
+                    <p className="font-medium">Board</p>
+                    <p className="text-sm text-muted-foreground">{ganhosBoard} deals fechados</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-green-600">
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                        minimumFractionDigits: 0,
+                      }).format(valorGanhoBoard)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {ganhosBoard > 0
+                        ? `Média: ${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0 }).format(valorGanhoBoard / ganhosBoard)}`
                         : "-"}
                     </p>
                   </div>
