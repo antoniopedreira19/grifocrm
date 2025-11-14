@@ -20,7 +20,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
     nome: "",
     email: "",
     telefone: "",
-    produto: "mentoria_fast" as "mentoria_fast" | "gbc",
+    produto: "mentoria_fast" as "mentoria_fast" | "gbc" | "board",
     rede_social: "",
     regiao: "",
     faturamento_2025: "",
@@ -47,6 +47,8 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
         // Se marcou interesse na mentoria fast, valor é 18k, senão 120k
         leadData.deal_valor = formData.interesse_mentoria_fast ? 18000 : 120000;
         leadData.interesse_mentoria_fast = formData.interesse_mentoria_fast;
+      } else if (formData.produto === "board") {
+        leadData.deal_valor = 2000;
       }
 
       // Adicionar campos opcionais apenas se preenchidos
@@ -164,7 +166,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
                 <Label htmlFor="produto">Produto *</Label>
                 <Select
                   value={formData.produto}
-                  onValueChange={(value: "mentoria_fast" | "gbc") => setFormData({ ...formData, produto: value })}
+                  onValueChange={(value: "mentoria_fast" | "gbc" | "board") => setFormData({ ...formData, produto: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -172,6 +174,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
                   <SelectContent>
                     <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
                     <SelectItem value="gbc">GBC</SelectItem>
+                    <SelectItem value="board">Board</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

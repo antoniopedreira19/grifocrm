@@ -117,7 +117,7 @@ export default function Dashboard() {
           // Se for GBC mas tem interesse em Mentoria Fast, valor é 18k
           return sum + (l.interesse_mentoria_fast ? 18000 : 120000);
         } else if (l.produto === "board") {
-          return sum + 120000; // Valor padrão para Board
+          return sum + 2000; // Valor padrão para Board
         }
 
         return sum;
