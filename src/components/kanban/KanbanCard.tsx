@@ -10,6 +10,7 @@ import { ptBR } from "date-fns/locale";
 import type { Status } from "@/types/lead";
 import { LeadDetailsModal } from "../lead/LeadDetailsModal";
 import { cn } from "@/lib/utils";
+import { produtoLabels } from "@/utils/labels";
 
 interface KanbanLead {
   id: string;
@@ -148,7 +149,7 @@ export function KanbanCard({ lead, status, disabled, onEditProximoContato }: Kan
           {/* Badges */}
           <div className="flex flex-wrap gap-1.5 mb-2">
             <Badge variant="outline" className="text-[10px] font-medium px-1.5 py-0">
-              {lead.produto === "gbc" ? "GBC" : "Fast"}
+              {produtoLabels[lead.produto as keyof typeof produtoLabels] || lead.produto}
             </Badge>
             
             {lead.interesse && (
