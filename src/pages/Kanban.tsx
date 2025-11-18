@@ -558,6 +558,7 @@ export default function Kanban() {
                   <SelectItem value="todos">Todos os produtos</SelectItem>
                   <SelectItem value="gbc">GBC</SelectItem>
                   <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+                  <SelectItem value="board">Board</SelectItem>
                 </SelectContent>
               </Select>
 
