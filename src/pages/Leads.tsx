@@ -55,7 +55,7 @@ export default function Leads() {
 
       // Aplicar filtro de produto
       if (produtoFilter !== "todos") {
-        query = query.eq("produto", produtoFilter as "gbc" | "mentoria_fast");
+        query = query.eq("produto", produtoFilter as "gbc" | "mentoria_fast" | "board");
       }
 
       // Ordenação
@@ -165,6 +165,7 @@ export default function Leads() {
                       <SelectItem value="todos">Todos os produtos</SelectItem>
                       <SelectItem value="gbc">GBC</SelectItem>
                       <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+                      <SelectItem value="board">Board</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
