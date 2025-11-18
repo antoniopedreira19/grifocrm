@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { statusLabels } from "@/utils/labels";
+import { statusLabels, produtoLabels } from "@/utils/labels";
 import { LeadDetailsModal } from "@/components/lead/LeadDetailsModal";
 import { CreateLeadModal } from "@/components/lead/CreateLeadModal";
 import { formatPhoneNumber, capitalizeName } from "@/lib/utils";
@@ -255,7 +255,7 @@ export default function Leads() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {lead.produto === 'gbc' ? 'GBC' : 'Mentoria Fast'}
+                        {produtoLabels[lead.produto as keyof typeof produtoLabels] || lead.produto}
                       </Badge>
                     </TableCell>
                     <TableCell>
