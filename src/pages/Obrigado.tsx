@@ -78,10 +78,6 @@ export default function Obrigado() {
               </p>
             </div>
           )}
-
-          <Button asChild className="w-full mt-6" size="lg">
-            <Link to="/">Voltar ao início</Link>
-          </Button>
         </CardContent>
       </Card>
       </div>
