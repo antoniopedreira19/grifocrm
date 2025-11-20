@@ -17,7 +17,12 @@ import InputMask from "react-input-mask";
 const formSchema = z.object({
   nome: z.string().min(3, "Nome completo é obrigatório"),
   email: z.string().email("E-mail inválido"),
-  telefone: z.string().min(14, "Telefone inválido"),
+  codigo_pais: z.string().default("+55"),
+  telefone: z.string()
+    .min(14, "Telefone inválido")
+    .refine((val) => !val.startsWith("+"), {
+      message: "Digite apenas DDD + número (sem código do país)",
+    }),
   rede_social: z.string().optional(),
   faturamento_2025: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m", "acima_50m"], {
     required_error: "Faturamento 2025 é obrigatório",
@@ -92,6 +97,18 @@ const numFuncionariosLabels: Record<string, string> = {
   mais_100: "Mais de 100",
 };
 
+const paisesLabels: Record<string, string> = {
+  "+55": "🇧🇷 Brasil (+55)",
+  "+351": "🇵🇹 Portugal (+351)",
+  "+1": "🇺🇸 EUA/Canadá (+1)",
+  "+44": "🇬🇧 Reino Unido (+44)",
+  "+34": "🇪🇸 Espanha (+34)",
+  "+54": "🇦🇷 Argentina (+54)",
+  "+56": "🇨🇱 Chile (+56)",
+  "+57": "🇨🇴 Colômbia (+57)",
+  "+52": "🇲🇽 México (+52)",
+};
+
 export function FormularioGBC({ utmParams }: FormularioGBCProps) {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,6 +117,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       lgpd: false,
+      codigo_pais: "+55",
     },
   });
 
@@ -157,7 +175,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
           p_produto: "gbc",
           p_nome: values.nome,
           p_email: values.email,
-          p_telefone: values.telefone.replace(/\D/g, ""),
+          p_telefone: values.codigo_pais + values.telefone.replace(/\D/g, ""),
           p_rede_social: values.rede_social || null,
           p_faturamento_2025: values.faturamento_2025,
           p_faturamento_2024: values.faturamento_2024 || null,
@@ -255,6 +273,31 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
 
                 <FormField
                   control={form.control}
+                  name="codigo_pais"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>País *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o país" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.entries(paisesLabels).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="telefone"
                   render={({ field }) => (
                     <FormItem>
@@ -264,6 +307,9 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                           {(inputProps: any) => <Input placeholder="(00) 00000-0000" {...inputProps} />}
                         </InputMask>
                       </FormControl>
+                      <FormDescription>
+                        Digite apenas DDD + número
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
