@@ -312,13 +312,10 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                       <FormControl>
                         <Input 
                           type="tel" 
-                          placeholder="5571996545751" 
+                          placeholder="" 
                           {...field} 
                         />
                       </FormControl>
-                      <FormDescription>
-                        Digite DDD + número ou código país + DDD + número
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
