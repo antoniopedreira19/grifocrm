@@ -268,31 +268,6 @@ export function FormularioFast({ utmParams }: FormularioFastProps) {
 
                 <FormField
                   control={form.control}
-                  name="codigo_pais"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>País *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o país" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {Object.entries(paisesLabels).map(([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="telefone"
                   render={({ field }) => (
                     <FormItem>
