@@ -19,9 +19,13 @@ const formSchema = z.object({
   email: z.string().email("E-mail inválido"),
   codigo_pais: z.string().default("+55"),
   telefone: z.string()
-    .min(14, "Telefone inválido")
-    .refine((val) => !val.startsWith("+"), {
-      message: "Digite apenas DDD + número (sem código do país)",
+    .min(10, "Telefone inválido")
+    .refine((val) => {
+      const digits = val.replace(/\D/g, "");
+      // Aceita 11 dígitos (DDD + número) ou 13 dígitos (código país + DDD + número)
+      return digits.length === 11 || digits.length === 13;
+    }, {
+      message: "Digite DDD + número (11 dígitos) ou código do país + DDD + número (13 dígitos)",
     }),
   rede_social: z.string().optional(),
   faturamento_2025: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m", "acima_50m"], {
@@ -169,13 +173,17 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
         },
       };
 
+      // Processa o telefone: se já veio com código do país, usa direto; senão, adiciona
+      const cleanPhone = values.telefone.replace(/\D/g, "");
+      const finalPhone = cleanPhone.length === 13 ? cleanPhone : values.codigo_pais + cleanPhone;
+
       const { data, error } = await supabase.rpc(
         "capture_lead_public" as any,
         {
           p_produto: "gbc",
           p_nome: values.nome,
           p_email: values.email,
-          p_telefone: values.codigo_pais + values.telefone.replace(/\D/g, ""),
+          p_telefone: finalPhone,
           p_rede_social: values.rede_social || null,
           p_faturamento_2025: values.faturamento_2025,
           p_faturamento_2024: values.faturamento_2024 || null,
@@ -308,7 +316,7 @@ export function FormularioGBC({ utmParams }: FormularioGBCProps) {
                         </InputMask>
                       </FormControl>
                       <FormDescription>
-                        Digite apenas DDD + número
+                        Digite DDD + número ou código país + DDD + número
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
