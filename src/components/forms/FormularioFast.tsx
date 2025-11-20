@@ -19,13 +19,12 @@ const formSchema = z.object({
   email: z.string().email("E-mail inválido"),
   codigo_pais: z.string().default("+55"),
   telefone: z.string()
-    .min(10, "Telefone inválido")
+    .min(8, "Telefone muito curto")
     .refine((val) => {
       const digits = val.replace(/\D/g, "");
-      // Aceita 11 dígitos (DDD + número) ou 13 dígitos (código país + DDD + número)
-      return digits.length === 11 || digits.length === 13;
+      return digits.length >= 10;
     }, {
-      message: "Digite DDD + número (11 dígitos) ou código do país + DDD + número (13 dígitos)",
+      message: "Digite um número válido",
     }),
   rede_social: z.string().optional(),
   faturamento_2025: z.enum(["ate_500k", "entre_500k_1m", "entre_1m_10m", "entre_10m_50m", "acima_50m"], {
@@ -299,9 +298,11 @@ export function FormularioFast({ utmParams }: FormularioFastProps) {
                     <FormItem>
                       <FormLabel>Telefone *</FormLabel>
                       <FormControl>
-                        <InputMask mask="(99) 99999-9999" {...field}>
-                          {(inputProps: any) => <Input placeholder="(00) 00000-0000" {...inputProps} />}
-                        </InputMask>
+                        <Input 
+                          type="tel" 
+                          placeholder="5571996545751" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormDescription>
                         Digite DDD + número ou código país + DDD + número
