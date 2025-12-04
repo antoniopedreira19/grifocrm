@@ -7,7 +7,7 @@ import webinarCover from "@/assets/webinar-cover.png";
 import danielGedeon from "@/assets/daniel-gedeon.png";
 
 const MasterclassLanding = () => {
-  const ctaUrl = "https://pay.hotmart.com/SEU_LINK_AQUI"; // Replace with actual Hotmart link
+  const ctaUrl = "https://lastlink.com/p/C9F920EE8?cp=MASTER150";
 
   const scrollToVideo = () => {
     document.getElementById('video-section')?.scrollIntoView({ behavior: 'smooth' });
