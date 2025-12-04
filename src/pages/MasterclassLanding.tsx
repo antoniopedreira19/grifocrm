@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Lock, ShieldCheck, Medal, Play } from "lucide-react";
 import grifoIconGold from "@/assets/grifo-icon-gold.png";
+import webinarCover from "@/assets/webinar-cover.png";
 
 const MasterclassLanding = () => {
   const ctaUrl = "https://pay.hotmart.com/SEU_LINK_AQUI"; // Replace with actual Hotmart link
@@ -43,25 +44,11 @@ const MasterclassLanding = () => {
                 </Button>
               </div>
               <div className="flex justify-center">
-                <div className="bg-[#1e2730] p-8 rounded-lg shadow-2xl">
-                  <div className="flex items-end justify-center gap-2 mb-4">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div
-                        key={i}
-                        className={`w-8 h-16 rounded-t-full ${
-                          i === 3 ? "bg-[#b8860b] h-20" : "bg-gray-400"
-                        } flex items-start justify-center pt-2`}
-                      >
-                        <div className={`w-4 h-4 rounded-full ${i === 3 ? "bg-[#b8860b] border-2 border-white" : "bg-gray-300"}`} />
-                      </div>
-                    ))}
-                  </div>
-                  <h2 className="text-white text-xl md:text-2xl font-semibold text-center mt-6">
-                    Como se <span className="text-[#b8860b]">Diferenciar</span>
-                    <br />na Construção Civil
-                  </h2>
-                  <p className="text-gray-400 text-center mt-4 text-sm tracking-widest uppercase">Grifo</p>
-                </div>
+                <img 
+                  src={webinarCover} 
+                  alt="Como se Diferenciar na Construção Civil - Grifo" 
+                  className="rounded-lg shadow-2xl max-w-md w-full"
+                />
               </div>
             </div>
           </div>
