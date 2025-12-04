@@ -122,17 +122,37 @@ export default function Forms() {
               </p>
             </div>
 
-            <Card className="max-w-2xl">
-              <CardContent className="pt-6">
-                <div className="text-center py-8 text-muted-foreground">
-                  <Globe className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg font-medium">Em breve</p>
-                  <p className="text-sm mt-2">
-                    Landing pages personalizadas para suas campanhas serão adicionadas aqui.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid gap-6 md:grid-cols-2 max-w-4xl">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Masterclass Fast Construction</CardTitle>
+                  <CardDescription>
+                    Landing page da masterclass "Como se Diferenciar na Construção Civil"
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-3 bg-muted rounded-lg text-sm font-mono break-all">
+                    https://grifocrm.com.br/links/masterclass
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => copyToClipboard("https://grifocrm.com.br/links/masterclass", "Masterclass")}
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copiar Link
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => window.open("/links/masterclass", "_blank")}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

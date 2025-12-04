@@ -12,6 +12,7 @@ import Kanban from "./pages/Kanban";
 import Forms from "./pages/Forms";
 import FormularioPublico from "./pages/FormularioPublico";
 import Obrigado from "./pages/Obrigado";
+import MasterclassLanding from "./pages/MasterclassLanding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,7 +52,7 @@ const App = () => (
               }
             />
             <Route
-              path="/forms"
+              path="/links"
               element={
                 <ProtectedRoute allowedRoles={['admin', 'closer', 'sdr']}>
                   <Forms />
@@ -65,6 +66,10 @@ const App = () => (
             <Route
               path="/obrigado"
               element={<Obrigado />}
+            />
+            <Route
+              path="/links/masterclass"
+              element={<MasterclassLanding />}
             />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
