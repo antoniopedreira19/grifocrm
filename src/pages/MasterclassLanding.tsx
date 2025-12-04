@@ -4,6 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Lock, ShieldCheck, Medal, Play } from "lucide-react";
 import grifoIconGold from "@/assets/grifo-icon-gold.png";
 import webinarCover from "@/assets/webinar-cover.png";
+import danielGedeon from "@/assets/daniel-gedeon.png";
 
 const MasterclassLanding = () => {
   const ctaUrl = "https://pay.hotmart.com/SEU_LINK_AQUI"; // Replace with actual Hotmart link
@@ -121,14 +122,12 @@ const MasterclassLanding = () => {
               </div>
               <div className="flex justify-center">
                 <div className="relative">
-                  <div className="absolute -inset-4 border-4 border-[#b8860b] rounded-lg" />
-                  <div className="relative bg-[#1e2730] rounded-lg overflow-hidden w-80 h-96 flex items-center justify-center">
-                    <img 
-                      src={grifoIconGold} 
-                      alt="Grifo - Daniel Gedeon" 
-                      className="w-48 h-48 object-contain"
-                    />
-                  </div>
+                  <div className="absolute -inset-4 border-4 border-[#b8860b]" />
+                  <img 
+                    src={danielGedeon} 
+                    alt="Daniel Gedeon - Fundador da Grifo Engenharia" 
+                    className="relative w-80 h-auto object-cover"
+                  />
                 </div>
               </div>
             </div>
