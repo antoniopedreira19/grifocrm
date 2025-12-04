@@ -18,7 +18,7 @@ const MasterclassLanding = () => {
         <meta name="description" content="Aprenda como transformar sua construtora em referência no mercado com gestão financeira sólida, processos independentes e posicionamento de autoridade." />
       </Helmet>
 
-      <div className="min-h-screen bg-[#2a3441]">
+      <div className="min-h-screen bg-[#263238]">
         {/* Hero Section */}
         <section className="relative py-16 md:py-24 px-4">
           <div className="max-w-6xl mx-auto">
@@ -52,13 +52,13 @@ const MasterclassLanding = () => {
                 <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Pe5yzImnXxU" title="Fast Construction - Como se Diferenciar na Construção Civil" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full" />
               </div>
               <div className="space-y-6">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2a3441] uppercase">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#263238] uppercase">
                   Sobre o<br />Conteúdo
                 </h2>
-                <p className="text-[#2a3441] leading-relaxed">
+                <p className="text-[#263238] leading-relaxed">
                   A maioria das construtoras vive a mesma rotina: briga por preço, não sabe se lucra ou perde, depende do dono pra tudo e frustra o cliente. Esse ciclo trava o crescimento — mesmo em um mercado cheio de oportunidades.
                 </p>
-                <div className="space-y-3 text-[#2a3441]">
+                <div className="space-y-3 text-[#263238]">
                   <p className="font-semibold">No Fast Construction, você vai aprender:</p>
                   <ul className="space-y-2 list-none">
                     <li className="flex items-start gap-2">
@@ -79,7 +79,7 @@ const MasterclassLanding = () => {
                     </li>
                   </ul>
                 </div>
-                <p className="text-[#2a3441] font-medium">
+                <p className="text-[#263238] font-medium">
                   Tudo com exemplos reais com cases que transformaram a Grifo em referência no mercado.
                 </p>
               </div>
@@ -88,7 +88,7 @@ const MasterclassLanding = () => {
         </section>
 
         {/* About Daniel Section */}
-        <section className="bg-[#2a3441] py-16 md:py-24 px-4">
+        <section className="bg-[#263238] py-16 md:py-24 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
@@ -113,7 +113,7 @@ const MasterclassLanding = () => {
         {/* CTA Section */}
         <section className="bg-[#d4cfc4] py-16 px-4">
           <div className="max-w-2xl mx-auto text-center space-y-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-[#2a3441] italic uppercase">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#263238] italic uppercase">
               Quero aprender com quem faz.
             </h2>
             <Button asChild className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-12 py-6 uppercase tracking-wide">
@@ -125,7 +125,7 @@ const MasterclassLanding = () => {
         </section>
 
         {/* Practical Content Section */}
-        <section className="bg-[#2a3441] py-16 md:py-24 px-4">
+        <section className="bg-[#263238] py-16 md:py-24 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="flex justify-center">
@@ -146,7 +146,7 @@ const MasterclassLanding = () => {
         {/* Pricing Section */}
         <section className="bg-[#d4cfc4] py-16 md:py-24 px-4">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-[#2a3441] rounded-2xl p-8 md:p-12 relative overflow-hidden">
+            <div className="bg-[#263238] rounded-2xl p-8 md:p-12 relative overflow-hidden">
               {/* Promo Badge */}
               <div className="absolute -right-12 top-8 bg-red-600 text-white px-16 py-2 rotate-45 font-bold text-sm uppercase tracking-wide shadow-lg">
                 Promoção
@@ -212,7 +212,7 @@ const MasterclassLanding = () => {
         </section>
 
         {/* FAQ Section */}
-        <section className="bg-[#2a3441] py-16 md:py-24 px-4">
+        <section className="bg-[#263238] py-16 md:py-24 px-4">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12 uppercase">
               Perguntas Frequentes
@@ -272,10 +272,10 @@ const MasterclassLanding = () => {
         {/* Footer */}
         <footer className="bg-[#d4cfc4] py-8 px-4">
           <div className="max-w-6xl mx-auto text-center">
-            <p className="text-[#2a3441] text-sm uppercase tracking-wide">
+            <p className="text-[#263238] text-sm uppercase tracking-wide">
               Copyright © Grifo Engenharia
             </p>
-            <p className="text-[#2a3441] text-xs mt-2">
+            <p className="text-[#263238] text-xs mt-2">
               Todos os direitos reservados.
             </p>
           </div>
