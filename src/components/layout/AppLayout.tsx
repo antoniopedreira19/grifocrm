@@ -23,7 +23,7 @@ const navigation = [{
   icon: KanbanSquare
 }, {
   name: "Links",
-  href: "/forms",
+  href: "/links",
   icon: FileText
 }];
 function AppSidebar() {
