@@ -5,16 +5,14 @@ import { Lock, ShieldCheck, Medal, Play } from "lucide-react";
 import grifoIconGold from "@/assets/grifo-icon-gold.png";
 import webinarCover from "@/assets/webinar-cover.png";
 import danielGedeon from "@/assets/daniel-gedeon.png";
-
 const MasterclassLanding = () => {
   const ctaUrl = "https://lastlink.com/p/C9F920EE8?cp=MASTER150";
-
   const scrollToVideo = () => {
-    document.getElementById('video-section')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('video-section')?.scrollIntoView({
+      behavior: 'smooth'
+    });
   };
-
-  return (
-    <>
+  return <>
       <Helmet>
         <title>Fast Construction: Como se Diferenciar na Construção Civil | Grifo</title>
         <meta name="description" content="Aprenda como transformar sua construtora em referência no mercado com gestão financeira sólida, processos independentes e posicionamento de autoridade." />
@@ -34,22 +32,13 @@ const MasterclassLanding = () => {
                 <p className="text-gray-300 text-lg leading-relaxed">
                   O mercado da construção civil está aquecido em 2025, mas quem não se diferencia continua invisível.
                 </p>
-                <p className="text-gray-300 leading-relaxed">
-                  Neste webinar, Daniel Gedeon mostra como transformar sua construtora em referência: gestão financeira sólida, processos independentes do dono, equipe engajada e posicionamento de autoridade que atrai clientes maiores.
-                </p>
-                <Button 
-                  onClick={scrollToVideo}
-                  className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-8 py-6 w-full md:w-auto uppercase tracking-wide"
-                >
+                <p className="text-gray-300 leading-relaxed">Nesta Masterclass, Daniel Gedeon mostra como transformar sua construtora em referência: gestão financeira sólida, processos independentes do dono, equipe engajada e posicionamento de autoridade que atrai clientes maiores.</p>
+                <Button onClick={scrollToVideo} className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-8 py-6 w-full md:w-auto uppercase tracking-wide">
                   Quero me diferenciar
                 </Button>
               </div>
               <div className="flex justify-center">
-                <img 
-                  src={webinarCover} 
-                  alt="Como se Diferenciar na Construção Civil - Grifo" 
-                  className="rounded-lg shadow-2xl max-w-md w-full"
-                />
+                <img src={webinarCover} alt="Como se Diferenciar na Construção Civil - Grifo" className="rounded-lg shadow-2xl max-w-md w-full" />
               </div>
             </div>
           </div>
@@ -60,16 +49,7 @@ const MasterclassLanding = () => {
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="aspect-video rounded-lg overflow-hidden shadow-2xl">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src="https://www.youtube.com/embed/Pe5yzImnXxU"
-                  title="Fast Construction - Como se Diferenciar na Construção Civil"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
+                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Pe5yzImnXxU" title="Fast Construction - Como se Diferenciar na Construção Civil" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full" />
               </div>
               <div className="space-y-6">
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2a3441] uppercase">
@@ -123,11 +103,7 @@ const MasterclassLanding = () => {
               <div className="flex justify-center">
                 <div className="relative">
                   <div className="absolute -inset-4 border-4 border-[#b8860b]" />
-                  <img 
-                    src={danielGedeon} 
-                    alt="Daniel Gedeon - Fundador da Grifo Engenharia" 
-                    className="relative w-80 h-auto object-cover"
-                  />
+                  <img src={danielGedeon} alt="Daniel Gedeon - Fundador da Grifo Engenharia" className="relative w-80 h-auto object-cover" />
                 </div>
               </div>
             </div>
@@ -140,10 +116,7 @@ const MasterclassLanding = () => {
             <h2 className="text-2xl md:text-3xl font-bold text-[#2a3441] italic uppercase">
               Quero aprender com quem faz.
             </h2>
-            <Button 
-              asChild
-              className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-12 py-6 uppercase tracking-wide"
-            >
+            <Button asChild className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-12 py-6 uppercase tracking-wide">
               <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                 Comprar Agora
               </a>
@@ -156,11 +129,7 @@ const MasterclassLanding = () => {
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="flex justify-center">
-                <img 
-                  src={grifoIconGold} 
-                  alt="Grifo" 
-                  className="w-64 h-64 object-contain"
-                />
+                <img src={grifoIconGold} alt="Grifo" className="w-64 h-64 object-contain" />
               </div>
               <div className="space-y-6">
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase leading-tight">
@@ -226,12 +195,9 @@ const MasterclassLanding = () => {
                     Economia de R$ 150,00
                   </div>
                   
-                  <p className="text-[#b8860b] font-medium">ou 3x de R$ 32,33</p>
+                  <p className="text-[#b8860b] font-medium">ou 3x de R$ 34,95</p>
                   
-                  <Button 
-                    asChild
-                    className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-12 py-6 w-full uppercase tracking-wide shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                  >
+                  <Button asChild className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-12 py-6 w-full uppercase tracking-wide shadow-lg hover:shadow-xl transition-all hover:scale-105">
                     <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                       Quero Aproveitar
                     </a>
@@ -315,8 +281,6 @@ const MasterclassLanding = () => {
           </div>
         </footer>
       </div>
-    </>
-  );
+    </>;
 };
-
 export default MasterclassLanding;
