@@ -22,7 +22,7 @@ const navigation = [{
   href: "/kanban",
   icon: KanbanSquare
 }, {
-  name: "Formulários",
+  name: "Links",
   href: "/forms",
   icon: FileText
 }];
