@@ -177,7 +177,12 @@ const MasterclassLanding = () => {
         {/* Pricing Section */}
         <section className="bg-[#d4cfc4] py-16 md:py-24 px-4">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-[#2a3441] rounded-2xl p-8 md:p-12">
+            <div className="bg-[#2a3441] rounded-2xl p-8 md:p-12 relative overflow-hidden">
+              {/* Promo Badge */}
+              <div className="absolute -right-12 top-8 bg-red-600 text-white px-16 py-2 rotate-45 font-bold text-sm uppercase tracking-wide shadow-lg">
+                Promoção
+              </div>
+              
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div className="space-y-6">
                   <h3 className="text-2xl md:text-3xl font-bold text-white">
@@ -199,18 +204,36 @@ const MasterclassLanding = () => {
                     </div>
                   </div>
                 </div>
-                <div className="text-center space-y-4">
-                  <p className="text-gray-400">por apenas</p>
-                  <p className="text-5xl md:text-6xl font-bold text-white">
-                    R$ 97,90
+                <div className="text-center space-y-3">
+                  {/* Discount Badge */}
+                  <div className="inline-block bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold uppercase animate-pulse">
+                    🔥 Oferta por tempo limitado
+                  </div>
+                  
+                  <p className="text-gray-400 text-sm">de</p>
+                  <p className="text-2xl text-gray-500 line-through decoration-red-500 decoration-2">
+                    R$ 247,00
                   </p>
-                  <p className="text-[#b8860b]">Parcelado em até 3 vezes</p>
+                  <p className="text-gray-400 text-sm">por apenas</p>
+                  <div className="relative inline-block">
+                    <p className="text-5xl md:text-7xl font-bold text-white">
+                      R$ 97<span className="text-3xl md:text-4xl">,00</span>
+                    </p>
+                  </div>
+                  
+                  {/* Savings Badge */}
+                  <div className="inline-block bg-green-600/20 border border-green-500 text-green-400 px-4 py-2 rounded-lg text-sm font-semibold">
+                    Economia de R$ 150,00
+                  </div>
+                  
+                  <p className="text-[#b8860b] font-medium">ou 3x de R$ 32,33</p>
+                  
                   <Button 
                     asChild
-                    className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-12 py-6 w-full uppercase tracking-wide"
+                    className="bg-[#b8860b] hover:bg-[#9a7209] text-white font-bold text-lg px-12 py-6 w-full uppercase tracking-wide shadow-lg hover:shadow-xl transition-all hover:scale-105"
                   >
                     <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
-                      Comprar Agora
+                      Quero Aproveitar
                     </a>
                   </Button>
                   <p className="text-xs text-gray-400 uppercase tracking-wide">
