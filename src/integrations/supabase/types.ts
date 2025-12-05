@@ -528,23 +528,23 @@ export type Database = {
         | "nao_mas_posso"
         | "nao_nao_consigo"
       lastlink_event_t:
-        | "Carrinho Abandonado"
-        | "Pagamento Estornado"
-        | "Pagamento Reembolsado"
-        | "Compra Completa"
-        | "Pedido de Compra Cancelado"
-        | "Fatura Criada"
-        | "Pedido de Compra Expirada"
-        | "Pagamento de Renovação Efetuado"
-        | "Periodo de Reembolso Terminado"
-        | "Assinatura Cancelada"
-        | "Assinatura Expirada"
-        | "Liberação e remoção de acesso"
-        | "Assinatura Pendente de Renovação"
-        | "Notificar Membro Ativo"
-        | "Início liberação de acesso"
-        | "Fim liberação de acesso"
-        | "Reembolso solicitado"
+        | "Abandoned_Cart"
+        | "Payment_Chargeback"
+        | "Payment_Refund"
+        | "Purchase_Order_Confirmed"
+        | "Purchase_Request_Canceled"
+        | "Purchase_Request_Confirmed"
+        | "Purchase_Request_Expired"
+        | "Recurrent_Payment"
+        | "Refund_Period_Over"
+        | "Subscription_Canceled"
+        | "Subscription_Expired"
+        | "Product_Access_Started"
+        | "Product_Access_Ended"
+        | "Subscription_Product_Access"
+        | "Subscription_Renewal_Pending"
+        | "Active_Member_Notification"
+        | "Refund_Requested"
       origem_t:
         | "lp_gbc"
         | "lp_fast"
@@ -717,23 +717,23 @@ export const Constants = {
         "nao_nao_consigo",
       ],
       lastlink_event_t: [
-        "Carrinho Abandonado",
-        "Pagamento Estornado",
-        "Pagamento Reembolsado",
-        "Compra Completa",
-        "Pedido de Compra Cancelado",
-        "Fatura Criada",
-        "Pedido de Compra Expirada",
-        "Pagamento de Renovação Efetuado",
-        "Periodo de Reembolso Terminado",
-        "Assinatura Cancelada",
-        "Assinatura Expirada",
-        "Liberação e remoção de acesso",
-        "Assinatura Pendente de Renovação",
-        "Notificar Membro Ativo",
-        "Início liberação de acesso",
-        "Fim liberação de acesso",
-        "Reembolso solicitado",
+        "Abandoned_Cart",
+        "Payment_Chargeback",
+        "Payment_Refund",
+        "Purchase_Order_Confirmed",
+        "Purchase_Request_Canceled",
+        "Purchase_Request_Confirmed",
+        "Purchase_Request_Expired",
+        "Recurrent_Payment",
+        "Refund_Period_Over",
+        "Subscription_Canceled",
+        "Subscription_Expired",
+        "Product_Access_Started",
+        "Product_Access_Ended",
+        "Subscription_Product_Access",
+        "Subscription_Renewal_Pending",
+        "Active_Member_Notification",
+        "Refund_Requested",
       ],
       origem_t: [
         "lp_gbc",
