@@ -350,6 +350,33 @@ export type Database = {
           },
         ]
       }
+      products_config: {
+        Row: {
+          categoria: Database["public"]["Enums"]["produto_categoria_t"]
+          created_at: string | null
+          id: string
+          links: Json | null
+          produto: Database["public"]["Enums"]["produto_t"]
+          updated_at: string | null
+        }
+        Insert: {
+          categoria: Database["public"]["Enums"]["produto_categoria_t"]
+          created_at?: string | null
+          id?: string
+          links?: Json | null
+          produto: Database["public"]["Enums"]["produto_t"]
+          updated_at?: string | null
+        }
+        Update: {
+          categoria?: Database["public"]["Enums"]["produto_categoria_t"]
+          created_at?: string | null
+          id?: string
+          links?: Json | null
+          produto?: Database["public"]["Enums"]["produto_t"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       sales_events: {
         Row: {
           created_at: string | null
@@ -561,6 +588,7 @@ export type Database = {
         | "sem_resposta"
         | "outros"
         | "concorrente"
+      produto_categoria_t: "mentorias" | "produtos"
       produto_t: "gbc" | "mentoria_fast" | "board" | "masterclass"
       score_cor_t: "verde" | "verde_claro" | "amarelo" | "vermelho" | "cinza"
       status_t:
@@ -753,6 +781,7 @@ export const Constants = {
         "outros",
         "concorrente",
       ],
+      produto_categoria_t: ["mentorias", "produtos"],
       produto_t: ["gbc", "mentoria_fast", "board", "masterclass"],
       score_cor_t: ["verde", "verde_claro", "amarelo", "vermelho", "cinza"],
       status_t: [

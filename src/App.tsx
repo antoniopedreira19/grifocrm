@@ -13,6 +13,7 @@ import Forms from "./pages/Forms";
 import FormularioPublico from "./pages/FormularioPublico";
 import Obrigado from "./pages/Obrigado";
 import MasterclassLanding from "./pages/MasterclassLanding";
+import ProductsConfig from "./pages/ProductsConfig";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['admin', 'closer', 'sdr']}>
                   <Forms />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/produtos"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <ProductsConfig />
                 </ProtectedRoute>
               }
             />
