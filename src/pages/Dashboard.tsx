@@ -238,6 +238,7 @@ export default function Dashboard() {
                 <SelectItem value="gbc">GBC</SelectItem>
                 <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
                 <SelectItem value="board">Board</SelectItem>
+                <SelectItem value="masterclass">Masterclass</SelectItem>
               </SelectContent>
             </Select>
           </div>
