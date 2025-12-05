@@ -392,6 +392,71 @@ export type Database = {
           },
         ]
       }
+      sales_events: {
+        Row: {
+          created_at: string | null
+          email_cliente: string
+          evento: Database["public"]["Enums"]["lastlink_event_t"]
+          id: string
+          lead_id: string | null
+          payload_completo: Json | null
+          processado: boolean | null
+          produto: Database["public"]["Enums"]["produto_t"] | null
+          valor: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          email_cliente: string
+          evento: Database["public"]["Enums"]["lastlink_event_t"]
+          id?: string
+          lead_id?: string | null
+          payload_completo?: Json | null
+          processado?: boolean | null
+          produto?: Database["public"]["Enums"]["produto_t"] | null
+          valor?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          email_cliente?: string
+          evento?: Database["public"]["Enums"]["lastlink_event_t"]
+          id?: string
+          lead_id?: string | null
+          payload_completo?: Json | null
+          processado?: boolean | null
+          produto?: Database["public"]["Enums"]["produto_t"] | null
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_fast_prioridade"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_gbc_prioridade"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_leads_prioridade_ativas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       v_dashboard_atividade_responsavel: {
@@ -734,6 +799,24 @@ export type Database = {
         | "quero_entender"
         | "nao_mas_posso"
         | "nao_nao_consigo"
+      lastlink_event_t:
+        | "Carrinho Abandonado"
+        | "Pagamento Estornado"
+        | "Pagamento Reembolsado"
+        | "Compra Completa"
+        | "Pedido de Compra Cancelado"
+        | "Fatura Criada"
+        | "Pedido de Compra Expirada"
+        | "Pagamento de Renovação Efetuado"
+        | "Periodo de Reembolso Terminado"
+        | "Assinatura Cancelada"
+        | "Assinatura Expirada"
+        | "Liberação e remoção de acesso"
+        | "Assinatura Pendente de Renovação"
+        | "Notificar Membro Ativo"
+        | "Início liberação de acesso"
+        | "Fim liberação de acesso"
+        | "Reembolso solicitado"
       origem_t:
         | "lp_gbc"
         | "lp_fast"
@@ -750,7 +833,7 @@ export type Database = {
         | "sem_resposta"
         | "outros"
         | "concorrente"
-      produto_t: "gbc" | "mentoria_fast" | "board"
+      produto_t: "gbc" | "mentoria_fast" | "board" | "masterclass"
       score_cor_t: "verde" | "verde_claro" | "amarelo" | "vermelho" | "cinza"
       status_t:
         | "primeiro_contato"
@@ -905,6 +988,25 @@ export const Constants = {
         "nao_mas_posso",
         "nao_nao_consigo",
       ],
+      lastlink_event_t: [
+        "Carrinho Abandonado",
+        "Pagamento Estornado",
+        "Pagamento Reembolsado",
+        "Compra Completa",
+        "Pedido de Compra Cancelado",
+        "Fatura Criada",
+        "Pedido de Compra Expirada",
+        "Pagamento de Renovação Efetuado",
+        "Periodo de Reembolso Terminado",
+        "Assinatura Cancelada",
+        "Assinatura Expirada",
+        "Liberação e remoção de acesso",
+        "Assinatura Pendente de Renovação",
+        "Notificar Membro Ativo",
+        "Início liberação de acesso",
+        "Fim liberação de acesso",
+        "Reembolso solicitado",
+      ],
       origem_t: [
         "lp_gbc",
         "lp_fast",
@@ -923,7 +1025,7 @@ export const Constants = {
         "outros",
         "concorrente",
       ],
-      produto_t: ["gbc", "mentoria_fast", "board"],
+      produto_t: ["gbc", "mentoria_fast", "board", "masterclass"],
       score_cor_t: ["verde", "verde_claro", "amarelo", "vermelho", "cinza"],
       status_t: [
         "primeiro_contato",
