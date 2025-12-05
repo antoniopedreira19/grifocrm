@@ -1,4 +1,4 @@
-export type Produto = "gbc" | "mentoria_fast" | "board";
+export type Produto = "gbc" | "mentoria_fast" | "board" | "masterclass";
 
 export type FaturamentoFaixa = 
   | "ate_500mil" 

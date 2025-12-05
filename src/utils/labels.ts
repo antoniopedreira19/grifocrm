@@ -13,6 +13,7 @@ export const produtoLabels: Record<Produto, string> = {
   gbc: "GBC",
   mentoria_fast: "Mentoria Fast",
   board: "Board",
+  masterclass: "Masterclass - Como se Diferenciar na Construção Civil",
 };
 
 export const faturamentoLabels: Record<FaturamentoFaixa, string> = {
