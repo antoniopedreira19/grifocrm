@@ -41,6 +41,33 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_products: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          external_id: string
+          id: string
+          internal_code: Database["public"]["Enums"]["produto_t"]
+          platform: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          external_id: string
+          id?: string
+          internal_code: Database["public"]["Enums"]["produto_t"]
+          platform?: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          external_id?: string
+          id?: string
+          internal_code?: Database["public"]["Enums"]["produto_t"]
+          platform?: string
+        }
+        Relationships: []
+      }
       interacoes: {
         Row: {
           autor: string
