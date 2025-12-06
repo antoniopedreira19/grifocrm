@@ -32,7 +32,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { statusLabels } from "@/utils/labels";
 import { cn } from "@/lib/utils";
-import type { Status, Produto, TipoPagamento, ProdutoCategoria } from "@/types/lead";
+import type { Status, Produto, TipoPagamento } from "@/types/lead";
+import type { Database } from "@/integrations/supabase/types";
+
+type ProdutoCategoria = Database["public"]["Enums"]["produto_categoria_t"];
+type StatusDB = Database["public"]["Enums"]["status_t"];
 
 // Interface local atualizada com categoria
 interface KanbanLead {
@@ -194,9 +198,9 @@ export default function Kanban() {
             sales_events!inner(evento)
           `,
           )
-          .eq("categoria", "produtos")
-          .in("sales_events.evento", selectedEvents) // Filtra pelos eventos selecionados
-          .in("status", activeColumns); // Apenas colunas visíveis
+          .eq("categoria", "produtos" as ProdutoCategoria)
+          .in("sales_events.evento", selectedEvents as Database["public"]["Enums"]["lastlink_event_t"][])
+          .in("status", activeColumns as StatusDB[]);
 
         // Aplica outros filtros
         if (searchQuery.trim()) query = query.ilike("nome", `%${searchQuery.trim()}%`);
@@ -216,10 +220,10 @@ export default function Kanban() {
         .select(
           "id, nome, produto, categoria, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, valor_parcelado, valor_entrada, proximo_followup",
         )
-        .in("status", activeColumns);
+        .in("status", activeColumns as StatusDB[]);
 
-      if (categoriaFilter !== "todos") query = query.eq("categoria", categoriaFilter);
-      if (produtoFilter !== "todos") query = query.eq("produto", produtoFilter);
+      if (categoriaFilter !== "todos") query = query.eq("categoria", categoriaFilter as ProdutoCategoria);
+      if (produtoFilter !== "todos") query = query.eq("produto", produtoFilter as Database["public"]["Enums"]["produto_t"]);
       if (responsavelFilter === "eu" && currentUser) query = query.eq("responsavel", currentUser.id);
       if (scoreRange) query = query.gte("score_total", scoreRange[0]).lte("score_total", scoreRange[1]);
       if (searchQuery.trim()) query = query.ilike("nome", `%${searchQuery.trim()}%`);
