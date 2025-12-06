@@ -55,6 +55,7 @@ export const origemLabels: Record<Origem, string> = {
   meta_lead_ads: "Meta Lead Ads",
   social_seller: "Social Seller",
   outro: "Outro",
+  lastlink: "Lastlink",
 };
 
 export const statusLabels: Record<Status, string> = {

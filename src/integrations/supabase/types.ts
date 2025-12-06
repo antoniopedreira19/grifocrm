@@ -161,7 +161,7 @@ export type Database = {
           anos_empresa: number | null
           capacidade_investimento_gbc: string | null
           categoria: Database["public"]["Enums"]["produto_categoria_t"] | null
-          conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
+          conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"] | null
           created_at: string
           data_entrada_negociacao: string | null
           data_entrada_qualificacao: string | null
@@ -231,7 +231,9 @@ export type Database = {
           anos_empresa?: number | null
           capacidade_investimento_gbc?: string | null
           categoria?: Database["public"]["Enums"]["produto_categoria_t"] | null
-          conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
+          conhece_daniel?:
+            | Database["public"]["Enums"]["conhece_daniel_t"]
+            | null
           created_at?: string
           data_entrada_negociacao?: string | null
           data_entrada_qualificacao?: string | null
@@ -303,7 +305,9 @@ export type Database = {
           anos_empresa?: number | null
           capacidade_investimento_gbc?: string | null
           categoria?: Database["public"]["Enums"]["produto_categoria_t"] | null
-          conhece_daniel?: Database["public"]["Enums"]["conhece_daniel_t"]
+          conhece_daniel?:
+            | Database["public"]["Enums"]["conhece_daniel_t"]
+            | null
           created_at?: string
           data_entrada_negociacao?: string | null
           data_entrada_qualificacao?: string | null
@@ -618,6 +622,7 @@ export type Database = {
         | "meta_lead_ads"
         | "social_seller"
         | "outro"
+        | "lastlink"
       perdido_motivo_t:
         | "sem_fit"
         | "preco"
@@ -809,6 +814,7 @@ export const Constants = {
         "meta_lead_ads",
         "social_seller",
         "outro",
+        "lastlink",
       ],
       perdido_motivo_t: [
         "sem_fit",
