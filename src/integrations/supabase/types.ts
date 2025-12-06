@@ -209,7 +209,7 @@ export type Database = {
           score_total: number | null
           status: Database["public"]["Enums"]["status_t"]
           tag_form: string | null
-          telefone: string
+          telefone: string | null
           tempo_negociacao_dias: number | null
           tempo_qualificacao_dias: number | null
           tempo_total_conversao_dias: number | null
@@ -281,7 +281,7 @@ export type Database = {
           score_total?: number | null
           status?: Database["public"]["Enums"]["status_t"]
           tag_form?: string | null
-          telefone: string
+          telefone?: string | null
           tempo_negociacao_dias?: number | null
           tempo_qualificacao_dias?: number | null
           tempo_total_conversao_dias?: number | null
@@ -355,7 +355,7 @@ export type Database = {
           score_total?: number | null
           status?: Database["public"]["Enums"]["status_t"]
           tag_form?: string | null
-          telefone?: string
+          telefone?: string | null
           tempo_negociacao_dias?: number | null
           tempo_qualificacao_dias?: number | null
           tempo_total_conversao_dias?: number | null
