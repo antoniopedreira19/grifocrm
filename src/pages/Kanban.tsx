@@ -132,7 +132,7 @@ export default function Kanban() {
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [productsComboboxOpen, setProductsComboboxOpen] = useState(false);
-  const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
+  const [categoriaFilter, setCategoriaFilter] = useState<string>("mentorias");
   const [responsavelFilter, setResponsavelFilter] = useState<string>("todos");
   const [ordenacao, setOrdenacao] = useState<string>("prioridade");
   const [scoreRange, setScoreRange] = useState<[number, number] | null>(null);
@@ -600,7 +600,6 @@ export default function Kanban() {
                   <SelectValue placeholder="Categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todos">Todas</SelectItem>
                   <SelectItem value="mentorias">Mentorias</SelectItem>
                   <SelectItem value="produtos">Produtos</SelectItem>
                 </SelectContent>
