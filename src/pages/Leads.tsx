@@ -17,6 +17,7 @@ import { statusLabels, produtoLabels } from "@/utils/labels";
 import { LeadDetailsModal } from "@/components/lead/LeadDetailsModal";
 import { CreateLeadModal } from "@/components/lead/CreateLeadModal";
 import { formatPhoneNumber, capitalizeName } from "@/lib/utils";
+import { useProductCategories } from "@/hooks/useProductCategories";
 
 interface Lead {
   id: string;
@@ -39,10 +40,13 @@ export default function Leads() {
   const [ordenacao, setOrdenacao] = useState<string>("data_criacao");
   const [scoreRange, setScoreRange] = useState<[number, number] | null>(null);
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
+  const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  
+  const { getProductsByCategory } = useProductCategories();
 
   const { data: leads, isLoading, error } = useQuery({
-    queryKey: ['leads', ordenacao, scoreRange, produtoFilter],
+    queryKey: ['leads', ordenacao, scoreRange, produtoFilter, categoriaFilter],
     queryFn: async () => {
       let query = supabase
         .from('leads')
@@ -53,8 +57,14 @@ export default function Leads() {
         query = query.gte("score_total", scoreRange[0]).lte("score_total", scoreRange[1]);
       }
 
-      // Aplicar filtro de produto
-      if (produtoFilter !== "todos") {
+      // Aplicar filtro de categoria (prioridade sobre produto)
+      if (categoriaFilter !== "todos") {
+        const produtosCategoria = getProductsByCategory(categoriaFilter);
+        if (produtosCategoria.length > 0) {
+          query = query.in("produto", produtosCategoria as any);
+        }
+      } else if (produtoFilter !== "todos") {
+        // Aplicar filtro de produto apenas se categoria não estiver definida
         query = query.eq("produto", produtoFilter as "gbc" | "mentoria_fast" | "board" | "masterclass");
       }
 
@@ -156,8 +166,22 @@ export default function Leads() {
             <PopoverContent className="w-80">
               <div className="space-y-4">
                 <div>
+                  <h4 className="font-medium text-sm mb-3">Filtrar por Categoria</h4>
+                  <Select value={categoriaFilter} onValueChange={(v) => { setCategoriaFilter(v); if (v !== "todos") setProdutoFilter("todos"); }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todas as categorias</SelectItem>
+                      <SelectItem value="mentorias">Mentorias</SelectItem>
+                      <SelectItem value="produtos">Produtos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
                   <h4 className="font-medium text-sm mb-3">Filtrar por Produto</h4>
-                  <Select value={produtoFilter} onValueChange={setProdutoFilter}>
+                  <Select value={produtoFilter} onValueChange={(v) => { setProdutoFilter(v); if (v !== "todos") setCategoriaFilter("todos"); }}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o produto" />
                     </SelectTrigger>
@@ -197,6 +221,7 @@ export default function Leads() {
                   onClick={() => {
                     setScoreRange(null);
                     setProdutoFilter("todos");
+                    setCategoriaFilter("todos");
                   }}
                   className="w-full"
                 >

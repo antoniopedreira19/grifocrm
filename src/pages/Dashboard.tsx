@@ -9,6 +9,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { useProductCategories } from "@/hooks/useProductCategories";
 
 const statusLabels: Record<string, string> = {
   primeiro_contato: "Primeiro Contato",
@@ -46,9 +47,12 @@ const statusColors: Record<string, string> = {
 
 export default function Dashboard() {
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
+  const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
+  
+  const { getProductsByCategory } = useProductCategories();
 
   const { data: leadsData, isLoading } = useQuery({
-    queryKey: ["dashboard-leads", produtoFilter],
+    queryKey: ["dashboard-leads", produtoFilter, categoriaFilter],
     queryFn: async () => {
       let query = supabase
         .from("leads")
@@ -56,7 +60,13 @@ export default function Dashboard() {
           "id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at, perdido_motivo_cat, tempo_qualificacao_dias, tempo_negociacao_dias, tempo_total_conversao_dias",
         );
 
-      if (produtoFilter !== "todos") {
+      // Filtro de categoria (prioridade sobre produto)
+      if (categoriaFilter !== "todos") {
+        const produtosCategoria = getProductsByCategory(categoriaFilter);
+        if (produtosCategoria.length > 0) {
+          query = query.in("produto", produtosCategoria as any);
+        }
+      } else if (produtoFilter !== "todos") {
         query = query.eq("produto", produtoFilter as any);
       }
 
@@ -229,18 +239,30 @@ export default function Dashboard() {
               <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
               <p className="text-muted-foreground mt-2">Visão geral do pipeline e métricas principais</p>
             </div>
-            <Select value={produtoFilter} onValueChange={setProdutoFilter}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Filtrar por produto" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos os produtos</SelectItem>
-                <SelectItem value="gbc">GBC</SelectItem>
-                <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
-                <SelectItem value="board">Board</SelectItem>
-                <SelectItem value="masterclass">Masterclass</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-3">
+              <Select value={categoriaFilter} onValueChange={(v) => { setCategoriaFilter(v); if (v !== "todos") setProdutoFilter("todos"); }}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filtrar por categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todas categorias</SelectItem>
+                  <SelectItem value="mentorias">Mentorias</SelectItem>
+                  <SelectItem value="produtos">Produtos</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={produtoFilter} onValueChange={(v) => { setProdutoFilter(v); if (v !== "todos") setCategoriaFilter("todos"); }}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Filtrar por produto" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos os produtos</SelectItem>
+                  <SelectItem value="gbc">GBC</SelectItem>
+                  <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+                  <SelectItem value="board">Board</SelectItem>
+                  <SelectItem value="masterclass">Masterclass</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
