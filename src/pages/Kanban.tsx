@@ -91,22 +91,24 @@ const columnsProdutos: Status[] = [
   "perdido",
 ];
 
-// Lista de Eventos Lastlink para o Filtro
-const lastlinkEvents = [
-  "Carrinho Abandonado",
-  "Pagamento Estornado",
-  "Pagamento Reembolsado",
-  "Compra Completa",
-  "Pedido de Compra Cancelado",
-  "Fatura Criada",
-  "Pedido de Compra Expirada",
-  "Pagamento de Renovação Efetuado",
-  "Periodo de Reembolso Terminado",
-  "Assinatura Cancelada",
-  "Assinatura Expirada",
-  "Assinatura Pendente de Renovação",
-  "Reembolso solicitado",
-];
+// Mapeamento de eventos Lastlink: label PT → valor do enum
+const lastlinkEventsMap: Record<string, Database["public"]["Enums"]["lastlink_event_t"]> = {
+  "Carrinho Abandonado": "Abandoned_Cart",
+  "Pagamento Estornado": "Payment_Chargeback",
+  "Pagamento Reembolsado": "Payment_Refund",
+  "Compra Completa": "Purchase_Order_Confirmed",
+  "Pedido de Compra Cancelado": "Purchase_Request_Canceled",
+  "Fatura Criada": "Purchase_Request_Confirmed",
+  "Pedido de Compra Expirado": "Purchase_Request_Expired",
+  "Pagamento de Renovação Efetuado": "Recurrent_Payment",
+  "Período de Reembolso Terminado": "Refund_Period_Over",
+  "Assinatura Cancelada": "Subscription_Canceled",
+  "Assinatura Expirada": "Subscription_Expired",
+  "Assinatura Pendente de Renovação": "Subscription_Renewal_Pending",
+  "Reembolso Solicitado": "Refund_Requested",
+};
+
+const lastlinkEvents = Object.keys(lastlinkEventsMap);
 
 // Mapa de configuração para o Frontend
 const produtosPorCategoria: Record<string, string[]> = {
@@ -180,13 +182,19 @@ export default function Kanban() {
     queryFn: async () => {
       // LÓGICA ESPECIAL PARA PRODUTOS (BOARD)
       if (categoriaFilter === "produtos") {
-        // Se não tem evento selecionado, retorna vazio (Board Limpo Inicialmente)
-        if (selectedEvents.length === 0) {
+        // Requer produto e evento selecionados
+        if (produtoFilter === "todos" || selectedEvents.length === 0) {
           return [];
         }
 
+        // Converte labels em português para valores do enum
+        const enumEvents = selectedEvents
+          .map((label) => lastlinkEventsMap[label])
+          .filter(Boolean) as Database["public"]["Enums"]["lastlink_event_t"][];
+
+        if (enumEvents.length === 0) return [];
+
         // Busca leads que tenham os eventos selecionados na tabela sales_events
-        // Usando subquery ou join implícito do Supabase
         let query = supabase
           .from("leads")
           .select(
@@ -198,8 +206,8 @@ export default function Kanban() {
             sales_events!inner(evento)
           `,
           )
-          .eq("categoria", "produtos" as ProdutoCategoria)
-          .in("sales_events.evento", selectedEvents as Database["public"]["Enums"]["lastlink_event_t"][])
+          .eq("produto", produtoFilter as Database["public"]["Enums"]["produto_t"])
+          .in("sales_events.evento", enumEvents)
           .in("status", activeColumns as StatusDB[]);
 
         // Aplica outros filtros
