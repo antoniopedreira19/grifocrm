@@ -17,7 +17,6 @@ import { statusLabels, produtoLabels } from "@/utils/labels";
 import { LeadDetailsModal } from "@/components/lead/LeadDetailsModal";
 import { CreateLeadModal } from "@/components/lead/CreateLeadModal";
 import { formatPhoneNumber, capitalizeName } from "@/lib/utils";
-import { useProductCategories } from "@/hooks/useProductCategories";
 
 interface Lead {
   id: string;
@@ -42,8 +41,6 @@ export default function Leads() {
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  
-  const { getProductsByCategory } = useProductCategories();
 
   const { data: leads, isLoading, error } = useQuery({
     queryKey: ['leads', ordenacao, scoreRange, produtoFilter, categoriaFilter],
@@ -57,12 +54,9 @@ export default function Leads() {
         query = query.gte("score_total", scoreRange[0]).lte("score_total", scoreRange[1]);
       }
 
-      // Aplicar filtro de categoria (prioridade sobre produto)
+      // Aplicar filtro de categoria diretamente na coluna
       if (categoriaFilter !== "todos") {
-        const produtosCategoria = getProductsByCategory(categoriaFilter);
-        if (produtosCategoria.length > 0) {
-          query = query.in("produto", produtosCategoria as any);
-        }
+        query = query.eq("categoria", categoriaFilter as any);
       } else if (produtoFilter !== "todos") {
         // Aplicar filtro de produto apenas se categoria não estiver definida
         query = query.eq("produto", produtoFilter as "gbc" | "mentoria_fast" | "board" | "masterclass");

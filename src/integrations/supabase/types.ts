@@ -160,6 +160,7 @@ export type Database = {
           acontecer_prox12m: string | null
           anos_empresa: number | null
           capacidade_investimento_gbc: string | null
+          categoria: Database["public"]["Enums"]["produto_categoria_t"] | null
           conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at: string
           data_entrada_negociacao: string | null
@@ -229,6 +230,7 @@ export type Database = {
           acontecer_prox12m?: string | null
           anos_empresa?: number | null
           capacidade_investimento_gbc?: string | null
+          categoria?: Database["public"]["Enums"]["produto_categoria_t"] | null
           conhece_daniel: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at?: string
           data_entrada_negociacao?: string | null
@@ -300,6 +302,7 @@ export type Database = {
           acontecer_prox12m?: string | null
           anos_empresa?: number | null
           capacidade_investimento_gbc?: string | null
+          categoria?: Database["public"]["Enums"]["produto_categoria_t"] | null
           conhece_daniel?: Database["public"]["Enums"]["conhece_daniel_t"]
           created_at?: string
           data_entrada_negociacao?: string | null
@@ -406,6 +409,7 @@ export type Database = {
       }
       sales_events: {
         Row: {
+          categoria: Database["public"]["Enums"]["produto_categoria_t"] | null
           created_at: string | null
           email_cliente: string
           evento: Database["public"]["Enums"]["lastlink_event_t"]
@@ -417,6 +421,7 @@ export type Database = {
           valor: number | null
         }
         Insert: {
+          categoria?: Database["public"]["Enums"]["produto_categoria_t"] | null
           created_at?: string | null
           email_cliente: string
           evento: Database["public"]["Enums"]["lastlink_event_t"]
@@ -428,6 +433,7 @@ export type Database = {
           valor?: number | null
         }
         Update: {
+          categoria?: Database["public"]["Enums"]["produto_categoria_t"] | null
           created_at?: string | null
           email_cliente?: string
           evento?: Database["public"]["Enums"]["lastlink_event_t"]
@@ -550,6 +556,10 @@ export type Database = {
             }
             Returns: string
           }
+      get_produto_categoria: {
+        Args: { p_produto: Database["public"]["Enums"]["produto_t"] }
+        Returns: Database["public"]["Enums"]["produto_categoria_t"]
+      }
       me: {
         Args: never
         Returns: {
