@@ -30,7 +30,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { statusLabels } from "@/utils/labels";
-import { useProductCategories } from "@/hooks/useProductCategories";
 import type { Status, Produto, TipoPagamento } from "@/types/lead";
 
 interface KanbanLead {
@@ -86,8 +85,6 @@ export default function Kanban() {
   const [activeLead, setActiveLead] = useState<KanbanLead | null>(null);
   const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
   
-  const { getProductsByCategory } = useProductCategories();
-  
   // Estado separado para edição de próximo contato (não é movimento de status)
   const [editingProximoContato, setEditingProximoContato] = useState<{
     leadId: string;
@@ -120,12 +117,9 @@ export default function Kanban() {
         .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, valor_parcelado, valor_entrada, proximo_followup")
         .in("status", ["primeiro_contato", "proximo_contato", "negociando", "proposta", "followup", "ganho", "perdido"]);
 
-      // Filtro de categoria (prioridade sobre produto)
+      // Filtro de categoria diretamente na coluna
       if (categoriaFilter !== "todos") {
-        const produtosCategoria = getProductsByCategory(categoriaFilter);
-        if (produtosCategoria.length > 0) {
-          query = query.in("produto", produtosCategoria as any);
-        }
+        query = query.eq("categoria", categoriaFilter as any);
       } else if (produtoFilter !== "todos") {
         // Filtro de produto apenas se categoria não estiver definida
         query = query.eq("produto", produtoFilter as any);

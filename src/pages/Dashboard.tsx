@@ -9,7 +9,6 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import { useProductCategories } from "@/hooks/useProductCategories";
 
 const statusLabels: Record<string, string> = {
   primeiro_contato: "Primeiro Contato",
@@ -48,8 +47,6 @@ const statusColors: Record<string, string> = {
 export default function Dashboard() {
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
-  
-  const { getProductsByCategory } = useProductCategories();
 
   const { data: leadsData, isLoading } = useQuery({
     queryKey: ["dashboard-leads", produtoFilter, categoriaFilter],
@@ -60,12 +57,9 @@ export default function Dashboard() {
           "id, status, produto, score_total, nome, deal_valor, interesse_mentoria_fast, created_at, perdido_motivo_cat, tempo_qualificacao_dias, tempo_negociacao_dias, tempo_total_conversao_dias",
         );
 
-      // Filtro de categoria (prioridade sobre produto)
+      // Filtro de categoria diretamente na coluna
       if (categoriaFilter !== "todos") {
-        const produtosCategoria = getProductsByCategory(categoriaFilter);
-        if (produtosCategoria.length > 0) {
-          query = query.in("produto", produtosCategoria as any);
-        }
+        query = query.eq("categoria", categoriaFilter as any);
       } else if (produtoFilter !== "todos") {
         query = query.eq("produto", produtoFilter as any);
       }
