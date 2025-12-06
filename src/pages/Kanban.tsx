@@ -113,7 +113,15 @@ const lastlinkEvents = Object.keys(lastlinkEventsMap);
 // Mapa de configuração para o Frontend
 const produtosPorCategoria: Record<string, string[]> = {
   mentorias: ["gbc", "mentoria_fast", "masterclass"],
-  produtos: ["board"],
+  produtos: ["board", "masterclass"],
+};
+
+// Labels dos produtos para exibição
+const produtoLabels: Record<string, string> = {
+  board: "Board",
+  masterclass: "Masterclass",
+  gbc: "GBC",
+  mentoria_fast: "Mentoria Fast",
 };
 
 export default function Kanban() {
@@ -122,6 +130,8 @@ export default function Kanban() {
 
   // Filtros
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [productsComboboxOpen, setProductsComboboxOpen] = useState(false);
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
   const [responsavelFilter, setResponsavelFilter] = useState<string>("todos");
   const [ordenacao, setOrdenacao] = useState<string>("prioridade");
@@ -178,12 +188,13 @@ export default function Kanban() {
       scoreRange,
       searchQuery,
       selectedEvents,
+      selectedProducts,
     ],
     queryFn: async () => {
-      // LÓGICA ESPECIAL PARA PRODUTOS (BOARD)
+      // LÓGICA ESPECIAL PARA PRODUTOS
       if (categoriaFilter === "produtos") {
-        // Requer produto e evento selecionados
-        if (produtoFilter === "todos" || selectedEvents.length === 0) {
+        // Requer produto(s) e evento(s) selecionados
+        if (selectedProducts.length === 0 || selectedEvents.length === 0) {
           return [];
         }
 
@@ -206,7 +217,7 @@ export default function Kanban() {
             sales_events!inner(evento)
           `,
           )
-          .eq("produto", produtoFilter as Database["public"]["Enums"]["produto_t"])
+          .in("produto", selectedProducts as Database["public"]["Enums"]["produto_t"][])
           .in("sales_events.evento", enumEvents)
           .in("status", activeColumns as StatusDB[]);
 
@@ -262,9 +273,10 @@ export default function Kanban() {
 
   const handleCategoriaChange = (novaCategoria: string) => {
     setCategoriaFilter(novaCategoria);
-    // Limpa eventos se sair de produtos
+    // Limpa eventos e produtos selecionados se sair de produtos
     if (novaCategoria !== "produtos") {
       setSelectedEvents([]);
+      setSelectedProducts([]);
     }
     if (novaCategoria !== "todos" && produtoFilter !== "todos") {
       const produtosDaCategoria = produtosPorCategoria[novaCategoria] || [];
@@ -277,6 +289,11 @@ export default function Kanban() {
   // Função para alternar seleção de eventos no MultiSelect
   const toggleEvent = (event: string) => {
     setSelectedEvents((prev) => (prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event]));
+  };
+
+  // Função para alternar seleção de produtos no MultiSelect
+  const toggleProduct = (product: string) => {
+    setSelectedProducts((prev) => (prev.includes(product) ? prev.filter((p) => p !== product) : [...prev, product]));
   };
 
   // ... (Mutations mantidas iguais - updateLeadMutation, createInteractionMutation)
@@ -589,44 +606,83 @@ export default function Kanban() {
                 </SelectContent>
               </Select>
 
-              {/* Renderiza Filtro de Eventos APENAS se categoria for PRODUTOS */}
+              {/* Renderiza Filtros de Produtos e Eventos APENAS se categoria for PRODUTOS */}
               {categoriaFilter === "produtos" ? (
-                <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={comboboxOpen}
-                      className="w-[250px] justify-between"
-                    >
-                      {selectedEvents.length > 0
-                        ? `${selectedEvents.length} evento(s) selecionado(s)`
-                        : "Filtrar por Eventos (Lastlink)"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[250px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Buscar evento..." />
-                      <CommandList>
-                        <CommandEmpty>Nenhum evento encontrado.</CommandEmpty>
-                        <CommandGroup>
-                          {lastlinkEvents.map((evento) => (
-                            <CommandItem key={evento} value={evento} onSelect={() => toggleEvent(evento)}>
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  selectedEvents.includes(evento) ? "opacity-100" : "opacity-0",
-                                )}
-                              />
-                              {evento}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                <>
+                  {/* Multi-select de Produtos */}
+                  <Popover open={productsComboboxOpen} onOpenChange={setProductsComboboxOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={productsComboboxOpen}
+                        className="w-[200px] justify-between"
+                      >
+                        {selectedProducts.length > 0
+                          ? `${selectedProducts.length} produto(s)`
+                          : "Selecionar Produtos"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandGroup>
+                            {produtosPorCategoria["produtos"].map((produto) => (
+                              <CommandItem key={produto} value={produto} onSelect={() => toggleProduct(produto)}>
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedProducts.includes(produto) ? "opacity-100" : "opacity-0",
+                                  )}
+                                />
+                                {produtoLabels[produto] || produto}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
+                  {/* Multi-select de Eventos */}
+                  <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={comboboxOpen}
+                        className="w-[250px] justify-between"
+                      >
+                        {selectedEvents.length > 0
+                          ? `${selectedEvents.length} evento(s)`
+                          : "Selecionar Eventos"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[250px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Buscar evento..." />
+                        <CommandList>
+                          <CommandEmpty>Nenhum evento encontrado.</CommandEmpty>
+                          <CommandGroup>
+                            {lastlinkEvents.map((evento) => (
+                              <CommandItem key={evento} value={evento} onSelect={() => toggleEvent(evento)}>
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedEvents.includes(evento) ? "opacity-100" : "opacity-0",
+                                  )}
+                                />
+                                {evento}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </>
               ) : (
                 // Se não for Produtos, mostra os filtros normais
                 <>
