@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  DndContext, 
-  DragEndEvent, 
-  DragOverlay, 
-  DragStartEvent, 
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
-  closestCenter
+  closestCenter,
 } from "@dnd-kit/core";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { KanbanColumn } from "@/components/kanban/KanbanColumn";
@@ -24,18 +24,22 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"; // Componentes para o MultiSelect
 import { Input } from "@/components/ui/input";
-import { Filter, Search } from "lucide-react";
+import { Filter, Search, Check, ChevronsUpDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { statusLabels } from "@/utils/labels";
-import type { Status, Produto, TipoPagamento } from "@/types/lead";
+import { cn } from "@/lib/utils";
+import type { Status, Produto, TipoPagamento, ProdutoCategoria } from "@/types/lead";
 
+// Interface local atualizada com categoria
 interface KanbanLead {
   id: string;
   nome: string;
   produto: string;
+  categoria?: ProdutoCategoria;
   interesse: string;
   faturamento_2025: string;
   regiao?: string;
@@ -63,7 +67,8 @@ interface PendingMove {
   dealValor?: number;
 }
 
-const columns: Status[] = [
+// Colunas Padrão (Mentorias)
+const columnsDefault: Status[] = [
   "primeiro_contato",
   "proximo_contato",
   "negociando",
@@ -73,25 +78,63 @@ const columns: Status[] = [
   "perdido",
 ];
 
+// Colunas Produtos (Board)
+// Mapeando "Segundo Contato" para "proximo_contato" internamente
+const columnsProdutos: Status[] = [
+  "primeiro_contato",
+  "proximo_contato", // Será exibido como "Segundo Contato"
+  "ganho",
+  "perdido",
+];
+
+// Lista de Eventos Lastlink para o Filtro
+const lastlinkEvents = [
+  "Carrinho Abandonado",
+  "Pagamento Estornado",
+  "Pagamento Reembolsado",
+  "Compra Completa",
+  "Pedido de Compra Cancelado",
+  "Fatura Criada",
+  "Pedido de Compra Expirada",
+  "Pagamento de Renovação Efetuado",
+  "Periodo de Reembolso Terminado",
+  "Assinatura Cancelada",
+  "Assinatura Expirada",
+  "Assinatura Pendente de Renovação",
+  "Reembolso solicitado",
+];
+
+// Mapa de configuração para o Frontend
+const produtosPorCategoria: Record<string, string[]> = {
+  mentorias: ["gbc", "mentoria_fast", "masterclass"],
+  produtos: ["board"],
+};
+
 export default function Kanban() {
   const { currentUser, currentRole } = useAuth();
   const queryClient = useQueryClient();
+
+  // Filtros
   const [produtoFilter, setProdutoFilter] = useState<string>("todos");
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
   const [responsavelFilter, setResponsavelFilter] = useState<string>("todos");
   const [ordenacao, setOrdenacao] = useState<string>("prioridade");
   const [scoreRange, setScoreRange] = useState<[number, number] | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+
+  // Novo Filtro: Eventos Selecionados (Multi-select)
+  const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
+  const [comboboxOpen, setComboboxOpen] = useState(false);
+
   const [activeLead, setActiveLead] = useState<KanbanLead | null>(null);
   const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
-  
-  // Estado separado para edição de próximo contato (não é movimento de status)
+
   const [editingProximoContato, setEditingProximoContato] = useState<{
     leadId: string;
     leadNome: string;
     currentDate?: string;
   } | null>(null);
-  
+
   const [proximoContatoOpen, setProximoContatoOpen] = useState(false);
   const [negociandoOpen, setNegociandoOpen] = useState(false);
   const [propostaOpen, setPropostaOpen] = useState(false);
@@ -99,50 +142,89 @@ export default function Kanban() {
   const [ganhoOpen, setGanhoOpen] = useState(false);
   const [perdidoOpen, setPerdidoOpen] = useState(false);
 
-  // Configurar sensores para drag and drop
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Pequeno movimento necessário para iniciar o drag
+        distance: 8,
       },
-    })
+    }),
   );
 
-  // Fetch leads da tabela principal
+  // Lógica para definir quais colunas mostrar
+  const activeColumns = categoriaFilter === "produtos" ? columnsProdutos : columnsDefault;
+
+  // Título customizado para as colunas
+  const getColumnTitle = (status: Status) => {
+    if (categoriaFilter === "produtos" && status === "proximo_contato") {
+      return "Segundo Contato";
+    }
+    return statusLabels[status];
+  };
+
+  // Fetch leads
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: ["kanban-leads", produtoFilter, categoriaFilter, responsavelFilter, ordenacao, scoreRange, searchQuery],
+    queryKey: [
+      "kanban-leads",
+      produtoFilter,
+      categoriaFilter,
+      responsavelFilter,
+      ordenacao,
+      scoreRange,
+      searchQuery,
+      selectedEvents,
+    ],
     queryFn: async () => {
+      // LÓGICA ESPECIAL PARA PRODUTOS (BOARD)
+      if (categoriaFilter === "produtos") {
+        // Se não tem evento selecionado, retorna vazio (Board Limpo Inicialmente)
+        if (selectedEvents.length === 0) {
+          return [];
+        }
+
+        // Busca leads que tenham os eventos selecionados na tabela sales_events
+        // Usando subquery ou join implícito do Supabase
+        let query = supabase
+          .from("leads")
+          .select(
+            `
+            id, nome, produto, categoria, interesse, faturamento_2025, regiao, created_at, 
+            responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, 
+            interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, 
+            valor_parcelado, valor_entrada, proximo_followup,
+            sales_events!inner(evento)
+          `,
+          )
+          .eq("categoria", "produtos")
+          .in("sales_events.evento", selectedEvents) // Filtra pelos eventos selecionados
+          .in("status", activeColumns); // Apenas colunas visíveis
+
+        // Aplica outros filtros
+        if (searchQuery.trim()) query = query.ilike("nome", `%${searchQuery.trim()}%`);
+        if (responsavelFilter === "eu" && currentUser) query = query.eq("responsavel", currentUser.id);
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        // Remove duplicatas (caso o lead tenha múltiplos eventos iguais)
+        const uniqueLeads = Array.from(new Map(data.map((item) => [item.id, item])).values());
+        return uniqueLeads as unknown as KanbanLead[];
+      }
+
+      // LÓGICA PADRÃO (MENTORIAS/GERAL)
       let query = supabase
         .from("leads")
-        .select("id, nome, produto, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, valor_parcelado, valor_entrada, proximo_followup")
-        .in("status", ["primeiro_contato", "proximo_contato", "negociando", "proposta", "followup", "ganho", "perdido"]);
+        .select(
+          "id, nome, produto, categoria, interesse, faturamento_2025, regiao, created_at, responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, valor_parcelado, valor_entrada, proximo_followup",
+        )
+        .in("status", activeColumns);
 
-      // Filtro de categoria diretamente na coluna
-      if (categoriaFilter !== "todos") {
-        query = query.eq("categoria", categoriaFilter as any);
-      } else if (produtoFilter !== "todos") {
-        // Filtro de produto apenas se categoria não estiver definida
-        query = query.eq("produto", produtoFilter as any);
-      }
+      if (categoriaFilter !== "todos") query = query.eq("categoria", categoriaFilter);
+      if (produtoFilter !== "todos") query = query.eq("produto", produtoFilter);
+      if (responsavelFilter === "eu" && currentUser) query = query.eq("responsavel", currentUser.id);
+      if (scoreRange) query = query.gte("score_total", scoreRange[0]).lte("score_total", scoreRange[1]);
+      if (searchQuery.trim()) query = query.ilike("nome", `%${searchQuery.trim()}%`);
 
-      // Filtro de responsável
-      if (responsavelFilter === "eu" && currentUser) {
-        query = query.eq("responsavel", currentUser.id);
-      }
-
-      // Filtro de score (apenas se definido)
-      if (scoreRange) {
-        query = query
-          .gte("score_total", scoreRange[0])
-          .lte("score_total", scoreRange[1]);
-      }
-
-      // Filtro de busca por nome
-      if (searchQuery.trim()) {
-        query = query.ilike("nome", `%${searchQuery.trim()}%`);
-      }
-
-      // Ordenação padrão por prioridade
+      // Ordenação
       if (ordenacao === "prioridade" || ordenacao === "score") {
         query = query.order("score_total", { ascending: false, nullsFirst: false });
       } else if (ordenacao === "chegada") {
@@ -159,59 +241,63 @@ export default function Kanban() {
     },
   });
 
-  // Update lead mutation
-  const updateLeadMutation = useMutation({
-    mutationFn: async ({ 
-      leadId, 
-      updates 
-    }: { 
-      leadId: string; 
-      updates: any;
-    }) => {
-      const { error } = await supabase
-        .from("leads")
-        .update(updates)
-        .eq("id", leadId);
+  const produtosDisponiveis = useMemo(() => {
+    if (categoriaFilter === "todos") {
+      return ["gbc", "mentoria_fast", "board", "masterclass"];
+    }
+    return produtosPorCategoria[categoriaFilter] || [];
+  }, [categoriaFilter]);
 
+  const handleCategoriaChange = (novaCategoria: string) => {
+    setCategoriaFilter(novaCategoria);
+    // Limpa eventos se sair de produtos
+    if (novaCategoria !== "produtos") {
+      setSelectedEvents([]);
+    }
+    if (novaCategoria !== "todos" && produtoFilter !== "todos") {
+      const produtosDaCategoria = produtosPorCategoria[novaCategoria] || [];
+      if (!produtosDaCategoria.includes(produtoFilter)) {
+        setProdutoFilter("todos");
+      }
+    }
+  };
+
+  // Função para alternar seleção de eventos no MultiSelect
+  const toggleEvent = (event: string) => {
+    setSelectedEvents((prev) => (prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event]));
+  };
+
+  // ... (Mutations mantidas iguais - updateLeadMutation, createInteractionMutation)
+  const updateLeadMutation = useMutation({
+    mutationFn: async ({ leadId, updates }: { leadId: string; updates: any }) => {
+      const { error } = await supabase.from("leads").update(updates).eq("id", leadId);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["kanban-leads"] });
       toast({ title: "Lead atualizado com sucesso!" });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Erro ao atualizar lead",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
+    onError: (error: any) => toast({ title: "Erro", description: error.message, variant: "destructive" }),
   });
 
-  // Create interaction mutation
   const createInteractionMutation = useMutation({
-    mutationFn: async ({ 
-      leadId, 
+    mutationFn: async ({
+      leadId,
       conteudo,
-      tipo = "comentario"
-    }: { 
-      leadId: string; 
+      tipo = "comentario",
+    }: {
+      leadId: string;
       conteudo: string;
       tipo?: string;
     }) => {
       const { error } = await supabase
         .from("interacoes")
-        .insert({
-          lead_id: leadId,
-          tipo: tipo as any,
-          conteudo,
-          autor: currentUser?.id,
-        } as any);
-
+        .insert({ lead_id: leadId, tipo: tipo as any, conteudo, autor: currentUser?.id } as any);
       if (error) throw error;
     },
   });
 
+  // ... (Drag logic mantida igual)
   const canDrag = (lead: KanbanLead): boolean => {
     if (!currentRole || !currentUser) return false;
     if (currentRole === "viewer") return false;
@@ -238,110 +324,75 @@ export default function Kanban() {
     const fromStatus = active.data.current?.status as Status;
     const toStatus = over.id as Status;
 
-    // Validar se é um status válido
-    const validStatuses: Status[] = [
-      "primeiro_contato",
-      "proximo_contato",
-      "negociando",
-      "proposta",
-      "followup",
-      "ganho",
-      "perdido",
-    ];
-    
+    const validStatuses: Status[] = activeColumns;
+
     if (!validStatuses.includes(toStatus)) return;
     if (fromStatus === toStatus) return;
 
-    // Verificar permissões
     if (!canDrag(lead)) {
-      toast({
-        title: "Sem permissão",
-        description: "Você não pode mover este lead.",
-        variant: "destructive",
-      });
+      toast({ title: "Sem permissão", description: "Você não pode mover este lead.", variant: "destructive" });
       return;
     }
 
-    // Validações especiais
+    // Validações Especiais (Mantidas)
     if (toStatus === "proximo_contato") {
       setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus });
       setProximoContatoOpen(true);
       return;
     }
-
     if (toStatus === "negociando") {
       setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus, dealValor: lead.deal_valor });
       setNegociandoOpen(true);
       return;
     }
-
     if (toStatus === "proposta") {
       setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus });
       setPropostaOpen(true);
       return;
     }
-
     if (toStatus === "followup") {
       setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus });
       setFollowUpOpen(true);
       return;
     }
-
     if (toStatus === "ganho") {
-      // Calcular o valor padrão do lead
       let dealValor = lead.deal_valor;
       if (!dealValor) {
-        if (lead.produto === "mentoria_fast" || lead.produto === "fast") {
-          dealValor = 18000;
-        } else if (lead.produto === "gbc") {
-          // Se for GBC mas tem interesse em Mentoria Fast, valor é 18k
-          dealValor = lead.interesse_mentoria_fast ? 18000 : 120000;
-        }
+        if (lead.produto === "mentoria_fast") dealValor = 18000;
+        else if (lead.produto === "gbc") dealValor = lead.interesse_mentoria_fast ? 18000 : 120000;
       }
-      
       setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus, dealValor });
       setGanhoOpen(true);
       return;
     }
-
     if (toStatus === "perdido") {
       setPendingMove({ leadId: lead.id, leadNome: lead.nome, fromStatus, toStatus });
       setPerdidoOpen(true);
       return;
     }
 
-    // Move simples
     updateLeadMutation.mutate({
       leadId: lead.id,
       updates: { status: toStatus },
     });
   };
 
+  // ... (Handlers dos Modais mantidos iguais - handleProximoContatoConfirm, etc.)
   const handleProximoContatoConfirm = (data: { proximo_contato: string }) => {
-    // Se está editando (não é movimento de status)
     if (editingProximoContato) {
       updateLeadMutation.mutate({
         leadId: editingProximoContato.leadId,
-        updates: {
-          proximo_contato: data.proximo_contato,
-        },
+        updates: { proximo_contato: data.proximo_contato },
       });
       setEditingProximoContato(null);
       setProximoContatoOpen(false);
       return;
     }
-
-    // Se é movimento de status
     if (!pendingMove) return;
-
     updateLeadMutation.mutate({
       leadId: pendingMove.leadId,
-      updates: {
-        status: pendingMove.toStatus,
-        proximo_contato: data.proximo_contato,
-      },
+      updates: { status: pendingMove.toStatus, proximo_contato: data.proximo_contato },
     });
-
     setProximoContatoOpen(false);
     setPendingMove(null);
   };
@@ -353,60 +404,45 @@ export default function Kanban() {
 
   const handleGanhoConfirm = async (data: { deal_valor: number; observacao: string }) => {
     if (!pendingMove) return;
-
     try {
       await updateLeadMutation.mutateAsync({
         leadId: pendingMove.leadId,
-        updates: {
-          status: pendingMove.toStatus,
-          deal_valor: data.deal_valor,
-        },
+        updates: { status: pendingMove.toStatus, deal_valor: data.deal_valor },
       });
-
-      if (data.observacao) {
+      if (data.observacao)
         await createInteractionMutation.mutateAsync({
           leadId: pendingMove.leadId,
           conteudo: `Lead ganho! Valor: R$ ${data.deal_valor.toFixed(2)}. ${data.observacao}`,
           tipo: "comentario",
         });
-      }
-
       setGanhoOpen(false);
       setPendingMove(null);
     } catch (error) {
-      console.error("Erro ao marcar como ganho:", error);
+      console.error(error);
     }
   };
 
   const handleNegociandoConfirm = async (data: { produto: Produto; deal_valor: number }) => {
     if (!pendingMove) return;
-
     try {
       await updateLeadMutation.mutateAsync({
         leadId: pendingMove.leadId,
-        updates: {
-          status: pendingMove.toStatus,
-          produto: data.produto,
-          deal_valor: data.deal_valor,
-        },
+        updates: { status: pendingMove.toStatus, produto: data.produto, deal_valor: data.deal_valor },
       });
-
       await createInteractionMutation.mutateAsync({
         leadId: pendingMove.leadId,
         conteudo: `Lead movido para Negociando. Produto: ${data.produto}, Valor: R$ ${data.deal_valor.toFixed(2)}`,
         tipo: "comentario",
       });
-
       setNegociandoOpen(false);
       setPendingMove(null);
     } catch (error) {
-      console.error("Erro ao atualizar negociação:", error);
+      console.error(error);
     }
   };
 
   const handlePerdidoConfirm = async (data: { motivo_categoria?: string; motivo_texto: string }) => {
     if (!pendingMove) return;
-
     try {
       await updateLeadMutation.mutateAsync({
         leadId: pendingMove.leadId,
@@ -416,81 +452,64 @@ export default function Kanban() {
           perdido_motivo_txt: data.motivo_texto,
         },
       });
-
       await createInteractionMutation.mutateAsync({
         leadId: pendingMove.leadId,
         conteudo: `Lead perdido. Motivo: ${data.motivo_texto}`,
         tipo: "comentario",
       });
-
       setPerdidoOpen(false);
       setPendingMove(null);
     } catch (error) {
-      console.error("Erro ao marcar como perdido:", error);
+      console.error(error);
     }
   };
 
-  const handlePropostaConfirm = async (data: { 
+  const handlePropostaConfirm = async (data: {
     tipo_pagamento: TipoPagamento;
     valor_a_vista?: number;
     valor_parcelado?: number;
     valor_entrada?: number;
   }) => {
     if (!pendingMove) return;
-
     try {
       await updateLeadMutation.mutateAsync({
         leadId: pendingMove.leadId,
-        updates: {
-          status: pendingMove.toStatus,
-          tipo_pagamento: data.tipo_pagamento,
-          valor_a_vista: data.valor_a_vista,
-          valor_parcelado: data.valor_parcelado,
-          valor_entrada: data.valor_entrada,
-        },
+        updates: { status: pendingMove.toStatus, ...data },
       });
-
-      const pagamentoTexto = data.tipo_pagamento === "a_vista" 
-        ? `À vista: R$ ${data.valor_a_vista?.toFixed(2)}`
-        : data.tipo_pagamento === "parcelado"
-        ? `Parcelado: R$ ${data.valor_parcelado?.toFixed(2)}`
-        : `Entrada + Parcelado: R$ ${data.valor_entrada?.toFixed(2)} + R$ ${data.valor_parcelado?.toFixed(2)}`;
-
+      const pagamentoTexto =
+        data.tipo_pagamento === "a_vista"
+          ? `À vista: R$ ${data.valor_a_vista?.toFixed(2)}`
+          : data.tipo_pagamento === "parcelado"
+            ? `Parcelado: R$ ${data.valor_parcelado?.toFixed(2)}`
+            : `Entrada + Parcelado: R$ ${data.valor_entrada?.toFixed(2)} + R$ ${data.valor_parcelado?.toFixed(2)}`;
       await createInteractionMutation.mutateAsync({
         leadId: pendingMove.leadId,
         conteudo: `Proposta enviada. ${pagamentoTexto}`,
         tipo: "comentario",
       });
-
       setPropostaOpen(false);
       setPendingMove(null);
     } catch (error) {
-      console.error("Erro ao enviar proposta:", error);
+      console.error(error);
     }
   };
 
   const handleFollowUpConfirm = async (data: { proximo_followup: string }) => {
     if (!pendingMove) return;
-
     try {
       await updateLeadMutation.mutateAsync({
         leadId: pendingMove.leadId,
-        updates: {
-          status: pendingMove.toStatus,
-          proximo_followup: data.proximo_followup,
-        },
+        updates: { status: pendingMove.toStatus, proximo_followup: data.proximo_followup },
       });
-
       await createInteractionMutation.mutateAsync({
         leadId: pendingMove.leadId,
-        conteudo: `Follow-up agendado para ${new Date(data.proximo_followup).toLocaleString('pt-BR')}`,
+        conteudo: `Follow-up agendado para ${new Date(data.proximo_followup).toLocaleString("pt-BR")}`,
         tipo: "comentario",
       });
-
       setFollowUpOpen(false);
       setPendingMove(null);
     } catch (error) {
-      console.error("Erro ao agendar follow-up:", error);
+      console.error(error);
     }
   };
 
@@ -510,15 +529,12 @@ export default function Kanban() {
           </div>
           <div className="px-8 pb-4">
             <div className="flex gap-3">
-              <Skeleton className="h-10 w-48" />
-              <Skeleton className="h-10 w-32" />
-              <Skeleton className="h-10 w-40" />
-              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-10 w-full max-w-md" />
             </div>
           </div>
           <div className="flex gap-4 px-8 pb-8 overflow-x-auto">
-            {columns.map((status) => (
-              <div key={status} className="w-[280px]">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="w-[280px]">
                 <Skeleton className="h-[calc(100vh-16rem)] rounded-lg" />
               </div>
             ))}
@@ -531,19 +547,15 @@ export default function Kanban() {
   return (
     <AppLayout>
       <div className="flex flex-col h-full">
-        {/* Cabeçalho */}
         <div className="px-4 md:px-8 pt-8 pb-4">
           <h1 className="text-3xl font-bold text-foreground">Kanban</h1>
-          <p className="text-muted-foreground mt-2">
-            Pipeline visual de leads por etapa
-          </p>
+          <p className="text-muted-foreground mt-2">Pipeline visual de leads por etapa</p>
         </div>
 
-        {/* Barra de ferramentas sticky */}
         <div className="sticky top-0 z-10 bg-background border-b px-4 md:px-8 py-3">
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="relative w-64">
+            <div className="flex items-center gap-3 flex-wrap w-full md:w-auto">
+              <div className="relative w-full md:w-64">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
@@ -554,91 +566,121 @@ export default function Kanban() {
                 />
               </div>
 
-              <Select value={categoriaFilter} onValueChange={(v) => { setCategoriaFilter(v); if (v !== "todos") setProdutoFilter("todos"); }}>
-                <SelectTrigger className="w-40">
+              <Select value={categoriaFilter} onValueChange={handleCategoriaChange}>
+                <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="Categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todos">Todas categorias</SelectItem>
+                  <SelectItem value="todos">Todas</SelectItem>
                   <SelectItem value="mentorias">Mentorias</SelectItem>
                   <SelectItem value="produtos">Produtos</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Select value={produtoFilter} onValueChange={(v) => { setProdutoFilter(v); if (v !== "todos") setCategoriaFilter("todos"); }}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Produto" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos os produtos</SelectItem>
-                  <SelectItem value="gbc">GBC</SelectItem>
-                  <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
-                  <SelectItem value="board">Board</SelectItem>
-                  <SelectItem value="masterclass">Masterclass</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Renderiza Filtro de Eventos APENAS se categoria for PRODUTOS */}
+              {categoriaFilter === "produtos" ? (
+                <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={comboboxOpen}
+                      className="w-[250px] justify-between"
+                    >
+                      {selectedEvents.length > 0
+                        ? `${selectedEvents.length} evento(s) selecionado(s)`
+                        : "Filtrar por Eventos (Lastlink)"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[250px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Buscar evento..." />
+                      <CommandList>
+                        <CommandEmpty>Nenhum evento encontrado.</CommandEmpty>
+                        <CommandGroup>
+                          {lastlinkEvents.map((evento) => (
+                            <CommandItem key={evento} value={evento} onSelect={() => toggleEvent(evento)}>
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedEvents.includes(evento) ? "opacity-100" : "opacity-0",
+                                )}
+                              />
+                              {evento}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                // Se não for Produtos, mostra os filtros normais
+                <>
+                  <Select value={produtoFilter} onValueChange={setProdutoFilter}>
+                    <SelectTrigger className="w-[150px]">
+                      <SelectValue placeholder="Produto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos</SelectItem>
+                      {produtosDisponiveis.includes("gbc") && <SelectItem value="gbc">GBC</SelectItem>}
+                      {produtosDisponiveis.includes("mentoria_fast") && (
+                        <SelectItem value="mentoria_fast">Mentoria Fast</SelectItem>
+                      )}
+                      {produtosDisponiveis.includes("masterclass") && (
+                        <SelectItem value="masterclass">Masterclass</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
 
-              <Select value={responsavelFilter} onValueChange={setResponsavelFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Responsável" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="eu">Meus leads</SelectItem>
-                </SelectContent>
-              </Select>
+                  <Select value={responsavelFilter} onValueChange={setResponsavelFilter}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder="Responsável" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos</SelectItem>
+                      <SelectItem value="eu">Meus leads</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-              <Select value={ordenacao} onValueChange={setOrdenacao}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Ordenar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="prioridade">Prioridade</SelectItem>
-                  <SelectItem value="score">Score</SelectItem>
-                  <SelectItem value="chegada">Ordem de chegada</SelectItem>
-                  <SelectItem value="ultima_interacao">Última interação</SelectItem>
-                  <SelectItem value="data_criacao">Data de criação</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80">
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-sm mb-3">Filtrar por Score</h4>
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm font-medium w-8">{scoreRange?.[0] ?? 0}</span>
-                        <Slider
-                          value={scoreRange ?? [0, 10]}
-                          onValueChange={(value) => setScoreRange(value as [number, number])}
-                          min={0}
-                          max={10}
-                          step={1}
-                          minStepsBetweenThumbs={1}
-                          className="flex-1"
-                        />
-                        <span className="text-sm font-medium w-8">{scoreRange?.[1] ?? 10}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {scoreRange ? `Score entre ${scoreRange[0]} e ${scoreRange[1]}` : 'Todos os scores'}
-                      </p>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setScoreRange(null)}
-                        className="w-full mt-2"
-                      >
-                        Limpar filtro
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="icon" title="Filtros avançados">
+                        <Filter className="h-4 w-4" />
                       </Button>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-medium text-sm mb-3">Filtrar por Score</h4>
+                          <div className="flex items-center gap-4">
+                            <span className="text-sm font-medium w-8">{scoreRange?.[0] ?? 0}</span>
+                            <Slider
+                              value={scoreRange ?? [0, 10]}
+                              onValueChange={(value) => setScoreRange(value as [number, number])}
+                              min={0}
+                              max={10}
+                              step={1}
+                              minStepsBetweenThumbs={1}
+                              className="flex-1"
+                            />
+                            <span className="text-sm font-medium w-8">{scoreRange?.[1] ?? 10}</span>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setScoreRange(null)}
+                            className="w-full mt-2"
+                          >
+                            Limpar filtro de score
+                          </Button>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </>
+              )}
             </div>
 
             <div className="text-sm text-muted-foreground">
@@ -657,35 +699,39 @@ export default function Kanban() {
               onDragEnd={handleDragEnd}
             >
               <div className="flex gap-4 h-full py-4">
-                {columns.map((status) => (
-                  <KanbanColumn
-                    key={status}
-                    status={status}
-                    title={statusLabels[status]}
-                    leads={getLeadsByStatus(status)}
-                    canDrag={canDrag}
-                    columnWidth="w-[280px]"
-                    onEditProximoContato={handleEditProximoContato}
-                  />
-                ))}
+                {/* Caso Produtos e sem seleção, mostra aviso amigável */}
+                {categoriaFilter === "produtos" && selectedEvents.length === 0 ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground border-2 border-dashed rounded-lg bg-muted/20">
+                    <Filter className="w-12 h-12 mb-4 opacity-20" />
+                    <p className="font-medium">Selecione um ou mais eventos para visualizar os leads</p>
+                    <p className="text-sm mt-2">
+                      Utilize o filtro acima para escolher entre "Compra Completa", "Carrinho Abandonado", etc.
+                    </p>
+                  </div>
+                ) : (
+                  activeColumns.map((status) => (
+                    <KanbanColumn
+                      key={status}
+                      status={status}
+                      title={getColumnTitle(status)}
+                      leads={getLeadsByStatus(status)}
+                      canDrag={canDrag}
+                      columnWidth="w-[280px]"
+                      onEditProximoContato={handleEditProximoContato}
+                    />
+                  ))
+                )}
               </div>
 
               <DragOverlay>
-                {activeLead ? (
-                  <KanbanCard 
-                    lead={activeLead} 
-                    status={activeLead.status} 
-                    disabled={false}
-                  />
-                ) : null}
+                {activeLead ? <KanbanCard lead={activeLead} status={activeLead.status} disabled={false} /> : null}
               </DragOverlay>
             </DndContext>
           </div>
         </div>
-
       </div>
 
-      {/* Modals */}
+      {/* Renderização dos Modais (omitida para brevidade, mantenha igual ao anterior) */}
       <ProximoContatoModal
         open={proximoContatoOpen}
         onClose={() => {
@@ -697,7 +743,6 @@ export default function Kanban() {
         leadNome={editingProximoContato?.leadNome || pendingMove?.leadNome || ""}
         initialDate={editingProximoContato?.currentDate}
       />
-
       <GanhoModal
         open={ganhoOpen}
         onClose={() => {
@@ -708,7 +753,6 @@ export default function Kanban() {
         leadNome={pendingMove?.leadNome || ""}
         defaultValor={pendingMove?.dealValor}
       />
-
       <NegociandoModal
         open={negociandoOpen}
         onClose={() => {
@@ -717,10 +761,9 @@ export default function Kanban() {
         }}
         onConfirm={handleNegociandoConfirm}
         leadNome={pendingMove?.leadNome || ""}
-        currentProduto={leads.find(l => l.id === pendingMove?.leadId)?.produto}
+        currentProduto={leads.find((l) => l.id === pendingMove?.leadId)?.produto}
         currentValor={pendingMove?.dealValor}
       />
-
       <PerdidoModal
         open={perdidoOpen}
         onClose={() => {
@@ -730,7 +773,6 @@ export default function Kanban() {
         onConfirm={handlePerdidoConfirm}
         leadNome={pendingMove?.leadNome || ""}
       />
-
       <PropostaModal
         open={propostaOpen}
         onClose={() => {
@@ -739,9 +781,8 @@ export default function Kanban() {
         }}
         onConfirm={handlePropostaConfirm}
         leadNome={pendingMove?.leadNome || ""}
-        currentValor={leads.find(l => l.id === pendingMove?.leadId)?.deal_valor || undefined}
+        currentValor={leads.find((l) => l.id === pendingMove?.leadId)?.deal_valor || undefined}
       />
-
       <FollowUpModal
         open={followUpOpen}
         onClose={() => {
