@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { LeadInfoTab } from "./LeadInfoTab";
 import { LeadCommentsTab } from "./LeadCommentsTab";
+import { LeadSalesEventsTab } from "./LeadSalesEventsTab";
 
 interface LeadDetailsModalProps {
   leadId: string | null;
@@ -283,6 +284,9 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
               <TabsTrigger value="comments">
                 Comentários ({interactions.length})
               </TabsTrigger>
+              {lead.categoria === "produtos" && (
+                <TabsTrigger value="events">Histórico de Eventos</TabsTrigger>
+              )}
             </TabsList>
 
             <ScrollArea className="h-[calc(90vh-180px)]">
@@ -306,6 +310,12 @@ export function LeadDetailsModal({ leadId, open, onClose }: LeadDetailsModalProp
                   currentUserId={currentUser?.id}
                 />
               </TabsContent>
+
+              {lead.categoria === "produtos" && (
+                <TabsContent value="events" className="m-0 p-6">
+                  <LeadSalesEventsTab leadId={lead.id} />
+                </TabsContent>
+              )}
             </ScrollArea>
           </Tabs>
         ) : (
