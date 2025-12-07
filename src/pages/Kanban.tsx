@@ -177,6 +177,29 @@ export default function Kanban() {
     return statusLabels[status];
   };
 
+  // Fetch event counts para o filtro de produtos
+  const { data: eventCounts = {} } = useQuery({
+    queryKey: ["event-counts", categoriaFilter],
+    queryFn: async () => {
+      if (categoriaFilter !== "produtos") return {};
+      
+      const { data, error } = await supabase
+        .from("sales_events")
+        .select("evento");
+      
+      if (error) throw error;
+      
+      // Conta os eventos
+      const counts: Record<string, number> = {};
+      data.forEach((row) => {
+        counts[row.evento] = (counts[row.evento] || 0) + 1;
+      });
+      
+      return counts;
+    },
+    enabled: categoriaFilter === "produtos",
+  });
+
   // Fetch leads
   const { data: leads = [], isLoading } = useQuery({
     queryKey: [
@@ -665,17 +688,24 @@ export default function Kanban() {
                         <CommandList>
                           <CommandEmpty>Nenhum evento encontrado.</CommandEmpty>
                           <CommandGroup>
-                            {lastlinkEvents.map((evento) => (
-                              <CommandItem key={evento} value={evento} onSelect={() => toggleEvent(evento)}>
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    selectedEvents.includes(evento) ? "opacity-100" : "opacity-0",
-                                  )}
-                                />
-                                {evento}
-                              </CommandItem>
-                            ))}
+                            {lastlinkEvents.map((evento) => {
+                              const enumValue = lastlinkEventsMap[evento];
+                              const count = enumValue ? (eventCounts[enumValue] || 0) : 0;
+                              return (
+                                <CommandItem key={evento} value={evento} onSelect={() => toggleEvent(evento)}>
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      selectedEvents.includes(evento) ? "opacity-100" : "opacity-0",
+                                    )}
+                                  />
+                                  <span className="flex-1">{evento}</span>
+                                  <span className="ml-2 text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
+                                    {count}
+                                  </span>
+                                </CommandItem>
+                              );
+                            })}
                           </CommandGroup>
                         </CommandList>
                       </Command>
