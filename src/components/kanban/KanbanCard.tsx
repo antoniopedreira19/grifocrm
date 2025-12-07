@@ -16,6 +16,7 @@ interface KanbanLead {
   id: string;
   nome: string;
   produto: string;
+  categoria?: string;
   interesse: string;
   faturamento_2025: string;
   regiao?: string;
@@ -25,6 +26,7 @@ interface KanbanLead {
   score_total?: number | null;
   score_cor?: string | null;
   proximo_contato?: string;
+  ultimo_evento?: string | null;
 }
 
 interface KanbanCardProps {
@@ -33,6 +35,27 @@ interface KanbanCardProps {
   disabled: boolean;
   onEditProximoContato?: (leadId: string, leadNome: string, currentDate?: string) => void;
 }
+
+// Labels para eventos Lastlink
+const eventLabels: Record<string, string> = {
+  "Abandoned_Cart": "Carrinho Abandonado",
+  "Payment_Chargeback": "Pagamento Estornado",
+  "Payment_Refund": "Pagamento Reembolsado",
+  "Purchase_Order_Confirmed": "Compra Completa",
+  "Purchase_Request_Canceled": "Pedido Cancelado",
+  "Purchase_Request_Confirmed": "Fatura Criada",
+  "Purchase_Request_Expired": "Pedido Expirado",
+  "Recurrent_Payment": "Pagamento Renovação",
+  "Refund_Period_Over": "Período Reemb. Terminado",
+  "Subscription_Canceled": "Assinatura Cancelada",
+  "Subscription_Expired": "Assinatura Expirada",
+  "Subscription_Renewal_Pending": "Renovação Pendente",
+  "Refund_Requested": "Reembolso Solicitado",
+  "Product_Access_Started": "Acesso Iniciado",
+  "Product_Access_Ended": "Acesso Encerrado",
+  "Subscription_Product_Access": "Acesso Assinatura",
+  "Active_Member_Notification": "Membro Ativo",
+};
 
 const interesseColors: Record<string, string> = {
   quero_agora: "bg-green-500/10 text-green-700 border-green-500/20",
@@ -152,7 +175,18 @@ export function KanbanCard({ lead, status, disabled, onEditProximoContato }: Kan
               {produtoLabels[lead.produto as keyof typeof produtoLabels] || lead.produto}
             </Badge>
             
-            {lead.interesse && (
+            {/* Badge do último evento para categoria produtos */}
+            {lead.categoria === "produtos" && lead.ultimo_evento && (
+              <Badge 
+                variant="outline" 
+                className="text-[10px] px-1.5 py-0 bg-primary/10 text-primary border-primary/30"
+              >
+                {eventLabels[lead.ultimo_evento] || lead.ultimo_evento}
+              </Badge>
+            )}
+            
+            {/* Badge de interesse para outras categorias */}
+            {lead.categoria !== "produtos" && lead.interesse && (
               <Badge 
                 variant="outline" 
                 className={`text-[10px] px-1.5 py-0 border ${interesseColors[lead.interesse] || ''}`}
