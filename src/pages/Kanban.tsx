@@ -61,6 +61,7 @@ interface KanbanLead {
   valor_parcelado?: number | null;
   valor_entrada?: number | null;
   proximo_followup?: string;
+  ultimo_evento?: string | null;
 }
 
 interface PendingMove {
@@ -253,7 +254,28 @@ export default function Kanban() {
 
         // Remove duplicatas (caso o lead tenha múltiplos eventos iguais)
         const uniqueLeads = Array.from(new Map(data.map((item) => [item.id, item])).values());
-        return uniqueLeads as unknown as KanbanLead[];
+        const leadIds = uniqueLeads.map(l => l.id);
+        
+        // Buscar último evento de cada lead
+        const { data: eventos } = await supabase
+          .from("sales_events")
+          .select("lead_id, evento, created_at")
+          .in("lead_id", leadIds)
+          .order("created_at", { ascending: false });
+        
+        const ultimoEventoPorLead: Record<string, string> = {};
+        if (eventos) {
+          eventos.forEach((ev) => {
+            if (ev.lead_id && !ultimoEventoPorLead[ev.lead_id]) {
+              ultimoEventoPorLead[ev.lead_id] = ev.evento;
+            }
+          });
+        }
+        
+        return uniqueLeads.map(lead => ({
+          ...lead,
+          ultimo_evento: ultimoEventoPorLead[lead.id] || null
+        })) as unknown as KanbanLead[];
       }
 
       // LÓGICA PADRÃO (MENTORIAS/GERAL)

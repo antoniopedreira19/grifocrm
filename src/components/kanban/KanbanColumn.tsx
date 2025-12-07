@@ -8,6 +8,7 @@ interface KanbanLead {
   id: string;
   nome: string;
   produto: string;
+  categoria?: string;
   interesse: string;
   faturamento_2025: string;
   regiao?: string;
@@ -17,6 +18,7 @@ interface KanbanLead {
   proximo_contato?: string;
   score_total?: number | null;
   score_cor?: string | null;
+  ultimo_evento?: string | null;
 }
 
 interface KanbanColumnProps {
