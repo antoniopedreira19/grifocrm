@@ -29,7 +29,29 @@ interface Lead {
   score_total: number | null;
   created_at: string;
   origem: string | null;
+  ultimo_evento?: string | null;
 }
+
+// Labels para eventos Lastlink
+const eventLabels: Record<string, string> = {
+  "Abandoned_Cart": "Carrinho Abandonado",
+  "Payment_Chargeback": "Pagamento Estornado",
+  "Payment_Refund": "Pagamento Reembolsado",
+  "Purchase_Order_Confirmed": "Compra Completa",
+  "Purchase_Request_Canceled": "Pedido Cancelado",
+  "Purchase_Request_Confirmed": "Fatura Criada",
+  "Purchase_Request_Expired": "Pedido Expirado",
+  "Recurrent_Payment": "Pagamento Renovação",
+  "Refund_Period_Over": "Período Reembolso Terminado",
+  "Subscription_Canceled": "Assinatura Cancelada",
+  "Subscription_Expired": "Assinatura Expirada",
+  "Subscription_Renewal_Pending": "Renovação Pendente",
+  "Refund_Requested": "Reembolso Solicitado",
+  "Product_Access_Started": "Acesso Iniciado",
+  "Product_Access_Ended": "Acesso Encerrado",
+  "Subscription_Product_Access": "Acesso Assinatura",
+  "Active_Member_Notification": "Membro Ativo",
+};
 
 export default function Leads() {
   const { currentRole } = useAuth();
@@ -73,6 +95,34 @@ export default function Leads() {
       
       const { data, error } = await query;
       if (error) throw error;
+      
+      // Para categoria produtos, buscar último evento de cada lead
+      if (categoriaFilter === "produtos" && data && data.length > 0) {
+        const leadIds = data.map(l => l.id);
+        
+        const { data: eventos, error: eventosError } = await supabase
+          .from("sales_events")
+          .select("lead_id, evento, created_at")
+          .in("lead_id", leadIds)
+          .order("created_at", { ascending: false });
+        
+        if (!eventosError && eventos) {
+          // Pegar o último evento de cada lead
+          const ultimoEventoPorLead: Record<string, string> = {};
+          eventos.forEach((ev) => {
+            if (ev.lead_id && !ultimoEventoPorLead[ev.lead_id]) {
+              ultimoEventoPorLead[ev.lead_id] = ev.evento;
+            }
+          });
+          
+          // Adicionar último evento aos leads
+          return data.map(lead => ({
+            ...lead,
+            ultimo_evento: ultimoEventoPorLead[lead.id] || null
+          })) as Lead[];
+        }
+      }
+      
       return data as Lead[];
     },
   });
@@ -275,9 +325,15 @@ export default function Leads() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(lead.status)}>
-                        {statusLabels[lead.status as keyof typeof statusLabels] || lead.status}
-                      </Badge>
+                      {categoriaFilter === "produtos" && lead.ultimo_evento ? (
+                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+                          {eventLabels[lead.ultimo_evento] || lead.ultimo_evento}
+                        </Badge>
+                      ) : (
+                        <Badge variant={getStatusVariant(lead.status)}>
+                          {statusLabels[lead.status as keyof typeof statusLabels] || lead.status}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
