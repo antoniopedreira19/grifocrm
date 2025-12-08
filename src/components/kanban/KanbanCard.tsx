@@ -15,6 +15,7 @@ import { produtoLabels } from "@/utils/labels";
 interface KanbanLead {
   id: string;
   nome: string;
+  email?: string;
   produto: string;
   categoria?: string;
   interesse: string;
@@ -223,9 +224,15 @@ export function KanbanCard({ lead, status, disabled, onEditProximoContato }: Kan
           )}
 
           {/* Info adicional */}
-          <div className="space-y-1 text-[11px] text-muted-foreground line-clamp-1 mt-2">
+          <div className="space-y-1 text-[11px] text-muted-foreground mt-2">
+            {/* Email para categoria produtos */}
+            {lead.categoria === "produtos" && lead.email && (
+              <div className="truncate" title={lead.email}>
+                {lead.email}
+              </div>
+            )}
             <div className="flex items-center gap-1">
-              {lead.regiao && (
+              {lead.categoria !== "produtos" && lead.regiao && (
                 <>
                   <span>📍 {lead.regiao}</span>
                   <span>•</span>
