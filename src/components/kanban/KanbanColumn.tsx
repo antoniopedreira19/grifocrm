@@ -7,6 +7,7 @@ import type { Status } from "@/types/lead";
 interface KanbanLead {
   id: string;
   nome: string;
+  email?: string;
   produto: string;
   categoria?: string;
   interesse: string;

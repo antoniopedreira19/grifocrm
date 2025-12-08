@@ -42,6 +42,7 @@ type StatusDB = Database["public"]["Enums"]["status_t"];
 interface KanbanLead {
   id: string;
   nome: string;
+  email?: string;
   produto: string;
   categoria?: ProdutoCategoria;
   interesse: string;
@@ -234,7 +235,7 @@ export default function Kanban() {
           .from("leads")
           .select(
             `
-            id, nome, produto, categoria, interesse, faturamento_2025, regiao, created_at, 
+            id, nome, email, produto, categoria, interesse, faturamento_2025, regiao, created_at, 
             responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, 
             interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, 
             valor_parcelado, valor_entrada, proximo_followup,
