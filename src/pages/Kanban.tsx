@@ -230,7 +230,7 @@ export default function Kanban() {
 
         if (enumEvents.length === 0) return [];
 
-        // Busca leads que tenham os eventos selecionados na tabela sales_events
+        // Primeiro, busca leads dos produtos selecionados
         let query = supabase
           .from("leads")
           .select(
@@ -238,12 +238,10 @@ export default function Kanban() {
             id, nome, email, produto, categoria, interesse, faturamento_2025, regiao, created_at, 
             responsavel, ultima_interacao, status, score_total, score_cor, deal_valor, 
             interesse_mentoria_fast, proximo_contato, tipo_pagamento, valor_a_vista, 
-            valor_parcelado, valor_entrada, proximo_followup,
-            sales_events!inner(evento)
+            valor_parcelado, valor_entrada, proximo_followup
           `,
           )
           .in("produto", selectedProducts as Database["public"]["Enums"]["produto_t"][])
-          .in("sales_events.evento", enumEvents)
           .in("status", activeColumns as StatusDB[]);
 
         // Aplica outros filtros
@@ -253,17 +251,18 @@ export default function Kanban() {
         const { data, error } = await query;
         if (error) throw error;
 
-        // Remove duplicatas (caso o lead tenha múltiplos eventos iguais)
-        const uniqueLeads = Array.from(new Map(data.map((item) => [item.id, item])).values());
-        const leadIds = uniqueLeads.map(l => l.id);
+        if (!data || data.length === 0) return [];
+
+        const leadIds = data.map(l => l.id);
         
-        // Buscar último evento de cada lead
+        // Buscar TODOS os eventos de cada lead para determinar o último
         const { data: eventos } = await supabase
           .from("sales_events")
           .select("lead_id, evento, created_at")
           .in("lead_id", leadIds)
           .order("created_at", { ascending: false });
         
+        // Determina o último evento de cada lead
         const ultimoEventoPorLead: Record<string, string> = {};
         if (eventos) {
           eventos.forEach((ev) => {
@@ -273,7 +272,14 @@ export default function Kanban() {
           });
         }
         
-        return uniqueLeads.map(lead => ({
+        // FILTRA: só inclui leads cujo ÚLTIMO evento está nos eventos selecionados
+        // Isso evita mostrar leads em "Carrinho Abandonado" se depois compraram
+        const filteredLeads = data.filter(lead => {
+          const ultimoEvento = ultimoEventoPorLead[lead.id];
+          return ultimoEvento && enumEvents.includes(ultimoEvento as Database["public"]["Enums"]["lastlink_event_t"]);
+        });
+        
+        return filteredLeads.map(lead => ({
           ...lead,
           ultimo_evento: ultimoEventoPorLead[lead.id] || null
         })) as unknown as KanbanLead[];
