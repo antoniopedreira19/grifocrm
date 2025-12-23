@@ -13,6 +13,7 @@ import Forms from "./pages/Forms";
 import FormularioPublico from "./pages/FormularioPublico";
 import Obrigado from "./pages/Obrigado";
 import MasterclassLanding from "./pages/MasterclassLanding";
+import PlanilhasLanding from "./pages/PlanilhasLanding";
 import ProductsConfig from "./pages/ProductsConfig";
 import NotFound from "./pages/NotFound";
 
@@ -79,6 +80,10 @@ const App = () => (
             <Route
               path="/links/masterclass"
               element={<MasterclassLanding />}
+            />
+            <Route
+              path="/links/planilhas"
+              element={<PlanilhasLanding />}
             />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -152,6 +152,36 @@ export default function Forms() {
                   </div>
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Planilhas para Construção Civil</CardTitle>
+                  <CardDescription>
+                    Landing page das planilhas de gestão para construção civil
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-3 bg-muted rounded-lg text-sm font-mono break-all">
+                    https://grifocrm.com.br/links/planilhas
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => copyToClipboard("https://grifocrm.com.br/links/planilhas", "Planilhas")}
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copiar Link
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => window.open("/links/planilhas", "_blank")}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
